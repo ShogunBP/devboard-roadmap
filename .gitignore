@@ -23,7 +23,4 @@ Desktop.ini
 
 # Arquivos de desenvolvimento (não fazem parte do produto)
 ROADMAP.md
-bkp.md
-prompt-ajustes-finais-temas.md
-update.py
-update_mock.js
+dev/
