@@ -1,0 +1,347 @@
+/* roadmap.css */
+
+:root {
+  --background: #F4F7FA;
+  --foreground: #1B2A38;
+  --card: #FFFFFF;
+  --card-foreground: #1B2A38;
+  --popover: #FFFFFF;
+  --popover-foreground: #1B2A38;
+  --primary: #1B6E8C;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E3EBF0;
+  --secondary-foreground: #1B2A38;
+  --muted: #E3EBF0;
+  --muted-foreground: #5C7385;
+  --accent: #DCEEF5;
+  --accent-foreground: #145066;
+  --destructive: #C0392B;
+  --destructive-foreground: #FFFFFF;
+  --border: #C5D6E0;
+  --input: #C5D6E0;
+  --ring: #1B6E8C;
+
+  /* Status (semânticas — herdadas por todos os temas) */
+  --status-draft: #7B8FA3;
+  --status-ready-for-review: #A855F7;
+  --status-changes-requested: #E07C1A;
+  --status-approved: #3B82F6;
+  --status-in-progress: #EAB308;
+  --status-done: #22C55E;
+  --status-cancelled: #6B7280;
+  --status-preparacao: #7B8FA3;
+
+  /* Prioridades */
+  --priority-baixa: #22C55E;
+  --priority-média: #EAB308;
+  --priority-alta: #EF4444;
+
+  /* Utilitários visuais */
+  --gradient-primary: linear-gradient(135deg, #1B6E8C, #4FC8E8);
+  --gradient-surface: linear-gradient(180deg, #F4F7FA, #E3EBF0);
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  --background: #0E1B2A;
+  --foreground: #DCE6EE;
+  --card: #132638;
+  --card-foreground: #DCE6EE;
+  --popover: #132638;
+  --popover-foreground: #DCE6EE;
+  --primary: #4FC8E8;
+  --primary-foreground: #04222E;
+  --secondary: #16293B;
+  --secondary-foreground: #DCE6EE;
+  --muted: #16293B;
+  --muted-foreground: #6B8FA3;
+  --accent: #1A3547;
+  --accent-foreground: #4FC8E8;
+  --destructive: #E24B4A;
+  --destructive-foreground: #1A0505;
+  --border: rgba(79,200,232,0.18);
+  --input: rgba(79,200,232,0.22);
+  --ring: #4FC8E8;
+
+  --gradient-primary: linear-gradient(135deg, #1B6E8C, #4FC8E8);
+  --gradient-surface: linear-gradient(180deg, #0E1B2A, #132638);
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+* {
+  border-color: var(--border);
+}
+
+/* Custom Scrollbar for better UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+}
+
+/* Base utility overrides or helpers if Tailwind gets confused by standard oklch */
+.text-muted-foreground { color: var(--muted-foreground); }
+.bg-card { background-color: var(--card);  .card-hover:hover {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* --- TEMAS VISUAIS --- */
+
+/* Tema: Terminal (Claro) */
+[data-theme="terminal"] {
+  --background: #EEF0F2;
+  --foreground: #1A1F24;
+  --card: #FFFFFF;
+  --card-foreground: #1A1F24;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1F24;
+  --primary: #B8791F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E2E5E8;
+  --secondary-foreground: #1A1F24;
+  --muted: #E2E5E8;
+  --muted-foreground: #5A6570;
+  --accent: #F5E6CC;
+  --accent-foreground: #7A4E0F;
+  --destructive: #C0392B;
+  --destructive-foreground: #FFFFFF;
+  --border: #D5D9DC;
+  --input: #D5D9DC;
+  --ring: #B8791F;
+  --gradient-primary: linear-gradient(135deg, #B8791F, #D4952E);
+}
+
+/* Tema: Terminal (Escuro) */
+[data-theme="terminal"].dark {
+  --background: #0B0F14;
+  --foreground: #E6EAEE;
+  --card: #131A22;
+  --card-foreground: #E6EAEE;
+  --popover: #131A22;
+  --popover-foreground: #E6EAEE;
+  --primary: #F2A93B;
+  --primary-foreground: #1A1200;
+  --secondary: #1C242D;
+  --secondary-foreground: #E6EAEE;
+  --muted: #1C242D;
+  --muted-foreground: #8A94A0;
+  --accent: #2A2115;
+  --accent-foreground: #F2A93B;
+  --destructive: #E24B4A;
+  --destructive-foreground: #1A0505;
+  --border: rgba(255,255,255,0.08);
+  --input: rgba(255,255,255,0.10);
+  --ring: #F2A93B;
+  --gradient-primary: linear-gradient(135deg, #F2A93B, #FFD080);
+}
+
+/* Tema: Default (Claro) */
+[data-theme="clean"] {
+  --radius: 0.625rem;
+  --background: oklch(0.985 0.005 240);
+  --foreground: oklch(0.18 0.03 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.03 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.03 260);
+  --primary: oklch(0.58 0.22 265);
+  --primary-foreground: oklch(0.99 0.005 240);
+  --primary-glow: oklch(0.72 0.19 285);
+  --secondary: oklch(0.96 0.01 250);
+  --secondary-foreground: oklch(0.22 0.04 260);
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.5 0.03 258);
+  --accent: oklch(0.94 0.04 280);
+  --accent-foreground: oklch(0.25 0.08 280);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(0.9 0.015 255);
+  --input: oklch(0.92 0.015 255);
+  --ring: oklch(0.58 0.22 265);
+
+  --status-backlog: oklch(0.65 0.03 260);
+  --status-todo: oklch(0.65 0.15 240);
+  --status-progress: oklch(0.72 0.17 60);
+  --status-review: oklch(0.65 0.2 300);
+  --status-done: oklch(0.65 0.17 155);
+
+  --status-draft: oklch(0.65 0.03 260);
+  --status-ready-for-review: oklch(0.65 0.2 300);
+  --status-changes-requested: oklch(0.65 0.18 40);
+  --status-approved: oklch(0.65 0.15 240);
+  --status-in-progress: oklch(0.72 0.17 70);
+  --status-cancelled: oklch(0.5 0.02 0);
+
+  --priority-low: oklch(0.7 0.14 155);
+  --priority-med: oklch(0.75 0.16 75);
+  --priority-high: oklch(0.65 0.22 25);
+
+  --priority-baixa: oklch(0.7 0.14 155);
+  --priority-média: oklch(0.75 0.16 75);
+  --priority-alta: oklch(0.65 0.22 25);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.58 0.22 265), oklch(0.72 0.19 300));
+  --gradient-surface: linear-gradient(180deg, oklch(0.99 0.005 240), oklch(0.96 0.01 250));
+  --shadow-card: 0 1px 2px oklch(0.2 0.05 260 / 0.06), 0 8px 24px oklch(0.2 0.05 260 / 0.08);
+  --shadow-elegant: 0 20px 50px -20px oklch(0.58 0.22 265 / 0.35);
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tema: Default (Escuro) */
+[data-theme="clean"].dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  
+  --gradient-surface: linear-gradient(180deg, oklch(0.129 0.042 264.695), oklch(0.15 0.04 265));
+}
+
+/* Default - Elementos Visuais */
+.card-blueprint-corner {
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%) !important;
+  border-top-right-radius: 0 !important;
+}
+
+[data-theme="default"] body {
+  background-image:
+    linear-gradient(rgba(79,200,232,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,200,232,0.06) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+}
+
+[data-theme="default"].dark body {
+  background-image:
+    linear-gradient(rgba(79,200,232,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,200,232,0.08) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+}
+
+/* Tema: Ficha (Claro) */
+[data-theme="ficha"] {
+  --background: #EDE6D6;
+  --foreground: #3A3226;
+  --card: #F7F2E7;
+  --card-foreground: #3A3226;
+  --popover: #F7F2E7;
+  --popover-foreground: #3A3226;
+  --primary: #8B5E3C;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E2D9C4;
+  --secondary-foreground: #3A3226;
+  --muted: #E2D9C4;
+  --muted-foreground: #8B7F68;
+  --accent: #DDD0B0;
+  --accent-foreground: #5C4726;
+  --destructive: #A13A2B;
+  --destructive-foreground: #FFFFFF;
+  --border: #C9BEA5;
+  --input: #C9BEA5;
+  --ring: #8B5E3C;
+  --gradient-primary: linear-gradient(135deg, #8B5E3C, #B07848);
+}
+
+/* Tema: Ficha (Escuro) */
+[data-theme="ficha"].dark {
+  --background: #1A1712;
+  --foreground: #E8DFC8;
+  --card: #241F17;
+  --card-foreground: #E8DFC8;
+  --popover: #241F17;
+  --popover-foreground: #E8DFC8;
+  --primary: #D4A15C;
+  --primary-foreground: #1A1200;
+  --secondary: #2E281E;
+  --secondary-foreground: #E8DFC8;
+  --muted: #2E281E;
+  --muted-foreground: #A89878;
+  --accent: #3A3122;
+  --accent-foreground: #D4A15C;
+  --destructive: #C25B4A;
+  --destructive-foreground: #1A0505;
+  --border: rgba(232,223,200,0.12);
+  --input: rgba(232,223,200,0.15);
+  --ring: #D4A15C;
+  --gradient-primary: linear-gradient(135deg, #D4A15C, #E2B870);
+}
+
+/* Ficha - Elementos Visuais */
+[data-theme="ficha"] article {
+  border-radius: 0 !important;
+}
+
+[data-theme="ficha"] .task-title,
+[data-theme="ficha"] #modal-body h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+[data-theme="ficha"] .card-stamp {
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 6px;
+  transform: rotate(-6deg);
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.text-foreground { color: var(--foreground); }
+.bg-background { background-color: var(--background); }
+.bg-primary { background-color: var(--primary); }
+.text-primary-foreground { color: var(--primary-foreground); }
+.border-primary { border-color: var(--primary); }
+.text-primary { color: var(--primary); }
+.bg-accent { background-color: var(--accent); }
+.text-accent-foreground { color: var(--accent-foreground); }
+.bg-muted { background-color: var(--muted); }
+.text-destructive { color: var(--destructive); }
+
+/* Task Modal overlay animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(10px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.modal-overlay {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.modal-content {
+  animation: slideIn 0.2s ease-out forwards;
+}

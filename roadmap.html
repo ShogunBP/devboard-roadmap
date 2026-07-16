@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap & Kanban Modular</title>
+  
+  
+  <script>
+    (function() {
+      const theme = localStorage.getItem('visualTheme') || 'default';
+      const storedThemeMode = localStorage.getItem('theme');
+      const dark = storedThemeMode === 'dark' || (!storedThemeMode);
+      document.documentElement.dataset.theme = theme;
+      if (dark) document.documentElement.classList.add('dark');
+    })();
+  </script>
+<!-- Estilos base e variáveis de cor customizadas -->
+  <link rel="stylesheet" href="roadmap/roadmap.css?v=4">
+
+  <!-- TailwindCSS via CDN para funcionamento imediato sem build -->
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  
+  <!-- Configuração do Tailwind para usar nossas variáveis CSS (compatível com v4) -->
+  <style type="text/tailwindcss">
+    @theme {
+      --radius-sm: calc(var(--radius) - 4px);
+      --radius-md: calc(var(--radius) - 2px);
+      --radius-lg: var(--radius);
+      --radius-xl: calc(var(--radius) + 4px);
+      --radius-2xl: calc(var(--radius) + 8px);
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-card: var(--card);
+      --color-card-foreground: var(--card-foreground);
+      --color-primary: var(--primary);
+      --color-primary-foreground: var(--primary-foreground);
+      --color-secondary: var(--secondary);
+      --color-muted: var(--muted);
+      --color-muted-foreground: var(--muted-foreground);
+      --color-accent: var(--accent);
+      --color-destructive: var(--destructive);
+      --color-border: var(--border);
+      --color-input: var(--input);
+      --color-ring: var(--ring);
+    }
+  </style>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-background text-foreground font-sans">
+  
+  <header class="border-b border-border/70 bg-[var(--gradient-surface)] backdrop-blur">
+    <div class="mx-auto max-w-[1400px] px-6 py-8">
+      <div class="flex flex-wrap items-start justify-between gap-6">
+        <div>
+          <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
+            <i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i>
+            Roadmap 2026 · Produto
+          </div>
+          <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">
+            Kanban & Roadmap Interativo
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Arraste tarefas entre colunas, alterne para a visão de roadmap por trimestre e
+            clique em qualquer card para ver detalhes, subtarefas e progresso.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-4" id="stats-container">
+          <!-- Estatísticas serão renderizadas aqui pelo JS -->
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <!-- Controles de Visão -->
+        <div class="inline-flex rounded-lg border border-border bg-card p-1">
+          <button id="btn-view-kanban" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow">
+            <i data-lucide="layout-grid" class="h-4 w-4"></i> Kanban
+          </button>
+          <button id="btn-view-roadmap" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5">
+            <i data-lucide="git-branch" class="h-4 w-4"></i> Roadmap
+          </button>
+        </div>
+
+        <!-- Toggle de Tema -->
+        <button id="btn-theme-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5" aria-label="Alternar tema">
+          <i data-lucide="sun" class="h-4 w-4" id="icon-theme-sun"></i>
+          <i data-lucide="moon" class="h-4 w-4 hidden" id="icon-theme-moon"></i>
+          <span id="text-theme">Claro</span>
+        </button>
+
+        <!-- Seletor de Tema Visual -->
+        <div class="relative min-w-[130px]">
+          <select id="select-visual-theme" class="flex h-8 w-full rounded-md border border-input bg-background text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <option value="default">Padrão</option>
+            <option value="terminal">Terminal</option>
+            <option value="clean">Clean</option>
+            <option value="ficha">Ficha de Arquivo</option>
+          </select>
+        </div>
+
+        <!-- Toggle Ocultar Cancelados -->
+        <button id="btn-toggle-cancelled" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5" title="Ocultar tarefas canceladas">
+          <i data-lucide="eye-off" class="h-4 w-4" id="icon-cancelled-off"></i>
+          <i data-lucide="eye" class="h-4 w-4 hidden" id="icon-cancelled-on"></i>
+          <span id="text-cancelled">Ocultar cancelados</span>
+        </button>
+
+        <!-- Importar/Exportar -->
+        <div class="inline-flex items-center gap-2">
+          <button id="btn-export-json" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5" title="Exportar dados para JSON">
+            <i data-lucide="download" class="h-4 w-4"></i>
+            Exportar
+          </button>
+          <button id="btn-import-json" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5" title="Importar dados de um arquivo JSON">
+            <i data-lucide="upload" class="h-4 w-4"></i>
+            Importar
+          </button>
+          <input type="file" id="input-file-json" accept=".json" class="hidden">
+        </div>
+
+        <!-- Busca -->
+        <div class="relative flex-1 min-w-[220px] max-w-md">
+          <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
+          <input type="text" id="input-search" placeholder="Buscar por título ou tags…" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9">
+        </div>
+
+        <!-- Filtro de Categoria -->
+        <div class="relative min-w-[155px]">
+          <select id="select-category" class="flex h-9 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <option value="all">Todas as Categorias</option>
+            <option value="bugs">🐛 Bugs</option>
+            <option value="features">✨ Features</option>
+            <option value="enhancements">🔧 Melhorias</option>
+            <option value="refactoring">♻️ Refactoring</option>
+          </select>
+        </div>
+
+        <!-- Filtro de Área -->
+        <div class="relative min-w-[130px]">
+          <select id="select-area" class="flex h-9 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <option value="all">Todas as Áreas</option>
+            <option value="active">Ativos</option>
+            <option value="archive">Arquivados</option>
+          </select>
+        </div>
+
+        <!-- Filtros de Prioridade -->
+        <div class="flex items-center gap-1.5" id="priority-filters">
+          <!-- Filtros renderizados por JS -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-[1400px] px-6 py-8">
+    <!-- View do Kanban -->
+    <div id="view-kanban" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <!-- Colunas renderizadas por JS -->
+    </div>
+
+    <!-- View do Roadmap -->
+    <div id="view-roadmap" class="hidden">
+      <div class="overflow-x-auto pb-4">
+        <div class="min-w-[800px] flex gap-4" id="roadmap-quarters">
+          <!-- Trimestres renderizados por JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de Detalhes da Tarefa -->
+  <div id="task-modal" class="fixed inset-0 z-50 hidden">
+    <!-- Fundo Escuro -->
+    <div class="fixed inset-0 bg-background/80 backdrop-blur-sm modal-overlay" id="task-modal-backdrop"></div>
+    
+    <!-- Painel do Modal -->
+    <div class="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[90vh] flex-col rounded-t-[20px] border border-border bg-background sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:mt-0 sm:h-auto sm:max-h-[85vh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl shadow-lg modal-content">
+      
+      <!-- Header do Modal -->
+      <div class="flex items-start justify-between border-b border-border/50 px-6 py-4">
+        <div class="flex items-center gap-2" id="modal-header-badges">
+          <!-- Badges de prioridade e status via JS -->
+        </div>
+        <button id="btn-close-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <i data-lucide="x" class="h-4 w-4"></i>
+        </button>
+      </div>
+
+      <!-- Conteúdo do Modal -->
+      <div class="flex-1 overflow-y-auto px-6 py-6" id="modal-body">
+        <!-- Renderizado via JS -->
+      </div>
+      
+      <!-- Footer do Modal (Ações) -->
+      <div class="flex items-center justify-between border-t border-border/50 bg-muted/20 px-6 py-4" id="modal-footer">
+        <!-- Renderizado via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="roadmap/data.js"></script>
+  <script src="roadmap/roadmap.js"></script>
+</body>
+</html>
