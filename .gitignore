@@ -22,5 +22,4 @@ Desktop.ini
 *.bak
 
 # Arquivos de desenvolvimento (não fazem parte do produto)
-ROADMAP.md
 dev/

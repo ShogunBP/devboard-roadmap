@@ -4,6 +4,7 @@
 **Data:** 2026-07-13
 **Prioridade:** `alta`
 **Tags:** `backend`, `segurança`
+**Resumo:** Implementação do fluxo de autenticação "Entrar com Google" (OAuth).
 
 ---
 
@@ -42,10 +43,10 @@ O usuário verá um botão "Login com Google" na tela principal e será redireci
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

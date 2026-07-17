@@ -4,6 +4,7 @@
 **Data:** 2026-07-13
 **Prioridade:** `alta`
 **Tags:** `frontend`, `performance`
+**Resumo:** Substituição da Context API pelo Redux Toolkit para gerenciar estados globais e evitar renders indesejados.
 
 ---
 
@@ -36,10 +37,10 @@ Migrar um slice por PR.
 
 ## Review
 
-### Feedback
+## Feedback
 > Aprovado, pode avançar para a migração real.
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

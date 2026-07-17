@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `baixa`
 **Tags:** `frontend`, `animação`, `ui-ux`
+**Resumo:** Estilização do texto do logo da navbar para simular um prompt de terminal de comandos com cursor piscando.
 
 > **Nota de categoria:** Este item foi listado na Fase 0 como "texto estático do navbar". Como se trata de uma implementação nova sobre texto que funciona normalmente (não é um comportamento quebrado), foi registrado como `enhancement`. Mova para `bugs/` se preferir tratar como bug de UX.
 
@@ -77,10 +78,10 @@ guilherme-menezes@home:~$▌
 
 ## Review
 
-### Feedback
+## Feedback
 > Texto deve ficar visível na navbar desktop também no estado scrollado.
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

@@ -347,9 +347,6 @@ function renderTaskCard(task) {
 
       <div class="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
         <span>
-          <code class="text-[10px] text-muted-foreground">${task.id}</code>
-        </span>
-        <span class="inline-flex items-center gap-2">
           ${dateLabel ? `
             <span class="inline-flex items-center gap-0.5">
               <i data-lucide="calendar" class="h-3 w-3"></i>
@@ -357,6 +354,12 @@ function renderTaskCard(task) {
             </span>
           ` : ''}
         </span>
+        ${task.progressFraction && task.progressFraction.total > 0 ? `
+          <span class="inline-flex items-center gap-1 tabular-nums">
+            <i data-lucide="check-circle" class="h-3 w-3"></i>
+            ${task.progressFraction.done}/${task.progressFraction.total}
+          </span>
+        ` : ''}
       </div>
     </article>
   `;
@@ -440,78 +443,281 @@ function closeModal() {
   renderApp();
 }
 
+function escapeHtml(unsafe) {
+  if (!unsafe) return "";
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function applyInlineFormatting(text) {
+  // Negrito: **texto**
+  let formatted = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  
+  // Itálico: *texto* ou _texto_
+  formatted = formatted.replace(/\*(.*?)\*/g, "<em>$1</em>");
+  formatted = formatted.replace(/_(.*?)_/g, "<em>$1</em>");
+
+  // Código inline: `código`
+  formatted = formatted.replace(/`(.*?)`/g, '<code class="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">$1</code>');
+
+  return formatted;
+}
+
+function convertMarkdownToHtml(content) {
+  if (!content) return "";
+
+  // Pre-process: ensure ### sub-headings are their own blocks
+  content = content.replace(/(\S)\r?\n(### )/g, '$1\n\n$2');
+  content = content.replace(/(### .+)\r?\n(\S)/g, '$1\n\n$2');
+
+  // 1. Dividir em blocos separados por linhas em branco (\n\s*\n)
+  const rawBlocks = content.split(/\r?\n\s*\r?\n/);
+  const htmlBlocks = [];
+
+  for (const rawBlock of rawBlocks) {
+    const trimmedBlock = rawBlock.trim();
+    if (!trimmedBlock) continue;
+
+    const lines = trimmedBlock.split(/\r?\n/);
+    if (lines.length === 0) continue;
+
+    const firstLine = lines[0].trim();
+
+    // Caso 0: Sub-heading ### (render como h5)
+    if (firstLine.startsWith("### ")) {
+      const headingText = escapeHtml(firstLine.substring(4).trim());
+      const inlineHtml = applyInlineFormatting(headingText);
+      htmlBlocks.push(`<h5 class="font-semibold text-foreground text-xs mt-3 mb-1.5">${inlineHtml}</h5>`);
+      // If there are more lines after the heading in the same block, process them as a paragraph
+      if (lines.length > 1) {
+        const restLines = lines.slice(1).map(l => l.trim()).join(" ");
+        const restEscaped = escapeHtml(restLines);
+        const restFormatted = applyInlineFormatting(restEscaped);
+        htmlBlocks.push(`<p class="leading-relaxed text-muted-foreground text-xs md:text-sm mb-3">${restFormatted}</p>`);
+      }
+      continue;
+    }
+
+    // Caso 1: Checkbox lista (- [x] ou - [ ])
+    if (firstLine.startsWith("- [x]") || firstLine.startsWith("- [ ]") || firstLine.startsWith("- [X]")) {
+      let listHtml = '<ul class="space-y-1.5">';
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        const escapedText = escapeHtml(trimmedLine.substring(5).trim());
+        const inlineHtml = applyInlineFormatting(escapedText);
+        
+        if (trimmedLine.toLowerCase().startsWith("- [x]")) {
+          listHtml += `
+            <li class="flex items-start gap-2 text-muted-foreground line-through">
+              <i data-lucide="check-square" class="h-4 w-4 text-emerald-500 mt-0.5 shrink-0"></i>
+              <span>${inlineHtml}</span>
+            </li>`;
+        } else {
+          listHtml += `
+            <li class="flex items-start gap-2">
+              <i data-lucide="square" class="h-4 w-4 text-muted-foreground mt-0.5 shrink-0"></i>
+              <span>${inlineHtml}</span>
+            </li>`;
+        }
+      }
+      listHtml += "</ul>";
+      htmlBlocks.push(listHtml);
+    }
+    // Caso 2: Lista simples (- )
+    else if (firstLine.startsWith("- ")) {
+      let listHtml = '<ul class="list-disc pl-5 space-y-1">';
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        const escapedText = escapeHtml(trimmedLine.substring(2).trim());
+        const inlineHtml = applyInlineFormatting(escapedText);
+        listHtml += `<li>${inlineHtml}</li>`;
+      }
+      listHtml += "</ul>";
+      htmlBlocks.push(listHtml);
+    }
+    // Caso 3: Lista ordenada (1. )
+    else if (/^\d+\.\s+/.test(firstLine)) {
+      let listHtml = '<ol class="list-decimal pl-5 space-y-1">';
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        const contentMatch = trimmedLine.match(/^\d+\.\s+(.*)$/);
+        const text = contentMatch ? contentMatch[1] : trimmedLine;
+        const escapedText = escapeHtml(text.trim());
+        const inlineHtml = applyInlineFormatting(escapedText);
+        listHtml += `<li>${inlineHtml}</li>`;
+      }
+      listHtml += "</ol>";
+      htmlBlocks.push(listHtml);
+    }
+    // Caso 4: Parágrafo normal
+    else {
+      const boldTitleMatch = firstLine.match(/^\*\*(.+)\*\*$/);
+      if (boldTitleMatch && lines.length > 1) {
+        const titleText = escapeHtml(boldTitleMatch[1]);
+        const bodyTextJoined = lines.slice(1).map(l => l.trim()).join(" ");
+        const bodyTextEscaped = escapeHtml(bodyTextJoined);
+        const bodyTextFormatted = applyInlineFormatting(bodyTextEscaped);
+        htmlBlocks.push(`
+          <div class="mb-4">
+            <h4 class="font-semibold text-foreground text-sm mb-1">${titleText}</h4>
+            <p class="leading-relaxed text-muted-foreground text-xs md:text-sm">${bodyTextFormatted}</p>
+          </div>`);
+      } else {
+        const joinedParagraph = lines.map(l => l.trim()).join(" ");
+        const escapedText = escapeHtml(joinedParagraph);
+        const inlineHtml = applyInlineFormatting(escapedText);
+        htmlBlocks.push(`<p class="leading-relaxed text-muted-foreground text-xs md:text-sm mb-3">${inlineHtml}</p>`);
+      }
+    }
+  }
+
+  return htmlBlocks.join("\n\n");
+}
+
 function renderModal(task) {
   const col = COLUMNS.find(c => c.statuses.includes(task.status)) || { title: task.status };
   const priorityLabel = task.priority ? PRIORITY_LABEL[task.priority] : "Sem prioridade";
   const priorityColor = task.priority ? `var(--priority-${task.priority})` : "transparent";
   const realStatusLabel = REAL_STATUS_LABELS[task.status] || task.status;
+  const dateStr = task.date ? new Date(task.date).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "Não especificada";
+  const fractionLabel = task.progressFraction && task.progressFraction.total > 0
+    ? `${task.progressFraction.done}/${task.progressFraction.total} critérios`
+    : '';
 
-  // Header Badges
+  // Header Badges + Info button
   document.getElementById("modal-header-badges").innerHTML = `
-    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-1.5 px-2 font-medium">
-      <div class="h-2 w-2 rounded-full" style="background: ${priorityColor}"></div>
-      Prioridade ${priorityLabel}
-    </div>
-    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-1.5 px-2 font-medium">
-      ${getCategoryLabel(task.category)}
-    </div>
-    <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-1.5 px-2 font-medium">
-      Área: ${task.area === "active" ? "Ativo" : "Arquivado"}
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-1.5 px-2 font-medium">
+        <div class="h-2 w-2 rounded-full" style="background: ${priorityColor}"></div>
+        Prioridade ${priorityLabel}
+      </div>
+      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-1.5 px-2 font-medium">
+        ${getCategoryLabel(task.category)}
+      </div>
+      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-1.5 px-2 font-medium">
+        Área: ${task.area === "active" ? "Ativo" : "Arquivado"}
+      </div>
     </div>
   `;
 
-  const dateStr = task.date ? new Date(task.date).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "Não especificada";
+  // Info popover content
+  const infoTooltip = document.getElementById("info-tooltip");
+  if (infoTooltip) {
+    infoTooltip.innerHTML = `
+      <p class="text-xs text-muted-foreground leading-relaxed">
+        Este item é gerado de forma estática com base na pasta <code class="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">${task.path}</code>.
+        Para marcar progresso ou atualizar o conteúdo, edite o arquivo <code class="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">README.md</code> correspondente no repositório.
+      </p>
+    `;
+  }
 
-  // Body
-  document.getElementById("modal-body").innerHTML = `
-    <div class="mb-6">
-      <h2 class="text-2xl font-semibold tracking-tight">${task.title}</h2>
-      <div class="mt-4 text-xs text-muted-foreground font-mono bg-muted/20 p-2 rounded border">
+  // --- TAB: Conteúdo ---
+  let tabConteudo = '';
+  if (task.sections && task.sections.length > 0) {
+    tabConteudo = `
+      <div class="space-y-5">
+        ${task.sections.map(sec => `
+          <div>
+            <h3 class="text-sm font-semibold text-foreground mb-2 flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+              ${sec.heading}
+            </h3>
+            <div class="pl-3 text-xs md:text-sm">
+              ${convertMarkdownToHtml(sec.content)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    tabConteudo = '<p class="text-sm text-muted-foreground italic py-6 text-center">Nenhuma informação disponível</p>';
+  }
+
+  // --- TAB: Critérios ---
+  let tabCriterios = '';
+  if (task.criteriaSections && task.criteriaSections.length > 0) {
+    tabCriterios = `
+      <div class="space-y-5">
+        ${task.criteriaSections.map(sec => `
+          <div>
+            <h3 class="text-sm font-semibold text-foreground mb-2 flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+              ${sec.heading}
+            </h3>
+            <div class="pl-3 text-xs md:text-sm">
+              ${convertMarkdownToHtml(sec.content)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    tabCriterios = '<p class="text-sm text-muted-foreground italic py-6 text-center">Nenhuma informação disponível</p>';
+  }
+
+  // --- TAB: Detalhes ---
+  const tabDetalhes = `
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 gap-4 rounded-xl border border-border bg-muted/30 p-4 sm:grid-cols-3">
+        <div>
+          <div class="text-[11px] font-medium text-muted-foreground">ID do Item (Slug)</div>
+          <div class="mt-1 text-sm font-mono truncate" title="${task.id}">
+            ${task.id}
+          </div>
+        </div>
+        <div>
+          <div class="text-[11px] font-medium text-muted-foreground">Data Registro</div>
+          <div class="mt-1 flex items-center gap-2 text-sm">
+            <i data-lucide="calendar" class="h-4 w-4 text-muted-foreground"></i>
+            ${dateStr}
+          </div>
+        </div>
+        <div>
+          <div class="text-[11px] font-medium text-muted-foreground">Status Atual</div>
+          <div class="mt-1 flex flex-col gap-0.5">
+            <div class="flex items-center gap-2 text-sm font-medium" style="color: var(--status-${task.status})">
+              ${col.title}
+            </div>
+            <div class="text-[10px] text-muted-foreground">
+              Status real: ${realStatusLabel}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="mb-2 text-xs font-semibold text-muted-foreground">Tags</h4>
+        <div class="flex flex-wrap gap-2">
+          ${task.tags.length > 0 ? task.tags.map(t => `
+            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition-colors border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 font-normal">
+              ${t}
+            </span>
+          `).join('') : '<span class="text-xs text-muted-foreground italic">Nenhuma tag registrada</span>'}
+        </div>
+      </div>
+
+      <div class="text-xs text-muted-foreground font-mono bg-muted/20 p-2 rounded border">
         <strong>Caminho do arquivo:</strong> ${task.path}/README.md
       </div>
     </div>
-    
-    <div class="mb-8 grid grid-cols-1 gap-4 rounded-xl border border-border bg-muted/30 p-4 sm:grid-cols-3">
-      <div>
-        <div class="text-[11px] font-medium text-muted-foreground">ID do Item (Slug)</div>
-        <div class="mt-1 text-sm font-mono truncate" title="${task.id}">
-          ${task.id}
-        </div>
-      </div>
-      <div>
-        <div class="text-[11px] font-medium text-muted-foreground">Data Registro</div>
-        <div class="mt-1 flex items-center gap-2 text-sm">
-          <i data-lucide="calendar" class="h-4 w-4 text-muted-foreground"></i>
-          ${dateStr}
-        </div>
-      </div>
-      <div>
-        <div class="text-[11px] font-medium text-muted-foreground">Status Atual</div>
-        <div class="mt-1 flex flex-col gap-0.5">
-          <div class="flex items-center gap-2 text-sm font-medium" style="color: var(--status-${task.status})">
-            ${col.title}
-          </div>
-          <div class="text-[10px] text-muted-foreground">
-            Status real: ${realStatusLabel}
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="mb-6 rounded-lg border border-dashed border-border/80 bg-accent/10 p-4">
-      <h3 class="mb-2 text-sm font-semibold flex items-center gap-1.5">
-        <i data-lucide="info" class="h-4 w-4 text-primary"></i>
-        Instruções de Edição
-      </h3>
-      <p class="text-xs text-muted-foreground leading-relaxed">
-        Este item é gerado de forma estática com base na pasta <code class="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">${task.path}</code>. 
-        Para marcar progresso ou atualizar o conteúdo, edite o arquivo <code class="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">README.md</code> correspondente no repositório. O progresso é calculado a partir dos checkboxes de critérios e validação.
-      </p>
+  `;
+
+  // Body
+  document.getElementById("modal-body").innerHTML = `
+    <!-- Topo com Título e Resumo -->
+    <div class="mb-5">
+      <h2 class="text-2xl font-semibold tracking-tight">${task.title}</h2>
+      ${task.summary ? `<p class="mt-3 text-sm text-muted-foreground leading-relaxed border-l-2 border-primary/40 pl-3 bg-muted/20 py-2 pr-2 rounded-r-md">${task.summary}</p>` : ''}
     </div>
 
-    <div class="mb-6">
+    <!-- Progresso Compacto (sempre visível, fora das abas) -->
+    <div class="mb-5 border-t border-border/50 pt-4">
       <div class="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>Progresso Calculado</span>
+        <span>Progresso${fractionLabel ? ` · ${fractionLabel}` : ''}</span>
         <span class="font-semibold tabular-nums">${task.progress}%</span>
       </div>
       <div class="h-2 overflow-hidden rounded-full bg-muted">
@@ -519,28 +725,63 @@ function renderModal(task) {
       </div>
     </div>
 
-    <div>
-      <h3 class="mb-3 text-sm font-semibold">Tags</h3>
-      <div class="flex flex-wrap gap-2">
-        ${task.tags.length > 0 ? task.tags.map(t => `
-          <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 font-normal">
-            ${t}
-          </span>
-        `).join('') : '<span class="text-xs text-muted-foreground italic">Nenhuma tag registrada</span>'}
+    <!-- Sistema de Abas -->
+    <div class="mb-5">
+      <div class="modal-tabs flex border-b border-border/50">
+        <button class="modal-tab active" data-tab="conteudo" onclick="switchTab('conteudo')">
+          <i data-lucide="file-text" class="h-3.5 w-3.5"></i>
+          Conteúdo
+        </button>
+        <button class="modal-tab" data-tab="criterios" onclick="switchTab('criterios')">
+          <i data-lucide="check-square" class="h-3.5 w-3.5"></i>
+          Critérios
+        </button>
+        <button class="modal-tab" data-tab="detalhes" onclick="switchTab('detalhes')">
+          <i data-lucide="info" class="h-3.5 w-3.5"></i>
+          Detalhes
+        </button>
       </div>
+    </div>
+
+    <!-- Painéis das Abas -->
+    <div id="tab-panel-conteudo" class="tab-panel">
+      ${tabConteudo}
+    </div>
+    <div id="tab-panel-criterios" class="tab-panel hidden">
+      ${tabCriterios}
+    </div>
+    <div id="tab-panel-detalhes" class="tab-panel hidden">
+      ${tabDetalhes}
     </div>
   `;
 
-  // Footer Actions (Select Status - Read Only message)
+  // Footer simplificado (só ID + data)
   document.getElementById("modal-footer").innerHTML = `
-    <div class="text-xs text-muted-foreground flex items-center gap-1">
-      <i data-lucide="lock" class="h-3 w-3"></i> Roadmap Somente Leitura
+    <div class="text-[11px] text-muted-foreground font-mono truncate" title="${task.id}">
+      ${task.id}
     </div>
-    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2" onclick="closeModal()">
-      Fechar
-    </button>
+    <div class="text-[11px] text-muted-foreground flex items-center gap-1">
+      <i data-lucide="calendar" class="h-3 w-3"></i>
+      ${dateStr}
+    </div>
   `;
 }
+
+window.switchTab = function(tabName) {
+  // Hide all panels
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+  // Deactivate all tabs
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  // Show selected panel
+  const panel = document.getElementById(`tab-panel-${tabName}`);
+  if (panel) panel.classList.remove('hidden');
+  // Activate selected tab
+  const tab = document.querySelector(`.modal-tab[data-tab="${tabName}"]`);
+  if (tab) tab.classList.add('active');
+  // Re-create Lucide icons in the newly visible panel
+  if (window.lucide) lucide.createIcons();
+}
+
 
 window.setPriorityFilter = function (p) {
   state.priorityFilter = p;
@@ -608,6 +849,21 @@ function setupEventListeners() {
 
   document.getElementById("btn-close-modal").addEventListener("click", closeModal);
   document.getElementById("task-modal-backdrop").addEventListener("click", closeModal);
+
+  // Info popover toggle
+  const btnInfo = document.getElementById("btn-info-modal");
+  const infoTooltip = document.getElementById("info-tooltip");
+  if (btnInfo && infoTooltip) {
+    btnInfo.addEventListener("click", (e) => {
+      e.stopPropagation();
+      infoTooltip.classList.toggle("hidden");
+    });
+    document.addEventListener("click", (e) => {
+      if (!btnInfo.contains(e.target) && !infoTooltip.contains(e.target)) {
+        infoTooltip.classList.add("hidden");
+      }
+    });
+  }
 
   // Esc para fechar modal
   document.addEventListener("keydown", (e) => {

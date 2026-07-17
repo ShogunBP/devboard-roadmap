@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `baixa`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: NavbarLogo  Texto "Guilherme Menezes" com cor de hover hardcoded.
 
 ---
 
@@ -63,10 +64,10 @@ Para expandir o Design System e preparar o terreno para a customização via pai
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

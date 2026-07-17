@@ -4,6 +4,7 @@
 **Data:** 2026-07-08
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Dropdown do ThemeToggle  Remove o scroll da página ao abrir.
 
 ---
 
@@ -65,10 +66,10 @@ A prop `modal` do `DropdownMenuPrimitive.Root` (padrão `true`) está acionando 
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

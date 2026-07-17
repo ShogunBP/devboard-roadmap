@@ -4,6 +4,7 @@
 **Data:** 2026-07-13
 **Prioridade:** `baixa`
 **Tags:** `api`, `backend`
+**Resumo:** Conexão com banco DBF antigo descartada devido ao encerramento do suporte ao ERP antigo.
 
 ---
 
@@ -37,10 +38,10 @@ N/A
 
 ## Review
 
-### Feedback
+## Feedback
 > A diretoria abortou o ERP, fechando.
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

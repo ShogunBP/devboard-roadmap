@@ -19,6 +19,20 @@ function extractTitle(h1Line) {
 }
 
 /**
+ * Helper to check if a section's content is empty or contains only placeholders.
+ */
+function isContentEmptyOrPlaceholder(text) {
+  const lines = text.split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line !== '' && !line.startsWith('#') && !line.startsWith('---'));
+  
+  if (lines.length === 0) return true;
+  
+  const placeholderRegex = /^_\(.*\)_$/;
+  return lines.every(line => placeholderRegex.test(line));
+}
+
+/**
  * Scan a single category directory recursively.
  */
 function scanDirectory(dirPath, area, category, tasks) {
@@ -90,6 +104,70 @@ function scanDirectory(dirPath, area, category, tasks) {
           const uncompleted = (content.match(/- \[ \]/g) || []).length;
           const total = completed + uncompleted;
           const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+          const progressFraction = { done: completed, total: total };
+
+          // Parse Summary
+          const summaryMatch = content.match(/\*\*Resumo:\*\*\s*(.+)$/im);
+          let summary = summaryMatch ? summaryMatch[1].trim() : null;
+
+          // Parse Sections (level ##)
+          const sections = [];
+          const criteriaSections = [];
+          const sectionBlocks = content.split(/\r?\n##\s+/);
+          for (let i = 1; i < sectionBlocks.length; i++) {
+            const block = sectionBlocks[i];
+            const lines = block.split(/\r?\n/);
+            const rawHeading = lines[0].trim();
+            const rawContent = lines.slice(1).join('\n').trim();
+
+            // Clean heading: remove emojis
+            const heading = rawHeading.replace(/^(?:[\p{Emoji_Presentation}\p{Extended_Pictographic}\u{2600}-\u{27BF}\u{1F300}-\u{1F9FF}🐛✨🔧♻️][\u{FE00}-\u{FE0F}\u{1F3FB}-\u{1F3FF}\u{200D}]*\s*)?/u, '').trim();
+
+            const headingLower = heading.toLowerCase();
+            // Exclude process sections (review, feedback, decisão)
+            if (['review', 'feedback', 'decisão', 'decisao'].includes(headingLower)) {
+              continue;
+            }
+
+            // Exclude empty or placeholders
+            if (isContentEmptyOrPlaceholder(rawContent)) {
+              continue;
+            }
+
+            // Separate criteria and validation sections into their own array
+            const isCriteria = headingLower.includes('critérios') || headingLower.includes('criterios') || headingLower === 'validação' || headingLower === 'validacao';
+            if (isCriteria) {
+              criteriaSections.push({
+                heading,
+                content: rawContent
+              });
+            } else {
+              sections.push({
+                heading,
+                content: rawContent
+              });
+            }
+          }
+
+          // Summary fallback to first section if empty
+          if (!summary && sections.length > 0) {
+            const firstSec = sections[0];
+            let cleanText = firstSec.content
+              .replace(/[-*]\s+/g, '')
+              .replace(/\[\s*\]|\[[xX]\]/g, '')
+              .replace(/###\s*.+/g, '')
+              .replace(/`|[*_]/g, '')
+              .replace(/\s+/g, ' ')
+              .trim();
+
+            if (cleanText.length > 200) {
+              cleanText = cleanText.substring(0, 197) + '...';
+            }
+            summary = cleanText || null;
+            if (summary) {
+              sections.shift();
+            }
+          }
 
           const relativePath = path.relative(projectRoot, folderPath).replace(/\\/g, '/');
 
@@ -103,6 +181,10 @@ function scanDirectory(dirPath, area, category, tasks) {
             priority,
             tags,
             progress,
+            progressFraction,
+            summary,
+            sections,
+            criteriaSections,
             path: relativePath
           });
         } catch (err) {

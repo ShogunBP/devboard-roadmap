@@ -180,12 +180,23 @@
       
       <!-- Header do Modal -->
       <div class="flex items-start justify-between border-b border-border/50 px-6 py-4">
-        <div class="flex items-center gap-2" id="modal-header-badges">
+        <div class="flex items-center gap-2 flex-wrap" id="modal-header-badges">
           <!-- Badges de prioridade e status via JS -->
         </div>
-        <button id="btn-close-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-          <i data-lucide="x" class="h-4 w-4"></i>
-        </button>
+        <div class="flex items-center gap-1">
+          <!-- Info Button with Popover -->
+          <div class="relative">
+            <button id="btn-info-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" title="Instruções de edição">
+              <i data-lucide="help-circle" class="h-4 w-4"></i>
+            </button>
+            <div id="info-tooltip" class="absolute right-0 top-full mt-2 w-72 hidden rounded-lg border border-border bg-card p-3 shadow-lg z-[70]">
+              <!-- Conteúdo preenchido via JS -->
+            </div>
+          </div>
+          <button id="btn-close-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Conteúdo do Modal -->

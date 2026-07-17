@@ -4,6 +4,7 @@
 **Data:** 2026-07-13
 **Prioridade:** `alta`
 **Tags:** `backend`, `infra`
+**Resumo:** Erro 403 / CORS blocking na rota de payment da API de Pagamento.
 
 ---
 
@@ -36,10 +37,10 @@ Adicionar a origin correta no array de CORS do Express.
 
 ## Review
 
-### Feedback
+## Feedback
 > Revisado, pode seguir.
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

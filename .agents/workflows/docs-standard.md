@@ -16,14 +16,22 @@ Antes de continuar, aplique rigorosamente as regras de `docs/PADRONIZATION.md` p
 
 ## Campos estruturados obrigatórios no cabeçalho
 - Todo README precisa ter, logo abaixo do título: `**Status:**`, `**Data:**`,
-  `**Prioridade:**` (`alta` | `média` | `baixa`) e `**Tags:**` (uma ou mais,
+  `**Prioridade:**` (`alta` | `média` | `baixa`), `**Tags:**` (uma ou mais,
   separadas por vírgula, escolhidas SOMENTE da lista predefinida em
-  PADRONIZATION.md — não invente tags novas).
+  PADRONIZATION.md — não invente tags novas) e `**Resumo:**` (uma única linha
+  de texto livre, sem markdown, sem quebra de linha, curta o suficiente para
+  caber em um card pequeno ou no topo de um modal sem cortar ou quebrar
+  layout).
 - `**Status:**` dentro do arquivo é só espelho informativo. A fonte de
   verdade é sempre o prefixo `[status]` no nome da pasta. Ao mudar o status
   da pasta, atualize também essa linha no arquivo para não ficarem
   divergentes sem necessidade — divergência não quebra o sistema, mas é
   sinal de descuido.
+- `**Resumo:**` existe para que ferramentas externas (como o roadmap visual)
+  tenham um resumo confiável de tamanho previsível, sem depender de extrair e
+  truncar a primeira seção de texto do corpo do documento. Diferente do corpo
+  (que varia de nome e tamanho por categoria), este campo é padronizado e
+  obrigatório em todos os templates.
 - Progresso (%) não é campo manual — é calculado por ferramentas externas
   contando checkboxes marcados sobre o total, em Critérios de Conclusão +
   Validação. Não adicione um campo de progresso escrito à mão.
@@ -93,7 +101,8 @@ Antes de continuar, aplique rigorosamente as regras de `docs/PADRONIZATION.md` p
 4. A pasta está no lugar certo — `active/` se em andamento, `archive/` se
    `[done]` ou `[cancelled]`?
 5. Algum trecho de código foi cortado? Se sim, está sinalizado explicitamente?
-6. Tem `Prioridade` e `Tags` (da lista predefinida) preenchidos no cabeçalho?
+6. Tem `Prioridade`, `Tags` (da lista predefinida) e `Resumo` (uma linha curta
+   e objetiva) preenchidos no cabeçalho?
 7. Se essa revisão substitui uma hipótese/tentativa anterior, isso está
    registrado como refutada, com o resultado real do teste?
 8. Alguma alegação sobre comportamento de biblioteca externa? Se sim, tem

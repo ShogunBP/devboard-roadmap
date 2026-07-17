@@ -4,6 +4,7 @@
 **Data:** 2026-07-08
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Resume  Largura do PDF calculada apenas no carregamento inicial.
 
 ---
 
@@ -60,10 +61,10 @@ O valor `window.innerWidth - 20` é lido somente durante o render. Como não há
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

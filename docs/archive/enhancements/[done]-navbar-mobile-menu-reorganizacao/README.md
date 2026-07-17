@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Navbar Mobile  Reorganização do menu hambúrguer aberto.
 
 ---
 
@@ -112,10 +113,10 @@ A mudança visa reduzir a assimetria percebida hoje (toggles isolados nos cantos
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

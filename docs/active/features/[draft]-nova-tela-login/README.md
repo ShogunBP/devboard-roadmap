@@ -4,6 +4,7 @@
 **Data:** 2026-07-13
 **Prioridade:** `alta`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Criação de uma nova interface moderna para a tela de login.
 
 ---
 
@@ -40,10 +41,10 @@ O usuário acessa a página e digita suas credenciais num formulário renovado.
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: NavbarLogo  Não é clicável no desktop.
 
 ---
 
@@ -74,10 +75,10 @@ Isso fará com que os elementos clicáveis fiquem em uma camada fisicamente supe
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

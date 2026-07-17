@@ -4,6 +4,7 @@
 **Data:** 2026-07-13
 **Prioridade:** `média`
 **Tags:** `frontend`, `animação`
+**Resumo:** Criar feedbacks visuais dinâmicos (efeito ripple) ao clicar nos botões principais da interface.
 
 ---
 
@@ -32,10 +33,10 @@ Criar animações usando CSS e classes utilitárias para quando houver cliques.
 
 ## Review
 
-### Feedback
+## Feedback
 > O ripple está muito devagar. Por favor reduza para 0.2s.
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [x] Alterações solicitadas
 

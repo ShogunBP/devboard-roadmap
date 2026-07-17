@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Navbar  Nome "Guilherme Menezes" desaparece ao scrollar (desktop e mobile).
 
 > **Bloqueia:** `enhancements/[draft]-navbar-logo-texto-terminal`. O efeito de estilo terminal não deve ser implementado sobre um texto que desaparece ao scrollar — este bug precisa ser resolvido antes ou junto.
 >
@@ -102,10 +103,10 @@ Não é hipótese — é causa confirmada por leitura direta do código: a condi
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

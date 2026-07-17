@@ -97,11 +97,13 @@ Além do prefixo `[status]` na pasta, cada `README.md` tem um cabeçalho com cam
 **Data:** YYYY-MM-DD
 **Prioridade:** `alta`
 **Tags:** `frontend`, `performance`
+**Resumo:** Uma linha curta descrevendo o item, sempre presente e sempre objetiva.
 ```
 
 - **Status:** este campo é apenas informativo/espelho dentro do documento. A fonte de verdade para qualquer ferramenta ou pessoa é o prefixo `[status]` no nome da pasta — se os dois divergirem, o nome da pasta manda.
 - **Prioridade:** valor único, uma das três opções: `alta`, `média`, `baixa`.
 - **Tags:** uma ou mais tags, separadas por vírgula, escolhidas da lista predefinida abaixo. Um item pode ter múltiplas tags.
+- **Resumo:** uma única linha de texto livre (sem markdown, sem quebra de linha), objetiva o suficiente para caber em um card pequeno ou no topo de um modal de detalhe sem cortar ou quebrar layout. Diferente das seções de corpo do documento (que variam de tamanho e nome por categoria), este campo é padronizado e obrigatório em todos os templates — existe justamente para que ferramentas externas tenham um resumo confiável de tamanho previsível, sem depender de extrair e truncar a primeira seção de texto do corpo do documento.
 
 ### Lista de Tags Predefinidas
 
@@ -125,6 +127,39 @@ Além do prefixo `[status]` na pasta, cada `README.md` tem um cabeçalho com cam
 ### Progresso (%)
 
 Não é um campo escrito manualmente. É calculado por ferramentas externas contando checkboxes marcados (`- [x]`) sobre o total de checkboxes (`- [ ]` + `- [x]`) somando as seções **Critérios de Conclusão** (quando existir) e **Validação** do documento.
+
+---
+
+## Estrutura das Seções (importante para ferramentas externas)
+
+Todas as seções de corpo do documento (o conteúdo entre o cabeçalho de campos
+estruturados e o fim do arquivo) usam nível `##`. Isso inclui, a partir desta versão,
+as subseções de **Review**, que antes eram `###` e agora são `##`:
+
+```markdown
+## Review
+
+## Feedback
+> _(preencher durante o review)_
+
+## Decisão
+- [ ] Aprovado
+- [ ] Alterações solicitadas
+```
+
+Essa mudança existe porque ferramentas externas (como o roadmap visual) extraem cada
+seção `##` como um bloco independente para exibição. Manter Feedback e Decisão como
+`###` (aninhadas dentro de "Review") misturava os dois num único bloco de texto,
+impedindo que uma ferramenta detectasse corretamente que, por exemplo, "Feedback" ainda
+está vazio (só com o placeholder `_(preencher durante o review)_`) enquanto "Decisão"
+já foi marcada. Com os dois em `##`, cada um é avaliado e filtrado de forma
+independente.
+
+> Seções cujo conteúdo for exclusivamente um placeholder no formato `_(texto)_` (itálico
+> entre parênteses) são tratadas como vazias por ferramentas externas e não são
+> exibidas até serem de fato preenchidas. Isso vale para qualquer seção do documento,
+> não só Review — é o padrão usado em todos os templates para marcar "isto ainda não
+> foi escrito".
 
 ---
 
@@ -178,6 +213,7 @@ Movo a pasta de active/<categoria>/ para archive/<categoria>/
 **Data:** YYYY-MM-DD
 **Prioridade:** `alta` | `média` | `baixa`
 **Tags:** `tag1`, `tag2`
+**Resumo:** Uma linha curta e objetiva descrevendo o bug.
 
 ---
 
@@ -210,10 +246,10 @@ Como pretendo resolver.
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 
@@ -239,6 +275,7 @@ Como pretendo resolver.
 **Data:** YYYY-MM-DD
 **Prioridade:** `alta` | `média` | `baixa`
 **Tags:** `tag1`, `tag2`
+**Resumo:** Uma linha curta e objetiva descrevendo a feature.
 
 ---
 
@@ -275,10 +312,10 @@ Como a feature se comporta do ponto de vista do usuário.
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 
@@ -305,6 +342,7 @@ Como a feature se comporta do ponto de vista do usuário.
 **Data:** YYYY-MM-DD
 **Prioridade:** `alta` | `média` | `baixa`
 **Tags:** `tag1`, `tag2`
+**Resumo:** Uma linha curta e objetiva descrevendo a melhoria.
 
 ---
 
@@ -333,10 +371,10 @@ O que será feito e como ficará depois.
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 
@@ -362,6 +400,7 @@ O que será feito e como ficará depois.
 **Data:** YYYY-MM-DD
 **Prioridade:** `alta` | `média` | `baixa`
 **Tags:** `tag1`, `tag2`
+**Resumo:** Uma linha curta e objetiva descrevendo a refatoração.
 
 ---
 
@@ -391,10 +430,10 @@ Como fazer de forma segura (incremental, por módulo, etc.).
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

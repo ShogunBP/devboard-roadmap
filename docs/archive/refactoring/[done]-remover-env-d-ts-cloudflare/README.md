@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `baixa`
 **Tags:** `dx`, `infra`
+**Resumo:** Remoção do arquivo env.d.ts (238 KB, 5.769 linhas) órfão, remanescente da infraestrutura antiga do Cloudflare Wrangler.
 
 ---
 
@@ -83,10 +84,10 @@ Uma busca global por `CloudflareEnv` retornou 0 ocorrências fora do escopo dest
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [ ] Aprovado
 - [ ] Alterações solicitadas
 

@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `alta`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Navbar Desktop  Sobreposição de botões em larguras próximas a 1200px.
 
 ---
 
@@ -115,10 +116,10 @@ Composição em `Navbar.tsx`:
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Flickerquebra de linha no NavbarLogo ao voltar do scroll para o topo.
 
 ---
 
@@ -43,10 +44,10 @@ No momento em que a navbar retorna ao estado não-scrollado, o texto do logo que
 
 ## Review
 
-### Feedback
+## Feedback
 > flex-shrink-0 no mesmo span — sem isso, mesmo com nowrap, o container flex pai pode espremer o elemento durante a transição (em vez de quebrar linha, ele simplesmente fica na largura errada por um instante, ou trunca visualmente).
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 

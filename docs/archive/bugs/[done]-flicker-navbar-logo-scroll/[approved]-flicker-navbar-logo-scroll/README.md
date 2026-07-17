@@ -4,6 +4,7 @@
 **Data:** 2026-07-09
 **Prioridade:** `média`
 **Tags:** `frontend`, `ui-ux`
+**Resumo:** Resumo descritivo para a tarefa: Flickerquebra de linha no NavbarLogo ao voltar do scroll para o topo.
 
 ---
 
@@ -73,10 +74,10 @@ Em vez de renderização condicional instantânea, utilizaremos a propriedade `l
 
 ## Review
 
-### Feedback
+## Feedback
 > _(preencher durante o review)_
 
-### Decisão
+## Decisão
 - [x] Aprovado
 - [ ] Alterações solicitadas
 
