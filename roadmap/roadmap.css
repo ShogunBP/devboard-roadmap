@@ -375,3 +375,13 @@ body {
   color: var(--primary);
   border-bottom-color: var(--primary);
 }
+
+/* Settings Drawer styles */
+.drawer-overlay {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.drawer-content {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+

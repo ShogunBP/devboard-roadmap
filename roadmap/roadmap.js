@@ -43,11 +43,14 @@ let state = {
   selectedTaskId: null
 };
 
+let pollingIntervalId = null;
+
 // --- INICIALIZAÇÃO ---
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   setupEventListeners();
   loadTasks();
+  loadProjectConfig();
   renderApp();
   startPolling();
 });
@@ -58,9 +61,98 @@ function loadTasks() {
   tasks = typeof ROADMAP_TASKS !== 'undefined' ? JSON.parse(JSON.stringify(ROADMAP_TASKS)) : [];
 }
 
+// --- CONFIGURAÇÃO DE IDENTIDADE DO PROJETO ---
+async function loadProjectConfig() {
+  try {
+    const res = await fetch('roadmap/config.json?_t=' + Date.now());
+    if (res.ok) {
+      const config = await res.json();
+      updateHeader(config.projectName, config.projectDescription, config.projectBadge);
+      
+      // Popular inputs do drawer
+      const inputName = document.getElementById("input-project-name");
+      const inputDesc = document.getElementById("input-project-description");
+      const inputBadge = document.getElementById("input-project-badge");
+      if (inputName) inputName.value = config.projectName;
+      if (inputDesc) inputDesc.value = config.projectDescription;
+      if (inputBadge) inputBadge.value = config.projectBadge;
+    }
+  } catch (err) {
+    console.warn("[roadmap] Falha ao carregar config.json (usando fallbacks estáticos).");
+  }
+}
+
+function updateHeader(name, desc, badge) {
+  const elName = document.getElementById("project-name");
+  const elDesc = document.getElementById("project-description");
+  const elBadge = document.getElementById("project-badge");
+  
+  if (elName) elName.innerText = name;
+  if (elDesc) elDesc.innerText = desc;
+  if (elBadge) {
+    elBadge.innerHTML = `<i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i> ${badge}`;
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+async function saveProjectIdentity() {
+  const name = document.getElementById("input-project-name").value;
+  const desc = document.getElementById("input-project-description").value;
+  const badge = document.getElementById("input-project-badge").value;
+  
+  const btn = document.getElementById("btn-save-identity");
+  const originalText = btn.innerHTML;
+  
+  try {
+    const res = await fetch('/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectName: name,
+        projectDescription: desc,
+        projectBadge: badge
+      })
+    });
+    
+    if (res.ok) {
+      // Atualiza header imediatamente sem recarregar
+      updateHeader(name, desc, badge);
+      
+      btn.innerHTML = `<i data-lucide="check" class="h-4 w-4"></i> Salvo!`;
+      btn.classList.add("bg-green-600", "text-white");
+      if (window.lucide) lucide.createIcons();
+      
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove("bg-green-600", "text-white");
+        if (window.lucide) lucide.createIcons();
+      }, 2000);
+    } else {
+      alert("Erro ao salvar identidade.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Erro de conexão ao salvar identidade.");
+  }
+}
+
 // --- POLLING DE DADOS ---
 function startPolling() {
-  setInterval(async () => {
+  const savedInterval = localStorage.getItem("pollingInterval");
+  const interval = savedInterval ? parseInt(savedInterval, 10) : 2500;
+  
+  if (pollingIntervalId) {
+    clearInterval(pollingIntervalId);
+    console.log(`[roadmap] Polling timer limpo e recriado com novo valor: ${interval} ms`);
+  } else {
+    console.log(`[roadmap] Polling inicializado com valor: ${interval} ms`);
+  }
+
+  // Sincroniza o select no drawer com o valor atual
+  const selectPolling = document.getElementById("select-polling-interval");
+  if (selectPolling) selectPolling.value = interval.toString();
+  
+  pollingIntervalId = setInterval(async () => {
     try {
       // Usar cache-buster para evitar que o navegador retorne o JSON desatualizado do cache
       const res = await fetch('roadmap/data.json?_t=' + Date.now());
@@ -75,7 +167,7 @@ function startPolling() {
     } catch (err) {
       console.warn("[roadmap] Polling falhou (modo file:// ou servidor offline). Fallback estático mantido.");
     }
-  }, 2500); // Poll a cada 2.5 segundos
+  }, interval);
 }
 
 // --- AUXILIAR DE TRIMESTRES (BASEADO NA DATA) ---
@@ -802,6 +894,11 @@ function setupEventListeners() {
     renderApp();
   });
 
+  // Settings Drawer Toggle
+  document.getElementById("btn-open-settings").addEventListener("click", openSettings);
+  document.getElementById("btn-close-settings").addEventListener("click", closeSettings);
+  document.getElementById("settings-drawer-backdrop").addEventListener("click", closeSettings);
+
   const btnTheme = document.getElementById("btn-theme-toggle");
   if (btnTheme) {
     btnTheme.addEventListener("click", () => {
@@ -831,12 +928,26 @@ function setupEventListeners() {
     });
   }
 
+  const selectPolling = document.getElementById("select-polling-interval");
+  if (selectPolling) {
+    selectPolling.addEventListener("change", (e) => {
+      const val = e.target.value;
+      localStorage.setItem("pollingInterval", val);
+      startPolling();
+    });
+  }
+
+  const btnSaveIdentity = document.getElementById("btn-save-identity");
+  if (btnSaveIdentity) {
+    btnSaveIdentity.addEventListener("click", saveProjectIdentity);
+  }
+
   document.getElementById("input-search").addEventListener("input", (e) => {
     state.query = e.target.value;
     renderApp();
   });
 
-  // Novos seletores de Filtro
+  // Filtros de Categoria e Área
   document.getElementById("select-category").addEventListener("change", (e) => {
     state.categoryFilter = e.target.value;
     renderApp();
@@ -865,10 +976,17 @@ function setupEventListeners() {
     });
   }
 
-  // Esc para fechar modal
+  // Esc para fechar modal ou drawer
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && state.selectedTaskId) {
-      closeModal();
+    if (e.key === "Escape") {
+      const drawer = document.getElementById("settings-drawer");
+      if (drawer && !drawer.classList.contains("hidden")) {
+        closeSettings();
+        return;
+      }
+      if (state.selectedTaskId) {
+        closeModal();
+      }
     }
   });
 
@@ -913,6 +1031,32 @@ function setupEventListeners() {
   });
 }
 
+window.openSettings = function() {
+  const drawer = document.getElementById("settings-drawer");
+  if (!drawer) return;
+  drawer.classList.remove("hidden");
+  // Force reflow
+  drawer.offsetHeight;
+  const panel = drawer.querySelector(".drawer-content");
+  if (panel) {
+    panel.classList.remove("translate-x-full");
+    panel.classList.add("translate-x-0");
+  }
+}
+
+window.closeSettings = function() {
+  const drawer = document.getElementById("settings-drawer");
+  if (!drawer) return;
+  const panel = drawer.querySelector(".drawer-content");
+  if (panel) {
+    panel.classList.remove("translate-x-0");
+    panel.classList.add("translate-x-full");
+  }
+  setTimeout(() => {
+    drawer.classList.add("hidden");
+  }, 300);
+}
+
 function updateViewButtons() {
   const btnK = document.getElementById("btn-view-kanban");
   const btnR = document.getElementById("btn-view-roadmap");
@@ -940,8 +1084,12 @@ function initTheme() {
   
   const savedVisualTheme = localStorage.getItem("visualTheme") || "default";
   state.visualTheme = savedVisualTheme;
+
+  const savedHideCancelled = localStorage.getItem("hideCancelled");
+  state.hideCancelled = savedHideCancelled === "true";
   
   applyTheme();
+  applyHideCancelledUI();
 }
 
 function applyTheme() {

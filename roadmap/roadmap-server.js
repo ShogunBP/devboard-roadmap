@@ -304,6 +304,37 @@ const server = http.createServer((req, res) => {
   let reqPath = req.url === '/' ? '/roadmap.html' : req.url;
   // Remove query strings
   reqPath = reqPath.split('?')[0];
+
+  // Route POST /config
+  if (req.method === 'POST' && reqPath === '/config') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body);
+        if (typeof payload.projectName !== 'string' ||
+            typeof payload.projectDescription !== 'string' ||
+            typeof payload.projectBadge !== 'string') {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Campos inválidos.' }));
+          return;
+        }
+
+        const configPath = path.join(projectRoot, 'roadmap', 'config.json');
+        fs.writeFileSync(configPath, JSON.stringify(payload, null, 2), 'utf8');
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Payload JSON inválido.' }));
+      }
+    });
+    return;
+  }
+
   let filePath = path.join(projectRoot, reqPath);
 
   const extname = path.extname(filePath);
