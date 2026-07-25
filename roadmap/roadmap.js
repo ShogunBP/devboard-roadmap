@@ -1040,28 +1040,64 @@ function setupEventListeners() {
 window.openSettings = function() {
   const drawer = document.getElementById("settings-drawer");
   if (!drawer) return;
-  drawer.classList.remove("hidden");
-  // Force reflow
-  drawer.offsetHeight;
+
+  const backdrop = document.getElementById("settings-drawer-backdrop");
   const panel = drawer.querySelector(".drawer-content");
-  if (panel) {
-    panel.classList.remove("translate-x-full");
-    panel.classList.add("translate-x-0");
-  }
-}
+
+  // 1. Tornar visível no DOM
+  drawer.classList.remove("hidden");
+
+  // 2. Disparar animações no próximo frame para garantir transição suave
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (backdrop) {
+        backdrop.classList.remove("opacity-0");
+        backdrop.classList.add("opacity-100");
+      }
+      if (panel) {
+        panel.classList.remove("translate-x-full");
+        panel.classList.add("translate-x-0");
+      }
+    });
+  });
+};
 
 window.closeSettings = function() {
   const drawer = document.getElementById("settings-drawer");
-  if (!drawer) return;
+  if (!drawer || drawer.classList.contains("hidden")) return;
+
+  const backdrop = document.getElementById("settings-drawer-backdrop");
   const panel = drawer.querySelector(".drawer-content");
+
+  // 1. Iniciar transição de saída do overlay e do painel simultaneamente
+  if (backdrop) {
+    backdrop.classList.remove("opacity-100");
+    backdrop.classList.add("opacity-0");
+  }
   if (panel) {
     panel.classList.remove("translate-x-0");
     panel.classList.add("translate-x-full");
   }
-  setTimeout(() => {
+
+  // 2. Adicionar hidden ao container somente após o término real da transição CSS
+  let transitionEnded = false;
+  const handleTransitionEnd = (e) => {
+    if (e && e.target !== panel) return;
+    if (!transitionEnded) {
+      transitionEnded = true;
+      if (panel) panel.removeEventListener("transitionend", handleTransitionEnd);
+      drawer.classList.add("hidden");
+    }
+  };
+
+  if (panel) {
+    panel.addEventListener("transitionend", handleTransitionEnd, { once: true });
+    // Safety fallback timer de segurança caso transitionend seja cancelado pelo browser
+    setTimeout(handleTransitionEnd, 350);
+  } else {
     drawer.classList.add("hidden");
-  }, 300);
-}
+  }
+};
 
 function updateViewButtons() {
   const btnK = document.getElementById("btn-view-kanban");

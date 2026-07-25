@@ -380,7 +380,7 @@ html, body {
 
 /* Settings Drawer styles */
 .drawer-overlay {
-  animation: fadeIn 0.25s ease-out forwards;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .drawer-content {
