@@ -12,11 +12,15 @@
       const storedThemeMode = localStorage.getItem('theme');
       const dark = storedThemeMode === 'dark' || (!storedThemeMode);
       document.documentElement.dataset.theme = theme;
-      if (dark) document.documentElement.classList.add('dark');
+      if (dark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     })();
   </script>
 <!-- Estilos base e variáveis de cor customizadas -->
-  <link rel="stylesheet" href="roadmap/roadmap.css?v=4">
+  <link rel="stylesheet" href="roadmap/roadmap.css?v=5">
 
   <!-- TailwindCSS via CDN para funcionamento imediato sem build -->
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
@@ -57,14 +61,13 @@
         <div>
           <div id="project-badge" class="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
             <i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i>
-            Roadmap 2026 · Produto
+            Portfólio & Roadmap · 2026
           </div>
           <h1 id="project-name" class="text-3xl font-semibold tracking-tight md:text-4xl">
-            Kanban & Roadmap Interativo
+            Devboard — Guilherme Menezes
           </h1>
           <p id="project-description" class="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Arraste tarefas entre colunas, alterne para a visão de roadmap por trimestre e
-            clique em qualquer card para ver detalhes, subtarefas e progresso.
+            Acompanhe em tempo real o planejamento, progresso de desenvolvimento e critérios de conclusão de novas features, bugs e refatorações do meu portfólio pessoal.
           </p>
         </div>
         <div class="grid grid-cols-2 gap-3 md:grid-cols-4" id="stats-container">
