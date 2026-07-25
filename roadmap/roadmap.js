@@ -63,6 +63,7 @@ function loadTasks() {
 
 // --- CONFIGURAÇÃO DE IDENTIDADE DO PROJETO ---
 async function loadProjectConfig() {
+  const identityContainer = document.getElementById("header-identity");
   try {
     const res = await fetch('roadmap/config.json?_t=' + Date.now());
     if (res.ok) {
@@ -79,6 +80,11 @@ async function loadProjectConfig() {
     }
   } catch (err) {
     console.warn("[roadmap] Falha ao carregar config.json (usando fallbacks estáticos).");
+  } finally {
+    if (identityContainer) {
+      identityContainer.classList.remove("opacity-0");
+      identityContainer.classList.add("opacity-100");
+    }
   }
 }
 
@@ -87,14 +93,11 @@ function updateHeader(name, desc, badge) {
   const elDesc = document.getElementById("project-description");
   const elBadge = document.getElementById("project-badge");
   
-  if (elName && elName.innerText !== name) elName.innerText = name;
-  if (elDesc && elDesc.innerText !== desc) elDesc.innerText = desc;
+  if (elName) elName.innerText = name;
+  if (elDesc) elDesc.innerText = desc;
   if (elBadge) {
-    const badgeText = elBadge.textContent.trim();
-    if (badgeText !== badge) {
-      elBadge.innerHTML = `<i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i> ${badge}`;
-      if (window.lucide) lucide.createIcons();
-    }
+    elBadge.innerHTML = `<i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i> ${badge}`;
+    if (window.lucide) lucide.createIcons();
   }
 }
 
