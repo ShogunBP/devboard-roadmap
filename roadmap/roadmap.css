@@ -93,11 +93,75 @@ html, body {
   border-radius: 4px;
 }
 
-/* Base utility overrides or helpers if Tailwind gets confused by standard oklch */
 .text-muted-foreground { color: var(--muted-foreground); }
-.bg-card { background-color: var(--card);  .card-hover:hover {
-    box-shadow: var(--shadow-card);
-  }
+.bg-card { background-color: var(--card); }
+.card-hover:hover {
+  box-shadow: var(--shadow-card);
+}
+
+/* --- HOVER AFFORDANCES GLOBAIS --- */
+button, select, [role="button"], .cursor-pointer {
+  cursor: pointer !important;
+}
+
+/* Icon Buttons (Export, Import, Settings, Close Modal, Close Drawer, Info) */
+#btn-export-json,
+#btn-import-json,
+#btn-open-settings,
+#btn-close-settings,
+#btn-close-modal,
+#btn-info-modal {
+  transition: all 0.15s ease-in-out !important;
+}
+
+#btn-export-json:hover,
+#btn-import-json:hover,
+#btn-open-settings:hover,
+#btn-close-settings:hover,
+#btn-close-modal:hover,
+#btn-info-modal:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Selects & Inputs Hover */
+#select-category:hover,
+#select-area:hover,
+#select-visual-theme:hover,
+#select-polling-interval:hover,
+#input-search:hover,
+#input-project-name:hover,
+#input-project-description:hover,
+#input-project-badge:hover {
+  border-color: var(--primary) !important;
+  transition: border-color 0.15s ease-in-out;
+}
+
+/* Toggle Buttons Hover (Dark mode toggle, Hide cancelled toggle) */
+#btn-theme-toggle,
+#btn-toggle-cancelled {
+  transition: all 0.15s ease-in-out !important;
+}
+
+#btn-theme-toggle:hover,
+#btn-toggle-cancelled:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Save Identity Primary Button Hover */
+#btn-save-identity {
+  transition: all 0.15s ease-in-out !important;
+}
+
+#btn-save-identity:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* --- TEMAS VISUAIS --- */
