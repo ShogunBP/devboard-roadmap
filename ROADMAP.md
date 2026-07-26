@@ -65,10 +65,10 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 
 ## Fase 4 — Polimento e portabilidade
 
-- [ ] Testar abrir `roadmap.html` direto (`file://`) sem o server rodando — confirmar que funciona com o `data.js` estático como fallback
-  - [ ] Indicador visual discreto (badge "modo estático") quando o polling falhar/não houver servidor, em vez de só logar no console
+- [x] Testar abrir `roadmap.html` direto (`file://`) sem o server rodando — confirmar que funciona com o `data.js` estático como fallback
+  - [x] Indicador visual discreto (badge "modo estático") quando o polling falhar/não houver servidor, em vez de só logar no console
 - [ ] Testar publicação em GitHub Pages (ou hospedagem estática equivalente) com um `data.js`/`data.json` já commitado — depende de repositório remoto ainda não configurado; passo guiado separado, fora do escopo de execução por agente
-- [ ] Documentar no próprio projeto (`README.md` da raiz) como usar em outro projeto: copiar pasta, ajustar caminho relativo do `docs/`, rodar o server
+- [x] Documentar no próprio projeto (`README.md` da raiz) como usar em outro projeto: copiar pasta, ajustar caminho relativo do `docs/`, rodar o server
 - [x] Revisar visualmente o design (cores, cards, modal) — sistema de temas visuais implementado e validado (ver detalhamento abaixo)
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
@@ -251,6 +251,22 @@ causando aninhamento inválido que fazia o navegador descartar regras subsequent
 arquivo) e contraste insuficiente entre as cores de fundo/hover no tema padrão para
 ser perceptível em botões pequenos. Ambos confirmados com teste visual real do usuário
 após a correção.
+
+### Indicador de "Modo Estático" (concluído)
+
+Badge visual (âmbar, com ícone `wifi-off`) exibido ao lado do selo do projeto no
+header, sempre que o polling detecta ausência de servidor ativo (aberto via `file://`
+ou o servidor caiu depois de já estar rodando). Reaproveita o ciclo de polling já
+existente (`startPolling`) em vez de criar uma checagem paralela: quando o `fetch` de
+`data.json` falha, `setStaticMode(true)` é acionado; quando volta a ter sucesso,
+`setStaticMode(false)` esconde o badge automaticamente — reage em tempo real, sem
+precisar recarregar a página em nenhum dos dois sentidos. Um botão de informação (`?`)
+no badge abre um popover explicando a situação e o comando exato para reativar o
+polling (`node roadmap/roadmap-server.js`).
+
+Validado com teste real cobrindo os 3 cenários: servidor ativo (badge oculto),
+servidor derrubado com a página já aberta (badge aparece no ciclo seguinte de
+polling, sem F5), e servidor reiniciado (badge desaparece sozinho).
 
 ---
 
