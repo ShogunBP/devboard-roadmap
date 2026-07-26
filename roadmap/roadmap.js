@@ -41,7 +41,7 @@ let state = {
   visualTheme: "default",
   hideCancelled: false,
   selectedTaskId: null,
-  serverPort: 3003
+  serverPort: null // null quando config.json ainda não foi carregado
 };
 
 let pollingIntervalId = null;
@@ -85,6 +85,7 @@ async function loadProjectConfig() {
     }
   } catch (err) {
     console.warn("[roadmap] Falha ao carregar config.json (usando fallbacks estáticos).");
+    updateDynamicServerPortUI();
   } finally {
     if (identityContainer) {
       identityContainer.classList.remove("opacity-0");
@@ -94,16 +95,25 @@ async function loadProjectConfig() {
 }
 
 function updateDynamicServerPortUI() {
-  const port = state.serverPort || 3003;
-  
-  const elStaticUrl = document.getElementById("static-mode-url");
-  if (elStaticUrl) {
-    elStaticUrl.textContent = `http://localhost:${port}`;
-  }
-
+  const elInstruction = document.getElementById("static-mode-instruction");
   const elTechServer = document.getElementById("tech-server-address");
-  if (elTechServer) {
-    elTechServer.textContent = `localhost:${port}`;
+
+  if (state.serverPort) {
+    if (elInstruction) {
+      elInstruction.innerHTML = `Rode o comando acima no terminal na raiz do projeto e acesse <span id="static-mode-url" class="font-mono text-primary">http://localhost:${state.serverPort}</span> para reativar o polling automático.`;
+    }
+    if (elTechServer) {
+      elTechServer.textContent = `localhost:${state.serverPort}`;
+      elTechServer.className = "font-mono";
+    }
+  } else {
+    if (elInstruction) {
+      elInstruction.textContent = "Rode o comando acima no terminal na raiz do projeto. O endereço para acessar (com a porta configurada) aparecerá no terminal ao iniciar o servidor.";
+    }
+    if (elTechServer) {
+      elTechServer.textContent = "(inicie o servidor para ver o endereço)";
+      elTechServer.className = "font-mono text-muted-foreground/70 italic";
+    }
   }
 }
 
