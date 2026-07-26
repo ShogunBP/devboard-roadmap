@@ -1,8 +1,12 @@
 # 📋 devboard-roadmap
 
-**Dashboard Kanban & Roadmap interativo que lê automaticamente a pasta `/docs` de qualquer projeto e exibe suas tarefas em tempo real.**
+Um kanban/roadmap estático (HTML + CSS + JS puro, sem build, sem framework) que visualiza o estado de qualquer sistema de documentação baseado em pastas `/docs` — originalmente criado para acompanhar o desenvolvimento de um portfólio pessoal, mas pensado desde o início para ser copiado e reutilizado em qualquer outro projeto.
 
-Sem banco de dados. Sem framework pesado. Sem configuração. Basta copiar a pasta para o seu projeto, rodar o servidor e o board aparece — lendo diretamente os `README.md` da sua documentação.
+**Somente leitura, por decisão deliberada.** Esta ferramenta nunca escreve nos seus documentos, não move pastas, não edita status pela interface. Ela só lê o que já existe em `/docs` e visualiza. Aprovações, mudanças de status e revisões continuam acontecendo do jeito que sempre aconteceram — renomeando pastas e editando READMEs manualmente, com intenção humana real por trás de cada decisão.
+
+## O que isso resolve
+
+Se o seu projeto já usa (ou está disposto a usar) uma convenção de pastas do tipo `docs/{active|archive}/{categoria}/[status]-nome-da-tarefa/README.md` para planejar bugs, features, melhorias e refatorações antes de implementá-las, esta ferramenta te dá um board visual (Kanban + linha do tempo por trimestre) gerado automaticamente a partir desses arquivos — sem duplicar trabalho de escrever os READMEs em outro lugar, e sem exigir nenhuma ferramenta externa (Trello, Notion, Jira) para acompanhar progresso.
 
 ---
 
