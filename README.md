@@ -12,11 +12,11 @@ Sem banco de dados. Sem framework pesado. Sem configuração. Basta copiar a pas
 - **Visualização Roadmap** — Agrupamento por trimestre para visão de longo prazo
 - **Atualização em tempo real** — Edite um `README.md` na pasta `/docs` e o board atualiza sozinho via polling (sem F5)
 - **Filtros e busca** — Filtre por prioridade, categoria, área (active/archive) e busque por título ou tags
-- **Modal de detalhes** — Clique em qualquer card para ver descrição completa, subtarefas e barra de progresso
+- **Modal de detalhes** — Clique em qualquer card para ver o conteúdo completo do README organizado em abas (Conteúdo, Critérios de Conclusão, Detalhes técnicos), com progresso calculado automaticamente
 - **4 temas visuais** — Padrão, Terminal, Clean e Ficha de Arquivo, cada um com variante clara e escura (8 combinações)
 - **Toggle claro/escuro** — Independente do tema visual, persiste no `localStorage`
 - **Importar/Exportar JSON** — Faça backup ou migre dados com um clique
-- **Modo estático** — Funciona abrindo direto no navegador (`file://`) usando o `data.js` como fallback, sem servidor
+- **Modo estático** — Pode ser aberto direto no navegador (`file://`) sem servidor rodando. Mostra o snapshot de dados gerado pela última vez que o servidor rodou (via `data.js`), mas sem atualização automática nesse modo — o polling depende de um servidor HTTP ativo para funcionar, por causa de restrições de CORS do navegador para requisições locais.
 - **Zero dependências externas** — Vanilla JS + TailwindCSS via CDN + Lucide Icons
 
 ---
@@ -77,9 +77,11 @@ node roadmap/roadmap-server.js
 http://localhost:3003
 ```
 
+> Porta configurável no topo de `roadmap/roadmap-server.js` (padrão: 3003). Se você alterar esse valor no arquivo, ajuste o endereço acima de acordo.
+
 ### Modo estático (sem servidor)
 
-Se não quiser rodar o servidor, basta abrir o `roadmap.html` diretamente no navegador. Ele usará o `data.js` já gerado como fallback — sem atualização em tempo real, mas funciona perfeitamente para consulta.
+Se não quiser rodar o servidor, basta abrir o `roadmap.html` diretamente no navegador. Ele usará o `data.js` gerado pela última execução do servidor como fallback. Note que a atualização automática (polling) não funciona nesse modo devido a restrições de CORS para requisições locais (`file://`), sendo necessário um servidor HTTP ativo para que o board atualize sozinho ao editar a documentação.
 
 ---
 
@@ -164,6 +166,17 @@ Alterne entre temas pelo seletor no header. A escolha persiste no `localStorage`
 
 ---
 
+## ⚙️ Painel de Configurações
+
+Acessível pelo ícone de engrenagem no header, dividido em 4 grupos:
+
+- **Aparência** *(preferência pessoal, salva no navegador)* — tema visual, modo escuro.
+- **Comportamento** *(preferência pessoal, salva no navegador)* — ocultar tarefas canceladas, intervalo de atualização automática (polling), aplicado imediatamente sem precisar recarregar a página.
+- **Identidade do Projeto** *(configuração compartilhada, salva em `roadmap/config.json`)* — nome do projeto, descrição, selo/badge exibidos no header. Diferente do grupo acima, isso vale para qualquer pessoa que abrir este roadmap, não só para quem está configurando.
+- **Informações técnicas** *(somente leitura)* — porta do servidor atual, status do polling.
+
+---
+
 ## 📂 Estrutura do Projeto
 
 ```
@@ -174,7 +187,8 @@ devboard-roadmap/
 │   ├── roadmap.css            ← Variáveis CSS e temas visuais (8 combinações)
 │   ├── roadmap-server.js      ← Servidor Node.js (parser + watcher + HTTP)
 │   ├── data.js                ← Dados gerados (formato JS para fallback estático)
-│   └── data.json              ← Dados gerados (formato JSON para polling)
+│   ├── data.json              ← Dados gerados (formato JSON para polling)
+│   └── config.json            ← Identidade do projeto (salvo no servidor)
 ├── docs/                      ← Pasta de documentação do projeto (seus dados)
 │   ├── PADRONIZATION.md       ← Guia completo da convenção de docs
 │   ├── active/                ← Tarefas em andamento
