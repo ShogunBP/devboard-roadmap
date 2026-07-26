@@ -293,6 +293,23 @@ console.log('[roadmap] Servidor de monitoramento rodando...');
 
 // --- Servidor HTTP ---
 const PORT = 3003;
+
+function syncConfigPort() {
+  const configPath = path.join(projectRoot, 'roadmap', 'config.json');
+  let config = {};
+  if (fs.existsSync(configPath)) {
+    try {
+      config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } catch (e) {}
+  }
+  if (config.serverPort !== PORT) {
+    config.serverPort = PORT;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+  }
+}
+
+syncConfigPort();
+
 const MIME_TYPES = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -322,6 +339,7 @@ const server = http.createServer((req, res) => {
           return;
         }
 
+        payload.serverPort = PORT;
         const configPath = path.join(projectRoot, 'roadmap', 'config.json');
         fs.writeFileSync(configPath, JSON.stringify(payload, null, 2), 'utf8');
 

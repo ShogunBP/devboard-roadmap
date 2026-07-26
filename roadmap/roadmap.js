@@ -40,7 +40,8 @@ let state = {
   dark: false,
   visualTheme: "default",
   hideCancelled: false,
-  selectedTaskId: null
+  selectedTaskId: null,
+  serverPort: 3003
 };
 
 let pollingIntervalId = null;
@@ -68,7 +69,11 @@ async function loadProjectConfig() {
     const res = await fetch('roadmap/config.json?_t=' + Date.now());
     if (res.ok) {
       const config = await res.json();
+      if (config.serverPort) {
+        state.serverPort = config.serverPort;
+      }
       updateHeader(config.projectName, config.projectDescription, config.projectBadge);
+      updateDynamicServerPortUI();
       
       // Popular inputs do drawer
       const inputName = document.getElementById("input-project-name");
@@ -85,6 +90,20 @@ async function loadProjectConfig() {
       identityContainer.classList.remove("opacity-0");
       identityContainer.classList.add("opacity-100");
     }
+  }
+}
+
+function updateDynamicServerPortUI() {
+  const port = state.serverPort || 3003;
+  
+  const elStaticUrl = document.getElementById("static-mode-url");
+  if (elStaticUrl) {
+    elStaticUrl.textContent = `http://localhost:${port}`;
+  }
+
+  const elTechServer = document.getElementById("tech-server-address");
+  if (elTechServer) {
+    elTechServer.textContent = `localhost:${port}`;
   }
 }
 
