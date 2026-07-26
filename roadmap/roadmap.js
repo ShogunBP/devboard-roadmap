@@ -142,6 +142,32 @@ async function saveProjectIdentity() {
   }
 }
 
+let isStaticMode = false;
+
+function setStaticMode(isStatic) {
+  if (isStaticMode === isStatic) return;
+  isStaticMode = isStatic;
+
+  const staticBadge = document.getElementById("static-mode-badge");
+  if (staticBadge) {
+    if (isStatic) {
+      staticBadge.classList.remove("hidden");
+      staticBadge.classList.add("inline-flex");
+    } else {
+      staticBadge.classList.add("hidden");
+      staticBadge.classList.remove("inline-flex");
+    }
+  }
+
+  const elTechStatus = document.getElementById("tech-polling-status");
+  if (elTechStatus) {
+    elTechStatus.textContent = isStatic ? "Inativo (Modo Estático / Servidor Offline)" : "Polling ativo";
+    elTechStatus.className = isStatic ? "font-mono text-amber-500 font-medium" : "font-mono text-green-500 font-medium";
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
 // --- POLLING DE DADOS ---
 function startPolling() {
   const savedInterval = localStorage.getItem("pollingInterval");
@@ -158,12 +184,15 @@ function startPolling() {
   const selectPolling = document.getElementById("select-polling-interval");
   if (selectPolling) selectPolling.value = interval.toString();
   
-  pollingIntervalId = setInterval(async () => {
+  const checkData = async () => {
     try {
-      // Usar cache-buster para evitar que o navegador retorne o JSON desatualizado do cache
       const res = await fetch('roadmap/data.json?_t=' + Date.now());
-      if (!res.ok) return;
+      if (!res.ok) {
+        setStaticMode(true);
+        return;
+      }
       const newTasks = await res.json();
+      setStaticMode(false);
       
       // Se houver diferença, atualiza os dados e re-renderiza preservando o scroll
       if (JSON.stringify(newTasks) !== JSON.stringify(tasks)) {
@@ -171,9 +200,13 @@ function startPolling() {
         renderApp();
       }
     } catch (err) {
+      setStaticMode(true);
       console.warn("[roadmap] Polling falhou (modo file:// ou servidor offline). Fallback estático mantido.");
     }
-  }, interval);
+  };
+
+  checkData();
+  pollingIntervalId = setInterval(checkData, interval);
 }
 
 // --- AUXILIAR DE TRIMESTRES (BASEADO NA DATA) ---
@@ -978,6 +1011,22 @@ function setupEventListeners() {
     document.addEventListener("click", (e) => {
       if (!btnInfo.contains(e.target) && !infoTooltip.contains(e.target)) {
         infoTooltip.classList.add("hidden");
+      }
+    });
+  }
+
+  // Popover do Modo Estático
+  const btnStaticInfo = document.getElementById("btn-static-info");
+  const popoverStatic = document.getElementById("static-mode-popover");
+  if (btnStaticInfo && popoverStatic) {
+    btnStaticInfo.addEventListener("click", (e) => {
+      e.stopPropagation();
+      popoverStatic.classList.toggle("hidden");
+      if (window.lucide) lucide.createIcons();
+    });
+    document.addEventListener("click", (e) => {
+      if (!btnStaticInfo.contains(e.target) && !popoverStatic.contains(e.target)) {
+        popoverStatic.classList.add("hidden");
       }
     });
   }
