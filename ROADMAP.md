@@ -239,6 +239,19 @@ Validado com prints reais do console (log de polling) e confirmação visual dir
 usuário (não só relato do agente) de que o fade-in funciona sem flash de texto errado,
 inclusive com nome customizado editado via o próprio painel.
 
+**Correção adicional pós-conclusão (bug relatado depois de marcado como pronto):** o
+drawer de Configurações não deslizava fisicamente (só aparecia/sumia no lugar) apesar
+do overlay já ter fade correto — causa raiz identificada como limitação de interpolação
+de variáveis CSS customizadas do Tailwind (`--tw-translate-x`) em transições sem
+`@property`; corrigido com `transform`/`transition` nativos explícitos em CSS puro.
+Também foi corrigida a ausência de affordance visual de hover em praticamente todos os
+botões/ícones da interface (cursor virava ponteiro mas nenhuma mudança visual
+ocorria) — causa raiz dupla: um erro de sintaxe CSS real (chave de fechamento ausente,
+causando aninhamento inválido que fazia o navegador descartar regras subsequentes no
+arquivo) e contraste insuficiente entre as cores de fundo/hover no tema padrão para
+ser perceptível em botões pequenos. Ambos confirmados com teste visual real do usuário
+após a correção.
+
 ---
 
 ## Adiado / Não planejado
