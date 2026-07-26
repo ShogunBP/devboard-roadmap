@@ -71,6 +71,7 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [ ] Documentar no próprio projeto (`README.md` da raiz) como usar em outro projeto: copiar pasta, ajustar caminho relativo do `docs/`, rodar o server
 - [x] Revisar visualmente o design (cores, cards, modal) — sistema de temas visuais implementado e validado (ver detalhamento abaixo)
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
+- [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [ ] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, sem causa raiz diagnosticada ainda
 
 ### Sistema de temas visuais (concluído)
@@ -178,6 +179,65 @@ do card).
 Validado com prints reais: card mini com fração de critérios, as 3 abas do modal, popover
 de informações, e testes em múltiplos temas visuais confirmando que o sistema de abas
 herda cores corretamente sem CSS adicional por tema.
+
+### Reorganização de header e painel de Configurações (concluído)
+
+Motivação: a barra de estatísticas e a linha de controles do header estavam com muita
+informação solta sem agrupamento por função (visualização, tema, ações misturados no
+mesmo nível), e não havia forma de personalizar a identidade do projeto (nome,
+descrição, selo) sem editar código diretamente — um problema para um projeto pensado
+para ser reutilizável em outros contextos.
+
+**Header**:
+- Bloco de estatísticas (Tarefas/Concluídas/Em Execução/Progresso Médio) reestruturado
+  como grid visualmente coeso, com fundo destacado, em vez de caixas soltas competindo
+  com o título.
+- Linha de controles dividida em dois grupos por função, separados por divisória sutil:
+  visualização de dados (toggle Kanban/Roadmap, busca, filtros de categoria/área/
+  prioridade) à esquerda; ações (exportar, importar, configurações) à direita, como
+  ícones com tooltip em vez de botões com texto.
+- Tema visual, modo claro/escuro e "ocultar cancelados" removidos da linha de
+  controles — migraram para o novo painel de Configurações.
+
+**Painel de Configurações** (drawer lateral direito, com overlay e fechamento via X/
+clique fora/Esc), com 4 grupos nesta ordem:
+- **Aparência** (preferência pessoal, `localStorage`): tema visual, modo escuro.
+- **Comportamento** (preferência pessoal, `localStorage`): ocultar cancelados,
+  intervalo de atualização do polling (2.5s/5s/10s — aplicado imediatamente via
+  `clearInterval`/`setInterval` em runtime, sem precisar recarregar).
+- **Identidade do Projeto** (configuração compartilhada, arquivo no servidor): nome do
+  projeto, descrição, selo/badge — com texto explicando a diferença em relação aos
+  grupos anteriores (isso vale para qualquer pessoa que abrir o roadmap, não só quem
+  está configurando).
+- **Informações técnicas** (somente leitura): porta do servidor, status do polling.
+
+**Backend**: novo `roadmap/config.json` armazenando a identidade do projeto, servido
+estaticamente pelo `roadmap-server.js`; novo endpoint `POST /config` (usando somente o
+módulo `http` nativo do Node, sem dependência nova) que valida e regrava o arquivo.
+
+**Processo de correção real (não aprovado de primeira):**
+- Confirmado via print real do console que a reconfiguração do polling em runtime
+  gera um log distinto ("Polling timer limpo e recriado") do log de inicialização,
+  provando que o `clearInterval`/`setInterval` funciona de fato ao trocar o valor com a
+  página já carregada, não só no load inicial.
+- Corrigido um FOUC (flash) real no carregamento, com três causas raiz distintas
+  identificadas e resolvidas: (1) a classe `dark` estava hardcoded no HTML e só era
+  adicionada condicionalmente pelo script inline, nunca removida em modo claro,
+  causando flash de escuro→claro; (2) `roadmap.css` não definia `background-color`/
+  `color` base em `html, body`, dependendo inteiramente do Tailwind CDN carregar; (3)
+  os textos do header (nome/descrição/selo) vindos de forma assíncrona do
+  `config.json` causavam um salto visível de texto trocando após o primeiro paint.
+- A correção do item (3) inicialmente hardcodeou no HTML o valor mais recente do
+  `config.json` — identificado como uma solução frágil, já que reintroduziria o mesmo
+  flash na próxima vez que o nome do projeto fosse editado. Corrigido revertendo para
+  o texto genérico original como fallback, com o container do header oculto
+  (`opacity-0`) até o `fetch('config.json')` resolver, revelado com fade-in suave
+  (200ms) — elimina o salto de texto de forma duradoura, sem depender de manter dois
+  lugares sincronizados manualmente.
+
+Validado com prints reais do console (log de polling) e confirmação visual direta do
+usuário (não só relato do agente) de que o fade-in funciona sem flash de texto errado,
+inclusive com nome customizado editado via o próprio painel.
 
 ---
 
