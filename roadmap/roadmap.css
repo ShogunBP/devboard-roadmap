@@ -380,10 +380,22 @@ html, body {
 
 /* Settings Drawer styles */
 .drawer-overlay {
+  opacity: 0;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+}
+
+.drawer-overlay.is-open {
+  opacity: 1;
 }
 
 .drawer-content {
+  transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.drawer-content.is-open {
+  transform: translateX(0);
 }
 

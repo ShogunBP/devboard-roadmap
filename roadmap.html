@@ -81,10 +81,10 @@
         <div class="flex flex-wrap items-center gap-3">
           <!-- Controles de Visão -->
           <div class="inline-flex rounded-lg border border-border bg-card p-1">
-            <button id="btn-view-kanban" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow">
+            <button id="btn-view-kanban" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow cursor-pointer">
               <i data-lucide="layout-grid" class="h-4 w-4"></i> Kanban
             </button>
-            <button id="btn-view-roadmap" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5">
+            <button id="btn-view-roadmap" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted hover:text-foreground h-8 px-3 gap-1.5 cursor-pointer">
               <i data-lucide="git-branch" class="h-4 w-4"></i> Roadmap
             </button>
           </div>
@@ -92,12 +92,12 @@
           <!-- Busca -->
           <div class="relative min-w-[200px] max-w-xs">
             <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
-            <input type="text" id="input-search" placeholder="Buscar por título ou tags…" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9">
+            <input type="text" id="input-search" placeholder="Buscar por título ou tags…" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 hover:border-primary/50">
           </div>
 
           <!-- Filtro de Categoria -->
           <div class="relative min-w-[140px]">
-            <select id="select-category" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <select id="select-category" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
               <option value="all">Categorias</option>
               <option value="bugs">🐛 Bugs</option>
               <option value="features">✨ Features</option>
@@ -108,7 +108,7 @@
 
           <!-- Filtro de Área -->
           <div class="relative min-w-[110px]">
-            <select id="select-area" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <select id="select-area" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
               <option value="all">Áreas</option>
               <option value="active">Ativos</option>
               <option value="archive">Arquivados</option>
@@ -127,16 +127,16 @@
           <div class="hidden sm:block h-6 w-px bg-border/80 mx-1"></div>
 
           <!-- Importar/Exportar -->
-          <button id="btn-export-json" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground shadow-sm" title="Exportar dados (JSON)">
+          <button id="btn-export-json" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm" title="Exportar dados (JSON)">
             <i data-lucide="download" class="h-4 w-4"></i>
           </button>
-          <button id="btn-import-json" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground shadow-sm" title="Importar dados (JSON)">
+          <button id="btn-import-json" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm" title="Importar dados (JSON)">
             <i data-lucide="upload" class="h-4 w-4"></i>
           </button>
           <input type="file" id="input-file-json" accept=".json" class="hidden">
 
           <!-- Configurações (Engrenagem) -->
-          <button id="btn-open-settings" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground shadow-sm" title="Configurações">
+          <button id="btn-open-settings" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm" title="Configurações">
             <i data-lucide="settings" class="h-4 w-4"></i>
           </button>
         </div>
@@ -176,14 +176,14 @@
         <div class="flex items-center gap-1">
           <!-- Info Button with Popover -->
           <div class="relative">
-            <button id="btn-info-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" title="Instruções de edição">
+            <button id="btn-info-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer" title="Instruções de edição">
               <i data-lucide="help-circle" class="h-4 w-4"></i>
             </button>
             <div id="info-tooltip" class="absolute right-0 top-full mt-2 w-72 hidden rounded-lg border border-border bg-card p-3 shadow-lg z-[70]">
               <!-- Conteúdo preenchido via JS -->
             </div>
           </div>
-          <button id="btn-close-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <button id="btn-close-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
             <i data-lucide="x" class="h-4 w-4"></i>
           </button>
         </div>
@@ -204,17 +204,17 @@
   <!-- Drawer de Configurações -->
   <div id="settings-drawer" class="fixed inset-0 z-50 hidden">
     <!-- Overlay Escuro -->
-    <div class="fixed inset-0 bg-background/80 backdrop-blur-sm drawer-overlay opacity-0" id="settings-drawer-backdrop"></div>
+    <div class="fixed inset-0 bg-background/80 backdrop-blur-sm drawer-overlay" id="settings-drawer-backdrop"></div>
     
     <!-- Painel do Drawer -->
-    <div class="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-background shadow-2xl drawer-content transition-transform duration-300 transform translate-x-full">
+    <div class="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-background shadow-2xl drawer-content">
       <!-- Header do Drawer -->
       <div class="flex items-center justify-between border-b border-border/50 px-6 py-4">
         <h3 class="text-base font-semibold flex items-center gap-2">
           <i data-lucide="settings" class="h-4 w-4 text-primary"></i>
           Configurações
         </h3>
-        <button id="btn-close-settings" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+        <button id="btn-close-settings" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
           <i data-lucide="x" class="h-4 w-4"></i>
         </button>
       </div>
@@ -227,7 +227,7 @@
           <div class="space-y-3">
             <div>
               <label for="select-visual-theme" class="text-xs font-medium text-muted-foreground block mb-1.5">Tema Visual</label>
-              <select id="select-visual-theme" class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <select id="select-visual-theme" class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 <option value="default">Padrão</option>
                 <option value="terminal">Terminal</option>
                 <option value="clean">Clean</option>
@@ -240,7 +240,7 @@
                 <label class="text-xs font-medium text-foreground block">Modo Escuro</label>
                 <span class="text-[11px] text-muted-foreground">Cores escuras ou claras</span>
               </div>
-              <button id="btn-theme-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5" aria-label="Alternar tema">
+              <button id="btn-theme-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer" aria-label="Alternar tema">
                 <i data-lucide="sun" class="h-4 w-4" id="icon-theme-sun"></i>
                 <i data-lucide="moon" class="h-4 w-4 hidden" id="icon-theme-moon"></i>
                 <span id="text-theme">Claro</span>
@@ -258,7 +258,7 @@
                 <label class="text-xs font-medium text-foreground block">Ocultar Cancelados</label>
                 <span class="text-[11px] text-muted-foreground">Ocultar colunas e cards cancelados</span>
               </div>
-              <button id="btn-toggle-cancelled" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1.5" title="Ocultar tarefas canceladas">
+              <button id="btn-toggle-cancelled" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer" title="Ocultar tarefas canceladas">
                 <i data-lucide="eye-off" class="h-4 w-4" id="icon-cancelled-off"></i>
                 <i data-lucide="eye" class="h-4 w-4 hidden" id="icon-cancelled-on"></i>
                 <span id="text-cancelled">Ocultar cancelados</span>
@@ -267,7 +267,7 @@
 
             <div class="border-t border-border/30 pt-3">
               <label for="select-polling-interval" class="text-xs font-medium text-muted-foreground block mb-1.5">Atualização Automática (Polling)</label>
-              <select id="select-polling-interval" class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <select id="select-polling-interval" class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 <option value="2500">2.5 segundos (Padrão)</option>
                 <option value="5000">5 segundos</option>
                 <option value="10000">10 segundos</option>
@@ -286,17 +286,17 @@
           <div class="space-y-3">
             <div>
               <label for="input-project-name" class="text-xs font-medium text-muted-foreground block mb-1">Nome do Projeto</label>
-              <input type="text" id="input-project-name" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <input type="text" id="input-project-name" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
             </div>
             <div>
               <label for="input-project-description" class="text-xs font-medium text-muted-foreground block mb-1">Descrição</label>
-              <textarea id="input-project-description" rows="3" class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
+              <textarea id="input-project-description" rows="3" class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
             </div>
             <div>
               <label for="input-project-badge" class="text-xs font-medium text-muted-foreground block mb-1">Selo / Badge</label>
-              <input type="text" id="input-project-badge" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <input type="text" id="input-project-badge" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
             </div>
-            <button id="btn-save-identity" class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 gap-1.5 font-medium">
+            <button id="btn-save-identity" class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none bg-primary text-primary-foreground shadow hover:bg-primary/90 hover:shadow-md cursor-pointer h-9 px-4 py-2 gap-1.5 font-medium">
               <i data-lucide="save" class="h-4 w-4"></i> Salvar identidade do projeto
             </button>
           </div>

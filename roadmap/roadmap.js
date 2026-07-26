@@ -337,9 +337,9 @@ function renderPriorityFilters() {
   document.getElementById("priority-filters").innerHTML = filters.map(f => `
     <button
       onclick="setPriorityFilter('${f.id}')"
-      class="rounded-full border px-3 py-1 text-xs transition ${state.priorityFilter === f.id
-      ? 'border-primary bg-primary text-primary-foreground'
-      : 'border-border bg-card text-muted-foreground hover:text-foreground'
+      class="rounded-full border px-3 py-1 text-xs transition-all duration-150 cursor-pointer ${state.priorityFilter === f.id
+      ? 'border-primary bg-primary text-primary-foreground shadow-sm font-medium'
+      : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/40'
     }"
     >${f.label}</button>
   `).join('');
@@ -1047,17 +1047,11 @@ window.openSettings = function() {
   // 1. Tornar visível no DOM
   drawer.classList.remove("hidden");
 
-  // 2. Disparar animações no próximo frame para garantir transição suave
+  // 2. Disparar animação CSS no próximo frame
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      if (backdrop) {
-        backdrop.classList.remove("opacity-0");
-        backdrop.classList.add("opacity-100");
-      }
-      if (panel) {
-        panel.classList.remove("translate-x-full");
-        panel.classList.add("translate-x-0");
-      }
+      if (backdrop) backdrop.classList.add("is-open");
+      if (panel) panel.classList.add("is-open");
     });
   });
 };
@@ -1069,15 +1063,9 @@ window.closeSettings = function() {
   const backdrop = document.getElementById("settings-drawer-backdrop");
   const panel = drawer.querySelector(".drawer-content");
 
-  // 1. Iniciar transição de saída do overlay e do painel simultaneamente
-  if (backdrop) {
-    backdrop.classList.remove("opacity-100");
-    backdrop.classList.add("opacity-0");
-  }
-  if (panel) {
-    panel.classList.remove("translate-x-0");
-    panel.classList.add("translate-x-full");
-  }
+  // 1. Iniciar transição de saída
+  if (backdrop) backdrop.classList.remove("is-open");
+  if (panel) panel.classList.remove("is-open");
 
   // 2. Adicionar hidden ao container somente após o término real da transição CSS
   let transitionEnded = false;
@@ -1092,7 +1080,6 @@ window.closeSettings = function() {
 
   if (panel) {
     panel.addEventListener("transitionend", handleTransitionEnd, { once: true });
-    // Safety fallback timer de segurança caso transitionend seja cancelado pelo browser
     setTimeout(handleTransitionEnd, 350);
   } else {
     drawer.classList.add("hidden");
