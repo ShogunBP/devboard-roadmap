@@ -67,7 +67,7 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 
 - [x] Testar abrir `roadmap.html` direto (`file://`) sem o server rodando — confirmar que funciona com o `data.js` estático como fallback
   - [x] Indicador visual discreto (badge "modo estático") quando o polling falhar/não houver servidor, em vez de só logar no console
-- [ ] Testar publicação em GitHub Pages (ou hospedagem estática equivalente) com um `data.js`/`data.json` já commitado — depende de repositório remoto ainda não configurado; passo guiado separado, fora do escopo de execução por agente
+- [x] Testar publicação em GitHub Pages (ou hospedagem estática equivalente) com um `data.js`/`data.json` já commitado — código preparado e publicado (ver detalhamento abaixo); ativação final do GitHub Pages nas configurações do repositório é passo manual do usuário, fora do escopo de agente
 - [x] Documentar no próprio projeto (`README.md` da raiz) como usar em outro projeto: copiar pasta, ajustar caminho relativo do `docs/`, rodar o server
 - [x] Revisar visualmente o design (cores, cards, modal) — sistema de temas visuais implementado e validado (ver detalhamento abaixo)
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
@@ -335,6 +335,45 @@ ausente em botões e cabeçalhos de coluna do accordion em mobile/tablet — cau
 os elementos novos criados para essas faixas nunca haviam sido incluídos nos seletores
 CSS de hover, que só cobriam os IDs originais de desktop. Ambas as correções
 confirmadas com teste visual real do usuário, não apenas leitura de código.
+
+### Favicon, SEO e Open Graph/Twitter Cards (concluído)
+
+Favicon gerado em todos os tamanhos padrão (16×16, 32×32, apple-touch-icon 180×180,
+android-chrome 192×192/512×512, `favicon.ico` multi-resolução) a partir de um JPG
+fornecido pelo usuário, com `site.webmanifest` para suporte básico de PWA/mobile.
+Título e descrição de SEO definidos de forma genérica/institucional (sem nome pessoal
+do usuário), já que o projeto é uma ferramenta open source reutilizável — o nome
+pessoal da instância continua vivendo em `config.json`, editável pelo painel de
+Configurações, sem duplicação na tag `<title>`. Banner de Open Graph/Twitter Card
+(1200×630px) gerado a partir de um print real do próprio board, recortado sem
+distorção. Testado com confirmação visual real de que o favicon aparece na aba do
+navegador.
+
+### Publicação no GitHub Pages (preparação de código concluída)
+
+Repositório confirmado público e sincronizado (`ShogunBP/devboard-roadmap`). Deploy
+definido como manual (sem GitHub Actions) — o usuário roda o gerador localmente e
+commita `data.js`/`data.json` atualizados quando quiser atualizar a demo pública, que
+funciona como vitrine estática do projeto (não uma instância com servidor rodando).
+
+- Preenchidas as URLs absolutas de Open Graph/Twitter (pendentes desde a tarefa
+  anterior) com o endereço real: `https://shogunbp.github.io/devboard-roadmap/`.
+- Corrigido um caminho absoluto (`href="/favicon.ico"`) que quebraria no GitHub Pages,
+  já que o projeto não fica na raiz do domínio — convertido para caminho relativo.
+- Tratado o comportamento do botão "Salvar identidade do projeto" quando não há
+  servidor disponível para receber `POST /config` (o caso normal na demo pública):
+  inicialmente implementado com `alert()` nativo do navegador, corrigido após
+  identificação de que isso quebrava a consistência visual do projeto (não respeita
+  tema ativo, trava a interface) — reescrito para reaproveitar o mesmo mecanismo de
+  feedback já usado no caso de sucesso ("Salvo!"), com texto "Somente leitura (demo)"
+  e cor de aviso. Numa segunda correção, as cores desse feedback (sucesso e erro)
+  foram trocadas de classes fixas do Tailwind para as variáveis CSS do sistema de
+  temas (`var(--destructive)`, `var(--status-done)`), garantindo que se adaptam
+  corretamente a qualquer um dos 4 temas visuais — confirmado com teste visual real.
+
+**Pendência remanescente:** ativar o GitHub Pages nas configurações do repositório
+(Settings → Pages) é uma ação manual do usuário na interface do GitHub, fora do
+escopo de execução por agente de código.
 
 ---
 

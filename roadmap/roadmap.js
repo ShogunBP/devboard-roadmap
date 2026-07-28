@@ -155,6 +155,28 @@ async function saveProjectIdentity() {
   
   const btn = document.getElementById("btn-save-identity");
   const originalText = btn.innerHTML;
+
+  const showBtnFeedback = (text, icon, isError = false) => {
+    btn.innerHTML = `<i data-lucide="${icon}" class="h-4 w-4"></i> ${text}`;
+    if (isError) {
+      btn.style.backgroundColor = "var(--destructive)";
+      btn.style.color = "var(--destructive-foreground)";
+      btn.style.borderColor = "var(--destructive)";
+    } else {
+      btn.style.backgroundColor = "var(--status-done)";
+      btn.style.color = "#ffffff";
+      btn.style.borderColor = "var(--status-done)";
+    }
+    if (window.lucide) lucide.createIcons();
+
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.backgroundColor = "";
+      btn.style.color = "";
+      btn.style.borderColor = "";
+      if (window.lucide) lucide.createIcons();
+    }, 2500);
+  };
   
   try {
     const res = await fetch('/config', {
@@ -170,22 +192,13 @@ async function saveProjectIdentity() {
     if (res.ok) {
       // Atualiza header imediatamente sem recarregar
       updateHeader(name, desc, badge);
-      
-      btn.innerHTML = `<i data-lucide="check" class="h-4 w-4"></i> Salvo!`;
-      btn.classList.add("bg-green-600", "text-white");
-      if (window.lucide) lucide.createIcons();
-      
-      setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.classList.remove("bg-green-600", "text-white");
-        if (window.lucide) lucide.createIcons();
-      }, 2000);
+      showBtnFeedback("Salvo!", "check", false);
     } else {
-      alert("Não foi possível salvar — esta é uma versão de demonstração (modo estático sem servidor).");
+      showBtnFeedback("Somente leitura (demo)", "alert-circle", true);
     }
   } catch (err) {
     console.error(err);
-    alert("Não foi possível salvar — esta é uma versão de demonstração (modo estático sem servidor).");
+    showBtnFeedback("Somente leitura (demo)", "alert-circle", true);
   }
 }
 
