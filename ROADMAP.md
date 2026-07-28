@@ -371,9 +371,23 @@ funciona como vitrine estática do projeto (não uma instância com servidor rod
   temas (`var(--destructive)`, `var(--status-done)`), garantindo que se adaptam
   corretamente a qualquer um dos 4 temas visuais — confirmado com teste visual real.
 
-**Pendência remanescente:** ativar o GitHub Pages nas configurações do repositório
-(Settings → Pages) é uma ação manual do usuário na interface do GitHub, fora do
-escopo de execução por agente de código.
+**GitHub Pages ativado e funcional.** Após a ativação manual do usuário (Settings →
+Pages), a URL raiz (`https://shogunbp.github.io/devboard-roadmap/`) estava servindo o
+conteúdo do `README.md` em vez de `roadmap.html` — causa raiz: na ausência de um
+`index.html` na raiz, o processador Jekyll (ativo por padrão no GitHub Pages) usa o
+`README.md` como página inicial automaticamente, já que `roadmap.html` não tem nome de
+entrada reservado.
+
+Decisão: não renomear `roadmap.html` para `index.html`, pois o nome é parte da
+convenção documentada no `README.md` para quem copia a pasta pra outro projeto.
+Corrigido com:
+- `index.html` na raiz, com redirecionamento via `<meta http-equiv="refresh">` para
+  `roadmap.html`.
+- `.nojekyll` vazio na raiz, desativando o processamento Jekyll (desnecessário e
+  potencialmente interferente num projeto 100% estático sem build step).
+
+Validado com teste real em aba anônima (descartando cache do navegador): a URL raiz
+abre `roadmap.html` corretamente.
 
 ---
 
