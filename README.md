@@ -1,27 +1,31 @@
 # 📋 devboard-roadmap
 
-Um kanban/roadmap estático (HTML + CSS + JS puro, sem build, sem framework) que visualiza o estado de qualquer sistema de documentação baseado em pastas `/docs` — originalmente criado para acompanhar o desenvolvimento de um portfólio pessoal, mas pensado desde o início para ser copiado e reutilizado em qualquer outro projeto.
+![Preview do devboard-roadmap](./roadmap/favicon/preview.png)
 
-**Somente leitura, por decisão deliberada.** Esta ferramenta nunca escreve nos seus documentos, não move pastas, não edita status pela interface. Ela só lê o que já existe em `/docs` e visualiza. Aprovações, mudanças de status e revisões continuam acontecendo do jeito que sempre aconteceram — renomeando pastas e editando READMEs manualmente, com intenção humana real por trás de cada decisão.
+**[🔗 Ver demo ao vivo](https://shogunbp.github.io/devboard-roadmap/)**
+
+Um kanban/roadmap estático (HTML + CSS + JS puro, sem build, sem framework) que visualiza o estado de qualquer sistema de documentação baseado em pastas `/docs`. Foi criado originalmente para acompanhar o desenvolvimento de um portfólio pessoal, mas pensado desde o início para ser copiado e reutilizado em qualquer outro projeto.
+
+**Somente leitura, por decisão deliberada.** Esta ferramenta nunca escreve nos seus documentos, não move pastas, não edita status pela interface. Ela só lê o que já existe em `/docs` e visualiza. Aprovações, mudanças de status e revisões continuam acontecendo do jeito que sempre aconteceram: renomeando pastas e editando READMEs manualmente, com intenção humana real por trás de cada decisão.
 
 ## O que isso resolve
 
-Se o seu projeto já usa (ou está disposto a usar) uma convenção de pastas do tipo `docs/{active|archive}/{categoria}/[status]-nome-da-tarefa/README.md` para planejar bugs, features, melhorias e refatorações antes de implementá-las, esta ferramenta te dá um board visual (Kanban + linha do tempo por trimestre) gerado automaticamente a partir desses arquivos — sem duplicar trabalho de escrever os READMEs em outro lugar, e sem exigir nenhuma ferramenta externa (Trello, Notion, Jira) para acompanhar progresso.
+Se o seu projeto já usa (ou está disposto a usar) uma convenção de pastas do tipo `docs/{active|archive}/{categoria}/[status]-nome-da-tarefa/README.md` para planejar bugs, features, melhorias e refatorações antes de implementá-las, esta ferramenta te dá um board visual (Kanban + linha do tempo por trimestre) gerado automaticamente a partir desses arquivos, sem duplicar trabalho de escrever os READMEs em outro lugar e sem exigir nenhuma ferramenta externa (Trello, Notion, Jira) para acompanhar progresso.
 
 ---
 
 ## ✨ Features
 
-- **Visualização Kanban** — Cards organizados por status (Preparação → Aprovado → Em Progresso → Concluído → Cancelado)
-- **Visualização Roadmap** — Agrupamento por trimestre para visão de longo prazo
-- **Atualização em tempo real** — Edite um `README.md` na pasta `/docs` e o board atualiza sozinho via polling (sem F5)
-- **Filtros e busca** — Filtre por prioridade, categoria, área (active/archive) e busque por título ou tags
-- **Modal de detalhes** — Clique em qualquer card para ver o conteúdo completo do README organizado em abas (Conteúdo, Critérios de Conclusão, Detalhes técnicos), com progresso calculado automaticamente
-- **4 temas visuais** — Padrão, Terminal, Clean e Ficha de Arquivo, cada um com variante clara e escura (8 combinações)
-- **Toggle claro/escuro** — Independente do tema visual, persiste no `localStorage`
-- **Importar/Exportar JSON** — Faça backup ou migre dados com um clique
-- **Modo estático** — Pode ser aberto direto no navegador (`file://`) sem servidor rodando. Mostra o snapshot de dados gerado pela última vez que o servidor rodou (via `data.js`), mas sem atualização automática nesse modo — o polling depende de um servidor HTTP ativo para funcionar, por causa de restrições de CORS do navegador para requisições locais.
-- **Zero dependências externas** — Vanilla JS + TailwindCSS via CDN + Lucide Icons
+- **Visualização Kanban:** cards organizados por status (Preparação → Aprovado → Em Progresso → Concluído → Cancelado)
+- **Visualização Roadmap:** agrupamento por trimestre para visão de longo prazo
+- **Atualização em tempo real:** edite um `README.md` na pasta `/docs` e o board atualiza sozinho via polling (sem F5)
+- **Filtros e busca:** filtre por prioridade, categoria, área (active/archive) e busque por título ou tags
+- **Modal de detalhes:** clique em qualquer card para ver o conteúdo completo do README organizado em abas (Conteúdo, Critérios de Conclusão, Detalhes técnicos), com progresso calculado automaticamente
+- **4 temas visuais:** Padrão, Terminal, Clean e Ficha de Arquivo, cada um com variante clara e escura (8 combinações)
+- **Toggle claro/escuro:** independente do tema visual, persiste no `localStorage`
+- **Importar/Exportar JSON:** faça backup ou migre dados com um clique
+- **Modo estático:** pode ser aberto direto no navegador (`file://`) sem servidor rodando. Mostra o snapshot de dados gerado pela última vez que o servidor rodou (via `data.js`), mas sem atualização automática nesse modo, já que o polling depende de um servidor HTTP ativo para funcionar, por causa de restrições de CORS do navegador para requisições locais.
+- **Zero dependências externas:** Vanilla JS + TailwindCSS via CDN + Lucide Icons
 
 ---
 
@@ -161,10 +165,10 @@ O devboard-roadmap inclui 4 temas visuais, cada um com variante clara e escura:
 
 | Tema | Descrição |
 |------|-----------|
-| **Padrão** | Estética blueprint/técnica com ciano e azul como acento |
-| **Terminal** | Painel de controle com âmbar como cor dominante |
-| **Clean** | Design limpo e minimalista inspirado no shadcn/ui |
-| **Ficha de Arquivo** | Estética de ficha de papel com tipografia serifada e "carimbos" de status |
+| **Padrão** | Estética blueprint/técnica, com ciano e azul como acento |
+| **Terminal** | Painel de controle, com âmbar como cor dominante |
+| **Clean** | Design limpo e minimalista, inspirado no shadcn/ui |
+| **Ficha de Arquivo** | Estética de ficha de papel, com tipografia serifada e "carimbos" de status |
 
 Alterne entre temas pelo seletor no header. A escolha persiste no `localStorage`.
 
@@ -174,10 +178,10 @@ Alterne entre temas pelo seletor no header. A escolha persiste no `localStorage`
 
 Acessível pelo ícone de engrenagem no header, dividido em 4 grupos:
 
-- **Aparência** *(preferência pessoal, salva no navegador)* — tema visual, modo escuro.
-- **Comportamento** *(preferência pessoal, salva no navegador)* — ocultar tarefas canceladas, intervalo de atualização automática (polling), aplicado imediatamente sem precisar recarregar a página.
-- **Identidade do Projeto** *(configuração compartilhada, salva em `roadmap/config.json`)* — nome do projeto, descrição, selo/badge exibidos no header. Diferente do grupo acima, isso vale para qualquer pessoa que abrir este roadmap, não só para quem está configurando.
-- **Informações técnicas** *(somente leitura)* — porta do servidor atual, status do polling.
+- **Aparência** *(preferência pessoal, salva no navegador)*: tema visual, modo escuro.
+- **Comportamento** *(preferência pessoal, salva no navegador)*: ocultar tarefas canceladas, intervalo de atualização automática (polling), aplicado imediatamente sem precisar recarregar a página.
+- **Identidade do Projeto** *(configuração compartilhada, salva em `roadmap/config.json`)*: nome do projeto, descrição, selo/badge exibidos no header. Diferente do grupo acima, isso vale para qualquer pessoa que abrir este roadmap, não só para quem está configurando.
+- **Informações técnicas** *(somente leitura)*: porta do servidor atual, status do polling.
 
 ---
 
@@ -218,11 +222,11 @@ devboard-roadmap/
 
 Consulte o [ROADMAP.md](./ROADMAP.md) para o plano completo de implementação, dividido em fases:
 
-- ✅ **Fase 0** — Fundação (arquitetura e decisões)
-- ✅ **Fase 1** — Parser e geração de dados
-- ✅ **Fase 2** — Integração com o front-end
-- ✅ **Fase 3** — Atualização quase em tempo real
-- 🔄 **Fase 4** — Polimento e portabilidade (em andamento)
+- ✅ **Fase 0:** Fundação (arquitetura e decisões)
+- ✅ **Fase 1:** Parser e geração de dados
+- ✅ **Fase 2:** Integração com o front-end
+- ✅ **Fase 3:** Atualização quase em tempo real
+- 🔄 **Fase 4:** Polimento e portabilidade (em andamento)
 
 ---
 
