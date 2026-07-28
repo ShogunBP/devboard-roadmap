@@ -276,7 +276,7 @@ function setStaticMode(isStatic) {
     }
   }
 
-  [inputName, inputDesc, inputBadge, btnSave].forEach(el => {
+  [inputName, inputDesc, inputBadge].forEach(el => {
     if (el) {
       if (isDemo) {
         el.disabled = true;
@@ -287,6 +287,18 @@ function setStaticMode(isStatic) {
       }
     }
   });
+
+  if (btnSave) {
+    if (isDemo) {
+      btnSave.disabled = true;
+      btnSave.innerHTML = `<i data-lucide="lock" class="h-4 w-4"></i> Edição indisponível no modo demo`;
+      btnSave.className = "w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none bg-muted text-muted-foreground border border-border/50 opacity-60 cursor-not-allowed h-9 px-4 py-2 gap-1.5 shadow-none";
+    } else {
+      btnSave.disabled = false;
+      btnSave.innerHTML = `<i data-lucide="save" class="h-4 w-4"></i> Salvar identidade do projeto`;
+      btnSave.className = "w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none bg-primary text-primary-foreground shadow hover:bg-primary/90 hover:shadow-md cursor-pointer h-9 px-4 py-2 gap-1.5 font-medium";
+    }
+  }
 
   updateDynamicServerPortUI();
 
