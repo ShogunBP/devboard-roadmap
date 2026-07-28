@@ -69,9 +69,17 @@ function loadTasks() {
   tasks = typeof ROADMAP_TASKS !== 'undefined' ? JSON.parse(JSON.stringify(ROADMAP_TASKS)) : [];
 }
 
+const DEFAULT_CONFIG = {
+  projectName: "Devboard",
+  projectDescription: "Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de novas features, bugs e refatorações.",
+  projectBadge: "Universal Roadmap - 2026"
+};
+
 // --- CONFIGURAÇÃO DE IDENTIDADE DO PROJETO ---
 async function loadProjectConfig() {
   const identityContainer = document.getElementById("header-identity");
+  let cfg = { ...DEFAULT_CONFIG };
+
   try {
     const res = await fetch('roadmap/config.json?_t=' + Date.now());
     if (res.ok) {
@@ -79,21 +87,24 @@ async function loadProjectConfig() {
       if (config.serverPort) {
         state.serverPort = config.serverPort;
       }
-      updateHeader(config.projectName, config.projectDescription, config.projectBadge);
-      updateDynamicServerPortUI();
-      
-      // Popular inputs do drawer
-      const inputName = document.getElementById("input-project-name");
-      const inputDesc = document.getElementById("input-project-description");
-      const inputBadge = document.getElementById("input-project-badge");
-      if (inputName) inputName.value = config.projectName;
-      if (inputDesc) inputDesc.value = config.projectDescription;
-      if (inputBadge) inputBadge.value = config.projectBadge;
+      cfg.projectName = config.projectName || cfg.projectName;
+      cfg.projectDescription = config.projectDescription || cfg.projectDescription;
+      cfg.projectBadge = config.projectBadge || cfg.projectBadge;
     }
   } catch (err) {
     console.warn("[roadmap] Falha ao carregar config.json (usando fallbacks estáticos).");
-    updateDynamicServerPortUI();
   } finally {
+    updateHeader(cfg.projectName, cfg.projectDescription, cfg.projectBadge);
+    updateDynamicServerPortUI();
+    
+    // Popular inputs do drawer sempre (mesmo em modo estático/file://)
+    const inputName = document.getElementById("input-project-name");
+    const inputDesc = document.getElementById("input-project-description");
+    const inputBadge = document.getElementById("input-project-badge");
+    if (inputName) inputName.value = cfg.projectName;
+    if (inputDesc) inputDesc.value = cfg.projectDescription;
+    if (inputBadge) inputBadge.value = cfg.projectBadge;
+
     if (identityContainer) {
       identityContainer.classList.remove("opacity-0");
       identityContainer.classList.add("opacity-100");
@@ -118,7 +129,7 @@ function updateDynamicServerPortUI() {
       elInstruction.textContent = "Rode o comando acima no terminal na raiz do projeto. O endereço para acessar (com a porta configurada) aparecerá no terminal ao iniciar o servidor.";
     }
     if (elTechServer) {
-      elTechServer.textContent = "Nenhum servidor ativo (Modo Estático)";
+      elTechServer.textContent = isDemoMode ? "Nenhum servidor ativo (Modo Demo)" : "Nenhum servidor ativo (Modo Estático)";
       elTechServer.className = "font-mono text-amber-500/90 italic";
     }
   }
@@ -203,10 +214,15 @@ async function saveProjectIdentity() {
 }
 
 let isStaticMode = false;
+let isDemoMode = false;
 
 function setStaticMode(isStatic) {
-  if (isStaticMode === isStatic) return;
+  const isFileProtocol = window.location.protocol === 'file:';
+  const isDemo = isStatic && !isFileProtocol;
+
+  if (isStaticMode === isStatic && isDemoMode === isDemo) return;
   isStaticMode = isStatic;
+  isDemoMode = isDemo;
 
   const staticBadge = document.getElementById("static-mode-badge");
   const mobStaticBadge = document.getElementById("mobile-static-mode-badge");
@@ -217,6 +233,13 @@ function setStaticMode(isStatic) {
       if (isStatic) {
         badge.classList.remove("hidden");
         badge.classList.add("inline-flex");
+        if (isDemo) {
+          badge.innerHTML = `<i data-lucide="globe" class="h-3.5 w-3.5"></i> Modo Demo`;
+          badge.className = "inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-xs font-medium text-sky-400";
+        } else {
+          badge.innerHTML = `<i data-lucide="wifi-off" class="h-3.5 w-3.5"></i> Modo estático`;
+          badge.className = "inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-500";
+        }
       } else {
         badge.classList.add("hidden");
         badge.classList.remove("inline-flex");
@@ -226,9 +249,44 @@ function setStaticMode(isStatic) {
 
   const elTechStatus = document.getElementById("tech-polling-status");
   if (elTechStatus) {
-    elTechStatus.textContent = isStatic ? "Inativo (Modo Estático / Servidor Offline)" : "Polling ativo";
-    elTechStatus.className = isStatic ? "font-mono text-amber-500 font-medium" : "font-mono text-green-500 font-medium";
+    if (!isStatic) {
+      elTechStatus.textContent = "Polling ativo";
+      elTechStatus.className = "font-mono text-green-500 font-medium";
+    } else if (isDemo) {
+      elTechStatus.textContent = "Inativo (Modo Demo / Somente Leitura)";
+      elTechStatus.className = "font-mono text-amber-500 font-medium";
+    } else {
+      elTechStatus.textContent = "Inativo (Modo Estático / Servidor Offline)";
+      elTechStatus.className = "font-mono text-amber-500 font-medium";
+    }
   }
+
+  // Trava formulário de Identidade do Projeto se estiver no Modo Demo
+  const demoNotice = document.getElementById("demo-mode-notice");
+  const inputName = document.getElementById("input-project-name");
+  const inputDesc = document.getElementById("input-project-description");
+  const inputBadge = document.getElementById("input-project-badge");
+  const btnSave = document.getElementById("btn-save-identity");
+
+  if (demoNotice) {
+    if (isDemo) {
+      demoNotice.classList.remove("hidden");
+    } else {
+      demoNotice.classList.add("hidden");
+    }
+  }
+
+  [inputName, inputDesc, inputBadge, btnSave].forEach(el => {
+    if (el) {
+      if (isDemo) {
+        el.disabled = true;
+        el.classList.add("opacity-60", "cursor-not-allowed");
+      } else {
+        el.disabled = false;
+        el.classList.remove("opacity-60", "cursor-not-allowed");
+      }
+    }
+  });
 
   updateDynamicServerPortUI();
 
