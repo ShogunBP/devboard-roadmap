@@ -322,6 +322,16 @@ const server = http.createServer((req, res) => {
   // Remove query strings
   reqPath = reqPath.split('?')[0];
 
+  // Route GET /health (Health check para detecção de servidor ativo)
+  if (req.method === 'GET' && reqPath === '/health') {
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({ server: true, port: PORT }));
+    return;
+  }
+
   // Route POST /config
   if (req.method === 'POST' && reqPath === '/config') {
     let body = '';

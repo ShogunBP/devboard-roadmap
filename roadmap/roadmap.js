@@ -105,21 +105,21 @@ function updateDynamicServerPortUI() {
   const elInstruction = document.getElementById("static-mode-instruction");
   const elTechServer = document.getElementById("tech-server-address");
 
-  if (state.serverPort) {
+  if (!isStaticMode && state.serverPort) {
     if (elInstruction) {
       elInstruction.innerHTML = `Rode o comando acima no terminal na raiz do projeto e acesse <span id="static-mode-url" class="font-mono text-primary">http://localhost:${state.serverPort}</span> para reativar o polling automático.`;
     }
     if (elTechServer) {
       elTechServer.textContent = `localhost:${state.serverPort}`;
-      elTechServer.className = "font-mono";
+      elTechServer.className = "font-mono text-green-500 font-medium";
     }
   } else {
     if (elInstruction) {
       elInstruction.textContent = "Rode o comando acima no terminal na raiz do projeto. O endereço para acessar (com a porta configurada) aparecerá no terminal ao iniciar o servidor.";
     }
     if (elTechServer) {
-      elTechServer.textContent = "(inicie o servidor para ver o endereço)";
-      elTechServer.className = "font-mono text-muted-foreground/70 italic";
+      elTechServer.textContent = "Nenhum servidor ativo (Modo Estático)";
+      elTechServer.className = "font-mono text-amber-500/90 italic";
     }
   }
 }
@@ -210,43 +210,27 @@ function setStaticMode(isStatic) {
 
   const staticBadge = document.getElementById("static-mode-badge");
   const mobStaticBadge = document.getElementById("mobile-static-mode-badge");
-
-  if (staticBadge) {
-    if (isStatic) {
-      staticBadge.classList.remove("hidden");
-      staticBadge.classList.add("inline-flex");
-    } else {
-      staticBadge.classList.add("hidden");
-      staticBadge.classList.remove("inline-flex");
-    }
-  }
-
-  if (mobStaticBadge) {
-    if (isStatic) {
-      mobStaticBadge.classList.remove("hidden");
-      mobStaticBadge.classList.add("inline-flex");
-    } else {
-      mobStaticBadge.classList.add("hidden");
-      mobStaticBadge.classList.remove("inline-flex");
-    }
-  }
-
   const tabStaticBadge = document.getElementById("tablet-static-mode-badge");
-  if (tabStaticBadge) {
-    if (isStatic) {
-      tabStaticBadge.classList.remove("hidden");
-      tabStaticBadge.classList.add("inline-flex");
-    } else {
-      tabStaticBadge.classList.add("hidden");
-      tabStaticBadge.classList.remove("inline-flex");
+
+  [staticBadge, mobStaticBadge, tabStaticBadge].forEach(badge => {
+    if (badge) {
+      if (isStatic) {
+        badge.classList.remove("hidden");
+        badge.classList.add("inline-flex");
+      } else {
+        badge.classList.add("hidden");
+        badge.classList.remove("inline-flex");
+      }
     }
-  }
+  });
 
   const elTechStatus = document.getElementById("tech-polling-status");
   if (elTechStatus) {
     elTechStatus.textContent = isStatic ? "Inativo (Modo Estático / Servidor Offline)" : "Polling ativo";
     elTechStatus.className = isStatic ? "font-mono text-amber-500 font-medium" : "font-mono text-green-500 font-medium";
   }
+
+  updateDynamicServerPortUI();
 
   if (window.lucide) lucide.createIcons();
 }
@@ -269,22 +253,32 @@ function startPolling() {
   
   const checkData = async () => {
     try {
-      const res = await fetch('roadmap/data.json?_t=' + Date.now());
-      if (!res.ok) {
+      // 1. Testa se o servidor Node.js real (roadmap-server.js) está ativo
+      const healthRes = await fetch('health?_t=' + Date.now());
+      if (!healthRes.ok) {
         setStaticMode(true);
         return;
       }
-      const newTasks = await res.json();
+      const healthData = await healthRes.json();
+      if (!healthData || !healthData.server) {
+        setStaticMode(true);
+        return;
+      }
+
       setStaticMode(false);
-      
-      // Se houver diferença, atualiza os dados e re-renderiza preservando o scroll
-      if (JSON.stringify(newTasks) !== JSON.stringify(tasks)) {
-        tasks = newTasks;
-        renderApp();
+
+      // 2. Servidor ativo: busca dados atualizados em tempo real do data.json
+      const res = await fetch('roadmap/data.json?_t=' + Date.now());
+      if (res.ok) {
+        const newTasks = await res.json();
+        if (JSON.stringify(newTasks) !== JSON.stringify(tasks)) {
+          tasks = newTasks;
+          renderApp();
+        }
       }
     } catch (err) {
       setStaticMode(true);
-      console.warn("[roadmap] Polling falhou (modo file:// ou servidor offline). Fallback estático mantido.");
+      console.warn("[roadmap] Polling falhou (servidor offline ou modo estático). Fallback estático mantido.");
     }
   };
 
