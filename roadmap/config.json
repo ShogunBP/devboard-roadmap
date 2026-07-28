@@ -1,6 +1,6 @@
 {
-  "projectName": "Devboard - Guilherme Menezes",
-  "projectDescription": "Acompanhe em tempo real o planejamento, progresso de desenvolvimento e criterios de conclusao de novas features, bugs e refatoracoes do meu portfolio pessoal.",
-  "projectBadge": "Portfolio & Roadmap - 2026",
+  "projectName": "Devboard",
+  "projectDescription": "Acompanhe em tempo real o planejamento, progresso de desenvolvimento e criterios de conclusao de novas features, bugs e refatoracoes.",
+  "projectBadge": "Universal Roadmap - 2026",
   "serverPort": 3003
 }

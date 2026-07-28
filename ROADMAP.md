@@ -72,7 +72,7 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Revisar visualmente o design (cores, cards, modal) — sistema de temas visuais implementado e validado (ver detalhamento abaixo)
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
-- [ ] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, sem causa raiz diagnosticada ainda
+- [x] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
 
 ### Sistema de temas visuais (concluído)
 
@@ -267,6 +267,74 @@ polling (`node roadmap/roadmap-server.js`).
 Validado com teste real cobrindo os 3 cenários: servidor ativo (badge oculto),
 servidor derrubado com a página já aberta (badge aparece no ciclo seguinte de
 polling, sem F5), e servidor reiniciado (badge desaparece sozinho).
+
+**Correção adicional (porta hardcoded):** o texto do popover e do painel de
+Configurações inicialmente mostravam a porta `3003` fixa no HTML. Corrigido expondo a
+porta real via `config.json` (mesma constante `PORT` do `roadmap-server.js`,
+sincronizada automaticamente a cada start do servidor via `syncConfigPort()`), lida
+dinamicamente pelo front-end — testado trocando a porta real para 3005 e confirmando
+que ambos os textos refletem o novo valor sem edição manual, depois revertido para
+3003. Também tratado o caso de borda em que `config.json` nunca existiu ainda
+(primeira execução via `file://` antes do servidor rodar uma vez) — nesse caso, o
+texto usa uma frase genérica em vez de assumir um número de porta que pode estar
+errado.
+
+### Responsividade mobile/tablet (concluída)
+
+Pendência mais antiga do projeto (aberta desde a Fase 2), resolvida em duas rodadas.
+
+**Diagnóstico prévio (sem correção)**: capturados 12 screenshots reais (Kanban, modal,
+drawer) em 375px/768px/900px/1024px via DevTools, antes de qualquer mudança de código
+— confirmando objetivamente onde o layout se comportava mal, em vez de corrigir às
+cegas.
+
+**Rodada 1 — estrutura**:
+- Bloco de estatísticas sincronizado com o breakpoint do board (deixou de virar grid
+  de 4 colunas antes do board conseguir acompanhar — ambos agora expandem juntos em
+  `lg:`/1024px).
+- Colunas do Kanban abaixo de 1024px passaram a empilhar verticalmente em formato
+  accordion: cada coluna é um cabeçalho clicável (cor de status + nome + contador +
+  chevron) que expande/colapsa. "Em preparação" inicia aberta, as demais fechadas por
+  padrão. O estado de aberto/fechado de cada coluna é preservado através dos re-renders
+  do polling (mesma técnica já usada para scroll/modal na Fase 3), evitando que uma
+  coluna aberta manualmente feche sozinha a cada atualização automática.
+- Acima de 1024px, o comportamento permanece grid horizontal, idêntico ao que já
+  existia.
+
+**Rodada 2 — o feedback do usuário identificou que a Rodada 1, embora tecnicamente sem
+quebras, ainda era "desktop encolhido" em vez de um design pensado para mobile.**
+Antes de codar, foram geradas 3 propostas visuais de direção (compacto / busca aberta
+com chips / mínimo com bottom sheet), e a direção "Compacto" foi escolhida. Aplicado
+exclusivamente abaixo de 768px:
+- Header reduzido de ~350px para ~110px de altura: título em 1 linha truncada +
+  resumo textual ("18 tarefas · 51% concluído"), 3 botões circulares compactos (busca,
+  filtro, configurações) substituindo os botões retangulares maiores de desktop.
+- Busca expande sob demanda ao tocar o ícone, com foco automático.
+- Categoria, área e prioridade migraram para um painel expansível sob o ícone de
+  filtro, com indicador visual (bolinha) quando algum filtro está ativo — confirmado
+  com teste real.
+- Estatísticas viraram uma faixa fina de 4 colunas, não mais caixas grandes.
+- Configurações continua abrindo o mesmo drawer já existente, sem alteração de
+  comportamento — só o botão de entrada mudou de estilo.
+- Tablet (768px+) e desktop permanecem exatamente como já estavam, sem alteração.
+
+Validado com prints reais nas larguras mobile (375px/414px) mostrando o header
+compacto, o estado de busca expandida, e o painel de filtro expandido.
+
+**Correção adicional (faixa de tablet, 768px–1023px):** o feedback do usuário
+identificou que a faixa de tablet tinha ficado sem o mesmo tratamento — continuava
+sendo o "desktop encolhido" mesmo depois da correção de mobile. Aplicada a mesma
+filosofia de densidade compacta, adaptada ao espaço extra do tablet (2 colunas de
+estatísticas em vez de faixa fina, controles cabendo em menos linhas). Essa correção
+introduziu uma regressão real que quebrou o carregamento da aplicação inteira
+(`ReferenceError: exportJSON is not defined`, interrompendo de forma síncrona o
+`DOMContentLoaded` antes de tarefas/config/board serem carregados) — diagnosticada via
+console do navegador antes de qualquer correção às cegas, e resolvida declarando a
+função ausente corretamente. Também corrigido, na mesma rodada, um problema de hover
+ausente em botões e cabeçalhos de coluna do accordion em mobile/tablet — causa raiz:
+os elementos novos criados para essas faixas nunca haviam sido incluídos nos seletores
+CSS de hover, que só cobriam os IDs originais de desktop. Ambas as correções
+confirmadas com teste visual real do usuário, não apenas leitura de código.
 
 ---
 

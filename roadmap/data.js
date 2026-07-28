@@ -1,4 +1,4 @@
-const ROADMAP_TASKS = [
+var ROADMAP_TASKS = [
   {
     "id": "erro-de-api-cors",
     "title": "Erro de CORS na API de Pagamento",

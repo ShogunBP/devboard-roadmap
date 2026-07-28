@@ -41,7 +41,14 @@ let state = {
   visualTheme: "default",
   hideCancelled: false,
   selectedTaskId: null,
-  serverPort: null // null quando config.json ainda não foi carregado
+  serverPort: null, // null quando config.json ainda não foi carregado
+  accordionState: {
+    backlog: true,       // "Em preparação" inicia ABERTA por padrão
+    approved: false,     // "Aprovado" inicia FECHADA por padrão
+    "in-progress": false,// "Em Progresso" inicia FECHADA por padrão
+    done: false,         // "Concluído" inicia FECHADA por padrão
+    cancelled: false     // "Cancelado" inicia FECHADA por padrão
+  }
 };
 
 let pollingIntervalId = null;
@@ -126,8 +133,19 @@ function updateHeader(name, desc, badge) {
   if (elDesc) elDesc.innerText = desc;
   if (elBadge) {
     elBadge.innerHTML = `<i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i> ${badge}`;
-    if (window.lucide) lucide.createIcons();
   }
+
+  const mobName = document.getElementById("mobile-project-name");
+  const mobBadgeText = document.getElementById("mobile-project-badge-text");
+  if (mobName) mobName.innerText = name;
+  if (mobBadgeText && badge) mobBadgeText.innerText = badge;
+
+  const tabName = document.getElementById("tablet-project-name");
+  const tabBadgeText = document.getElementById("tablet-project-badge-text");
+  if (tabName) tabName.innerText = name;
+  if (tabBadgeText && badge) tabBadgeText.innerText = badge;
+
+  if (window.lucide) lucide.createIcons();
 }
 
 async function saveProjectIdentity() {
@@ -178,6 +196,8 @@ function setStaticMode(isStatic) {
   isStaticMode = isStatic;
 
   const staticBadge = document.getElementById("static-mode-badge");
+  const mobStaticBadge = document.getElementById("mobile-static-mode-badge");
+
   if (staticBadge) {
     if (isStatic) {
       staticBadge.classList.remove("hidden");
@@ -185,6 +205,27 @@ function setStaticMode(isStatic) {
     } else {
       staticBadge.classList.add("hidden");
       staticBadge.classList.remove("inline-flex");
+    }
+  }
+
+  if (mobStaticBadge) {
+    if (isStatic) {
+      mobStaticBadge.classList.remove("hidden");
+      mobStaticBadge.classList.add("inline-flex");
+    } else {
+      mobStaticBadge.classList.add("hidden");
+      mobStaticBadge.classList.remove("inline-flex");
+    }
+  }
+
+  const tabStaticBadge = document.getElementById("tablet-static-mode-badge");
+  if (tabStaticBadge) {
+    if (isStatic) {
+      tabStaticBadge.classList.remove("hidden");
+      tabStaticBadge.classList.add("inline-flex");
+    } else {
+      tabStaticBadge.classList.add("hidden");
+      tabStaticBadge.classList.remove("inline-flex");
     }
   }
 
@@ -306,6 +347,7 @@ function renderApp() {
   const filteredTasks = getFilteredTasks();
   renderStats(filteredTasks);
   renderPriorityFilters();
+  updateViewButtons();
 
   if (state.view === "kanban") {
     document.getElementById("view-kanban").classList.remove("hidden");
@@ -368,12 +410,43 @@ function renderStats(filteredTasks) {
   const progress = tasks.filter(t => t.status === "in-progress").length;
   const avg = total > 0 ? Math.round(tasks.reduce((s, t) => s + t.progress, 0) / total) : 0;
 
-  document.getElementById("stats-container").innerHTML = `
-    ${createStatCard("Tarefas", total)}
-    ${createStatCard("Concluídas", done, "done")}
-    ${createStatCard("Em execução", progress, "in-progress")}
-    ${createStatCard("Progresso médio", `${avg}%`, "primary")}
-  `;
+  const statsContainer = document.getElementById("stats-container");
+  if (statsContainer) {
+    statsContainer.innerHTML = `
+      ${createStatCard("Tarefas", total)}
+      ${createStatCard("Concluídas", done, "done")}
+      ${createStatCard("Em execução", progress, "in-progress")}
+      ${createStatCard("Progresso médio", `${avg}%`, "primary")}
+    `;
+  }
+
+  // Mobile stats summary & strip
+  const mobSummary = document.getElementById("mobile-stats-summary");
+  if (mobSummary) {
+    mobSummary.textContent = `${total} tarefas · ${avg}% concluído`;
+  }
+  const mobTotal = document.getElementById("mobile-stat-total");
+  if (mobTotal) mobTotal.textContent = total;
+  const mobDone = document.getElementById("mobile-stat-done");
+  if (mobDone) mobDone.textContent = done;
+  const mobProgress = document.getElementById("mobile-stat-progress");
+  if (mobProgress) mobProgress.textContent = progress;
+  const mobAvg = document.getElementById("mobile-stat-avg");
+  if (mobAvg) mobAvg.textContent = `${avg}%`;
+
+  // Tablet stats summary & strip
+  const tabSummary = document.getElementById("tablet-stats-summary");
+  if (tabSummary) {
+    tabSummary.textContent = `${total} tarefas · ${avg}% concluído`;
+  }
+  const tabTotal = document.getElementById("tablet-stat-total");
+  if (tabTotal) tabTotal.textContent = total;
+  const tabDone = document.getElementById("tablet-stat-done");
+  if (tabDone) tabDone.textContent = done;
+  const tabProgress = document.getElementById("tablet-stat-progress");
+  if (tabProgress) tabProgress.textContent = progress;
+  const tabAvg = document.getElementById("tablet-stat-avg");
+  if (tabAvg) tabAvg.textContent = `${avg}%`;
 }
 
 function createStatCard(label, value, tone) {
@@ -396,47 +469,74 @@ function renderPriorityFilters() {
     { id: "baixa", label: "Baixa" }
   ];
 
-  document.getElementById("priority-filters").innerHTML = filters.map(f => `
+  const html = filters.map(f => `
     <button
       onclick="setPriorityFilter('${f.id}')"
-      class="rounded-full border px-3 py-1 text-xs transition-all duration-150 cursor-pointer ${state.priorityFilter === f.id
+      class="rounded-full border px-2.5 py-0.5 text-xs transition-all duration-150 cursor-pointer ${state.priorityFilter === f.id
       ? 'border-primary bg-primary text-primary-foreground shadow-sm font-medium'
       : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/40'
     }"
     >${f.label}</button>
   `).join('');
+
+  const deskContainer = document.getElementById("priority-filters");
+  if (deskContainer) deskContainer.innerHTML = html;
+
+  const mobContainer = document.getElementById("mobile-priority-filters");
+  if (mobContainer) mobContainer.innerHTML = html;
+
+  const tabContainer = document.getElementById("tablet-priority-filters");
+  if (tabContainer) tabContainer.innerHTML = html;
+}
+
+function toggleColumnAccordion(colId) {
+  if (!state.accordionState) {
+    state.accordionState = {};
+  }
+  state.accordionState[colId] = !state.accordionState[colId];
+  renderApp();
 }
 
 function renderKanban(filteredTasks) {
   const container = document.getElementById("view-kanban");
 
   if (state.hideCancelled) {
-    container.className = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+    container.className = "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-4";
   } else {
-    container.className = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5";
+    container.className = "grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-5";
   }
 
   container.innerHTML = COLUMNS.map(col => {
     if (col.id === "cancelled" && state.hideCancelled) return '';
     const colTasks = filteredTasks.filter(t => col.statuses.includes(t.status));
+    const isOpen = state.accordionState && state.accordionState[col.id] !== undefined ? state.accordionState[col.id] : (col.id === "backlog");
+
     return `
       <section
         data-col-id="${col.id}"
         class="kanban-col rounded-xl border bg-card/60 p-3 transition border-border"
       >
-        <header class="mb-3 flex items-center justify-between px-1">
+        <header
+          onclick="toggleColumnAccordion('${col.id}')"
+          class="accordion-header flex items-center justify-between p-2 rounded-lg transition-all duration-150 select-none cursor-pointer lg:cursor-default lg:pointer-events-none lg:p-0 lg:bg-transparent lg:border-transparent lg:hover:bg-transparent ${isOpen ? 'mb-2' : 'mb-0 lg:mb-3'}"
+        >
           <div class="flex items-center gap-2">
             <span class="h-2.5 w-2.5 rounded-full" style="background: var(--status-${col.id})"></span>
             <h2 class="text-sm font-semibold">${col.title}</h2>
-            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 h-5 px-1.5 text-[10px]">
+            <span class="inline-flex items-center rounded-md border border-transparent bg-secondary text-secondary-foreground h-5 px-1.5 text-[10px] font-semibold">
               ${colTasks.length}
             </span>
           </div>
+          <div class="block lg:hidden text-muted-foreground p-1 hover:text-foreground">
+            <i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}" class="h-4 w-4"></i>
+          </div>
         </header>
-        <p class="mb-3 px-1 text-[11px] text-muted-foreground">${col.hint}</p>
-        <div class="flex flex-col gap-2 min-h-[80px]">
-          ${colTasks.map(t => renderTaskCard(t)).join('')}
-          ${colTasks.length === 0 ? '<div class="rounded-lg border border-dashed border-border/70 py-6 text-center text-xs text-muted-foreground">Solte tarefas aqui</div>' : ''}
+        <div class="${isOpen ? 'block' : 'hidden lg:block'} transition-all duration-200">
+          <p class="mb-3 px-1 text-[11px] text-muted-foreground">${col.hint}</p>
+          <div class="flex flex-col gap-2 min-h-[80px]">
+            ${colTasks.map(t => renderTaskCard(t)).join('')}
+            ${colTasks.length === 0 ? '<div class="rounded-lg border border-dashed border-border/70 py-6 text-center text-xs text-muted-foreground">Solte tarefas aqui</div>' : ''}
+          </div>
         </div>
       </section>
     `;
@@ -945,7 +1045,83 @@ window.switchTab = function(tabName) {
 
 window.setPriorityFilter = function (p) {
   state.priorityFilter = p;
+  updateMobileFilterDot();
   renderApp();
+}
+
+function updateViewButtons() {
+  const isKanban = state.view === "kanban";
+  // Desktop
+  const btnKanban = document.getElementById("btn-view-kanban");
+  const btnRoadmap = document.getElementById("btn-view-roadmap");
+  if (btnKanban && btnRoadmap) {
+    if (isKanban) {
+      btnKanban.className = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow cursor-pointer active:scale-95";
+      btnRoadmap.className = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 hover:bg-muted hover:text-foreground h-8 px-3 gap-1.5 cursor-pointer active:scale-95";
+    } else {
+      btnRoadmap.className = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow cursor-pointer active:scale-95";
+      btnKanban.className = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 hover:bg-muted hover:text-foreground h-8 px-3 gap-1.5 cursor-pointer active:scale-95";
+    }
+  }
+  // Mobile
+  const mBtnKanban = document.getElementById("btn-mobile-view-kanban");
+  const mBtnRoadmap = document.getElementById("btn-mobile-view-roadmap");
+  if (mBtnKanban && mBtnRoadmap) {
+    if (isKanban) {
+      mBtnKanban.className = "flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 bg-primary text-primary-foreground shadow cursor-pointer active:scale-95 transition-all duration-150";
+      mBtnRoadmap.className = "flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 hover:bg-muted hover:text-foreground cursor-pointer active:scale-95 transition-all duration-150";
+    } else {
+      mBtnRoadmap.className = "flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 bg-primary text-primary-foreground shadow cursor-pointer active:scale-95 transition-all duration-150";
+      mBtnKanban.className = "flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 hover:bg-muted hover:text-foreground cursor-pointer active:scale-95 transition-all duration-150";
+    }
+  }
+  // Tablet
+  const tBtnKanban = document.getElementById("btn-tablet-view-kanban");
+  const tBtnRoadmap = document.getElementById("btn-tablet-view-roadmap");
+  if (tBtnKanban && tBtnRoadmap) {
+    if (isKanban) {
+      tBtnKanban.className = "inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 bg-primary text-primary-foreground shadow cursor-pointer active:scale-95 transition-all duration-150";
+      tBtnRoadmap.className = "inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 hover:bg-muted hover:text-foreground cursor-pointer active:scale-95 transition-all duration-150";
+    } else {
+      tBtnRoadmap.className = "inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 bg-primary text-primary-foreground shadow cursor-pointer active:scale-95 transition-all duration-150";
+      tBtnKanban.className = "inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 hover:bg-muted hover:text-foreground cursor-pointer active:scale-95 transition-all duration-150";
+    }
+  }
+}
+
+function setView(view) {
+  state.view = view;
+  updateViewButtons();
+  renderApp();
+}
+
+function updateMobileFilterDot() {
+  const dot = document.getElementById("mobile-filter-dot");
+  if (!dot) return;
+  const isActive = state.categoryFilter !== "all" || state.areaFilter !== "all" || state.priorityFilter !== "all";
+  if (isActive) {
+    dot.classList.remove("hidden");
+  } else {
+    dot.classList.add("hidden");
+  }
+}
+
+function toggleMobileSearch() {
+  const searchBar = document.getElementById("mobile-search-bar");
+  if (searchBar) {
+    searchBar.classList.toggle("hidden");
+    if (!searchBar.classList.contains("hidden")) {
+      const input = document.getElementById("input-mobile-search");
+      if (input) input.focus();
+    }
+  }
+}
+
+function toggleMobileFilterPanel() {
+  const panel = document.getElementById("mobile-filter-panel");
+  if (panel) {
+    panel.classList.toggle("hidden");
+  }
 }
 
 // --- EVENT LISTENERS ---
@@ -1010,21 +1186,123 @@ function setupEventListeners() {
     btnSaveIdentity.addEventListener("click", saveProjectIdentity);
   }
 
-  document.getElementById("input-search").addEventListener("input", (e) => {
-    state.query = e.target.value;
-    renderApp();
-  });
+  const inputDeskSearch = document.getElementById("input-search");
+  if (inputDeskSearch) {
+    inputDeskSearch.addEventListener("input", (e) => {
+      state.query = e.target.value;
+      const mobInput = document.getElementById("input-mobile-search");
+      if (mobInput) mobInput.value = e.target.value;
+      const tabInput = document.getElementById("input-tablet-search");
+      if (tabInput) tabInput.value = e.target.value;
+      renderApp();
+    });
+  }
+
+  const inputMobSearch = document.getElementById("input-mobile-search");
+  if (inputMobSearch) {
+    inputMobSearch.addEventListener("input", (e) => {
+      state.query = e.target.value;
+      if (inputDeskSearch) inputDeskSearch.value = e.target.value;
+      const tabInput = document.getElementById("input-tablet-search");
+      if (tabInput) tabInput.value = e.target.value;
+      renderApp();
+    });
+  }
+
+  const inputTabSearch = document.getElementById("input-tablet-search");
+  if (inputTabSearch) {
+    inputTabSearch.addEventListener("input", (e) => {
+      state.query = e.target.value;
+      if (inputDeskSearch) inputDeskSearch.value = e.target.value;
+      const mobInput = document.getElementById("input-mobile-search");
+      if (mobInput) mobInput.value = e.target.value;
+      renderApp();
+    });
+  }
 
   // Filtros de Categoria e Área
-  document.getElementById("select-category").addEventListener("change", (e) => {
-    state.categoryFilter = e.target.value;
-    renderApp();
-  });
+  const selectDeskCat = document.getElementById("select-category");
+  if (selectDeskCat) {
+    selectDeskCat.addEventListener("change", (e) => {
+      state.categoryFilter = e.target.value;
+      const mobCat = document.getElementById("select-mobile-category");
+      if (mobCat) mobCat.value = e.target.value;
+      const tabCat = document.getElementById("select-tablet-category");
+      if (tabCat) tabCat.value = e.target.value;
+      updateMobileFilterDot();
+      renderApp();
+    });
+  }
 
-  document.getElementById("select-area").addEventListener("change", (e) => {
-    state.areaFilter = e.target.value;
-    renderApp();
-  });
+  const selectMobCat = document.getElementById("select-mobile-category");
+  if (selectMobCat) {
+    selectMobCat.addEventListener("change", (e) => {
+      state.categoryFilter = e.target.value;
+      if (selectDeskCat) selectDeskCat.value = e.target.value;
+      const tabCat = document.getElementById("select-tablet-category");
+      if (tabCat) tabCat.value = e.target.value;
+      updateMobileFilterDot();
+      renderApp();
+    });
+  }
+
+  const selectTabCat = document.getElementById("select-tablet-category");
+  if (selectTabCat) {
+    selectTabCat.addEventListener("change", (e) => {
+      state.categoryFilter = e.target.value;
+      if (selectDeskCat) selectDeskCat.value = e.target.value;
+      const mobCat = document.getElementById("select-mobile-category");
+      if (mobCat) mobCat.value = e.target.value;
+      updateMobileFilterDot();
+      renderApp();
+    });
+  }
+
+  const selectDeskArea = document.getElementById("select-area");
+  if (selectDeskArea) {
+    selectDeskArea.addEventListener("change", (e) => {
+      state.areaFilter = e.target.value;
+      const mobArea = document.getElementById("select-mobile-area");
+      if (mobArea) mobArea.value = e.target.value;
+      const tabArea = document.getElementById("select-tablet-area");
+      if (tabArea) tabArea.value = e.target.value;
+      updateMobileFilterDot();
+      renderApp();
+    });
+  }
+
+  const selectMobArea = document.getElementById("select-mobile-area");
+  if (selectMobArea) {
+    selectMobArea.addEventListener("change", (e) => {
+      state.areaFilter = e.target.value;
+      if (selectDeskArea) selectDeskArea.value = e.target.value;
+      const tabArea = document.getElementById("select-tablet-area");
+      if (tabArea) tabArea.value = e.target.value;
+      updateMobileFilterDot();
+      renderApp();
+    });
+  }
+
+  const selectTabArea = document.getElementById("select-tablet-area");
+  if (selectTabArea) {
+    selectTabArea.addEventListener("change", (e) => {
+      state.areaFilter = e.target.value;
+      if (selectDeskArea) selectDeskArea.value = e.target.value;
+      const mobArea = document.getElementById("select-mobile-area");
+      if (mobArea) mobArea.value = e.target.value;
+      updateMobileFilterDot();
+      renderApp();
+    });
+  }
+
+  // Tablet Import JSON
+  const btnTabImport = document.getElementById("btn-tablet-import-json");
+  if (btnTabImport) {
+    btnTabImport.addEventListener("click", () => {
+      const fileInput = document.getElementById("input-file-json");
+      if (fileInput) fileInput.click();
+    });
+  }
 
   document.getElementById("btn-close-modal").addEventListener("click", closeModal);
   document.getElementById("task-modal-backdrop").addEventListener("click", closeModal);
@@ -1075,7 +1353,7 @@ function setupEventListeners() {
   });
 
   // Exportar JSON
-  document.getElementById("btn-export-json").addEventListener("click", () => {
+  const exportJSON = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tasks, null, 2));
     const a = document.createElement("a");
     a.href = dataStr;
@@ -1083,7 +1361,17 @@ function setupEventListeners() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  });
+  };
+
+  const btnDeskExport = document.getElementById("btn-export-json");
+  if (btnDeskExport) {
+    btnDeskExport.addEventListener("click", exportJSON);
+  }
+
+  const btnTabExport = document.getElementById("btn-tablet-export-json");
+  if (btnTabExport) {
+    btnTabExport.addEventListener("click", exportJSON);
+  }
 
   // Importar JSON (Apenas visualização em sessão)
   const fileInput = document.getElementById("input-file-json");

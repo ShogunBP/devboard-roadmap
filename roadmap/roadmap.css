@@ -104,10 +104,16 @@ button, select, [role="button"], .cursor-pointer {
   cursor: pointer !important;
 }
 
-/* Icon Buttons (Export, Import, Settings, Close Modal, Close Drawer, Info) */
+/* Icon Buttons (Export, Import, Settings, Close Modal, Close Drawer, Info, Mobile/Tablet Buttons) */
 #btn-export-json,
 #btn-import-json,
 #btn-open-settings,
+#btn-mobile-search,
+#btn-mobile-filter,
+#btn-mobile-settings,
+#btn-tablet-export-json,
+#btn-tablet-import-json,
+#btn-tablet-settings,
 #btn-close-settings,
 #btn-close-modal,
 #btn-info-modal {
@@ -117,6 +123,12 @@ button, select, [role="button"], .cursor-pointer {
 #btn-export-json:hover,
 #btn-import-json:hover,
 #btn-open-settings:hover,
+#btn-mobile-search:hover,
+#btn-mobile-filter:hover,
+#btn-mobile-settings:hover,
+#btn-tablet-export-json:hover,
+#btn-tablet-import-json:hover,
+#btn-tablet-settings:hover,
 #btn-close-settings:hover,
 #btn-close-modal:hover,
 #btn-info-modal:hover {
@@ -127,17 +139,55 @@ button, select, [role="button"], .cursor-pointer {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+#btn-export-json:active,
+#btn-import-json:active,
+#btn-open-settings:active,
+#btn-mobile-search:active,
+#btn-mobile-filter:active,
+#btn-mobile-settings:active,
+#btn-tablet-export-json:active,
+#btn-tablet-import-json:active,
+#btn-tablet-settings:active,
+#btn-close-settings:active,
+#btn-close-modal:active,
+#btn-info-modal:active {
+  transform: scale(0.95);
+  box-shadow: none;
+}
+
 /* Selects & Inputs Hover */
 #select-category:hover,
 #select-area:hover,
+#select-mobile-category:hover,
+#select-mobile-area:hover,
+#select-tablet-category:hover,
+#select-tablet-area:hover,
 #select-visual-theme:hover,
 #select-polling-interval:hover,
 #input-search:hover,
+#input-mobile-search:hover,
+#input-tablet-search:hover,
 #input-project-name:hover,
 #input-project-description:hover,
 #input-project-badge:hover {
   border-color: var(--primary) !important;
   transition: border-color 0.15s ease-in-out;
+}
+
+/* Accordion Header Hover & Touch Feedback (Mobile/Tablet < 1024px) */
+.accordion-header {
+  transition: all 0.15s ease-in-out;
+}
+
+@media (max-width: 1023px) {
+  .accordion-header:hover {
+    background-color: var(--accent) !important;
+    border-color: var(--primary) !important;
+  }
+  .accordion-header:active {
+    transform: scale(0.99);
+    opacity: 0.9;
+  }
 }
 
 /* Toggle Buttons Hover (Dark mode toggle, Hide cancelled toggle) */

@@ -218,7 +218,7 @@ function generateData() {
 
   // Write data.js
   const jsPath = path.join(projectRoot, 'roadmap', 'data.js');
-  const jsContent = `const ROADMAP_TASKS = ${JSON.stringify(tasks, null, 2)};\n`;
+  const jsContent = `var ROADMAP_TASKS = ${JSON.stringify(tasks, null, 2)};\n`;
   fs.writeFileSync(jsPath, jsContent, 'utf8');
 }
 
