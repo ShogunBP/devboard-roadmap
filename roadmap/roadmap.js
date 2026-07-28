@@ -181,11 +181,11 @@ async function saveProjectIdentity() {
         if (window.lucide) lucide.createIcons();
       }, 2000);
     } else {
-      alert("Erro ao salvar identidade.");
+      alert("Não foi possível salvar — esta é uma versão de demonstração (modo estático sem servidor).");
     }
   } catch (err) {
     console.error(err);
-    alert("Erro de conexão ao salvar identidade.");
+    alert("Não foi possível salvar — esta é uma versão de demonstração (modo estático sem servidor).");
   }
 }
 
