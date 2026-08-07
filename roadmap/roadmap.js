@@ -716,8 +716,8 @@ function renderRoadmap(filteredTasks) {
     else labelHint = "Sem data registrada";
 
     return `
-      <div class="flex-1 min-w-[280px]">
-        <h3 class="mb-4 text-sm font-semibold flex items-center gap-2">
+      <section class="roadmap-col flex-1 min-w-[280px] rounded-xl border bg-card/60 p-3 transition border-border">
+        <h3 class="mb-3 text-sm font-semibold flex items-center gap-2 px-1">
           ${q}
           <span class="text-xs font-normal text-muted-foreground">
             ${labelHint}
@@ -762,7 +762,7 @@ function renderRoadmap(filteredTasks) {
     }).join('')}
           </div>
         </div>
-      </div>
+      </section>
     `;
   }).join('');
 }
