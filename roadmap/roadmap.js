@@ -736,7 +736,7 @@ function renderRoadmap(filteredTasks) {
                 <div class="group relative py-1" onclick="openModal('${t.id}')">
                   <div class="absolute left-[-21px] top-4 h-2.5 w-2.5 rounded-full border-2 border-background ring-1 ring-border/50 transition-colors" style="background: var(--status-${t.status})"></div>
                   
-                  <div class="cursor-pointer rounded-lg border border-transparent bg-card/40 p-3 transition hover:border-border hover:bg-card hover:shadow-sm">
+                  <div class="cursor-pointer rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-card)] transition [transition:var(--transition-smooth)] hover:-translate-y-0.5 hover:border-primary/50">
                     <div class="mb-1.5 flex items-start justify-between gap-2">
                       <h4 class="text-sm font-medium leading-snug group-hover:text-primary">${t.title}</h4>
                       <div class="flex items-center gap-2 shrink-0">
