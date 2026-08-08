@@ -75,21 +75,17 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
 
-### Tela de boas-vindas (checklist de setup) (concluída)
+### Tela de boas-vindas e modo de cor de 3 estados (concluída)
 
-Adicionada uma tela de boas-vindas (`#welcome-modal`) exibida no primeiro acesso de um novo navegador/máquina, contendo um checklist informativo de setup em 4 passos:
-1. **Estrutura de Documentos:** Organização da pasta `/docs` seguindo os diretórios de status (`01-preparation`, `02-approved`, etc.).
-2. **Servidor Local & Live Refresh:** Execução do script `node roadmap/roadmap-server.js` para sincronização em tempo real (destacando o funcionamento em Modo Estático como fallback).
-3. **Padronização dos READMEs:** Apontamento para o guia `docs/PADRONIZATION.md` e sintaxe de metadados.
-4. **Personalização:** Indicação da engrenagem de Configurações para definir nome do projeto, tema e preferências.
+- **Modal de boas-vindas reformulado (`#welcome-modal`):** Apresentação concisa do produto com hero layout (ícone `layout-grid`, slogan *"Kanban & Roadmap vivo direto dos seus docs"*, parágrafo explicativo) e guia de 3 passos simples ("Aponte para `/docs`", "Rode o servidor (opcional)", "Personalize a identidade").
+  - Botão principal: **"Entendido, vamos lá!"** (`#btn-welcome-confirm` / `#btn-welcome-dismiss`) — grava `devboard-welcome-seen='true'` e oculta permanentemente.
+  - Botão secundário: **"Ver depois"** (`#btn-welcome-later`) — oculta apenas na sessão atual.
+- **Modo de cor com 3 estados ("Sistema", "Escuro", "Claro"):**
+  - O seletor no painel de configurações alterna no ciclo: `Sistema` (`monitor`) → `Escuro` (`moon`) → `Claro` (`sun`) → `Sistema`.
+  - O estado **padrão** em novos acessos passa a ser **"Sistema"** (`system`), que consulta o `prefers-color-scheme` do SO via `matchMedia`.
+  - Inclui script inline anti-FOUC no `<head>` de `roadmap.html` para aplicar a preferência sem salto visual e listener em tempo real para mudanças de preferência do SO.
 
-**Persistência e Comportamento:**
-- Persistência 100% via `localStorage` (chave `devboard-welcome-seen`).
-- Ao clicar no botão principal "Não mostrar novamente" (`#btn-welcome-dismiss`), a chave é gravada como `'true'` e o modal não reaparece mais naquele navegador.
-- Ao clicar em "Fechar por agora" (`#btn-welcome-later`), o modal fecha temporariamente sem gravar no `localStorage`, reaparecendo na próxima recarga de página.
-- 100% integrado ao sistema de temas visuais (Padrão, Terminal, Clean, Ficha de Arquivo) e aos modos Claro e Escuro, herdando as variáveis de cores semânticas (`var(--background)`, `var(--card)`, `var(--border)`, `var(--foreground)`, `var(--primary)`).
-
-Validado com o agente de browser em aba anônima/sessão limpa, testando dismiss persistente, fechamento temporário e consistência nos 4 temas visuais em ambos os modos de cor.
+Validado com o agente de browser testando a alternância dos 3 estados do botão de tema, persistência após recarga da página e renderização do modal reformulado em múltiplos temas visuais.
 
 ### Sistema de temas visuais (concluído)
 

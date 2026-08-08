@@ -35,9 +35,18 @@
     (function() {
       const theme = localStorage.getItem('visualTheme') || 'default';
       const storedThemeMode = localStorage.getItem('theme');
-      const dark = storedThemeMode === 'dark' || (!storedThemeMode);
       document.documentElement.dataset.theme = theme;
-      if (dark) {
+
+      let isDark;
+      if (storedThemeMode === 'dark') {
+        isDark = true;
+      } else if (storedThemeMode === 'light') {
+        isDark = false;
+      } else {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+
+      if (isDark) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
@@ -463,85 +472,72 @@
     </div>
   </div>
 
-  <!-- Modal de Boas-Vindas (Checklist de Setup) -->
+  <!-- Modal de Boas-Vindas (Apresentação e Setup) -->
   <div id="welcome-modal" class="fixed inset-0 z-50 hidden">
     <!-- Fundo Escuro com Backdrop Blur -->
     <div class="fixed inset-0 bg-background/80 backdrop-blur-sm modal-overlay" id="welcome-modal-backdrop"></div>
 
     <!-- Painel do Modal -->
-    <div class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content overflow-hidden">
+    <div class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-md sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content overflow-hidden">
       
-      <!-- Header do Modal -->
-      <div class="flex items-center justify-between border-b border-border/50 px-6 py-4 bg-muted/20">
-        <div class="flex items-center gap-2.5">
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
-            <i data-lucide="sparkles" class="h-5 w-5"></i>
-          </div>
-          <div>
-            <h2 class="text-base font-bold leading-tight">Bem-vindo ao Devboard!</h2>
-            <p class="text-xs text-muted-foreground">Checklist rápido de inicialização do projeto</p>
-          </div>
-        </div>
-        <button id="btn-close-welcome" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
+      <!-- Hero/Header do Modal -->
+      <div class="flex flex-col items-center text-center px-6 pt-6 pb-4 bg-muted/20 border-b border-border/50 relative">
+        <button id="btn-close-welcome" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
           <i data-lucide="x" class="h-4 w-4"></i>
         </button>
+
+        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 mb-3 shadow-sm">
+          <i data-lucide="layout-grid" class="h-6 w-6"></i>
+        </div>
+        <h2 class="text-xl font-bold leading-tight tracking-tight text-foreground">Devboard</h2>
+        <p class="text-xs font-semibold text-primary mt-0.5">Kanban & Roadmap vivo direto dos seus docs</p>
+
+        <p class="text-xs text-muted-foreground mt-2.5 leading-relaxed max-w-xs">
+          Seu planejamento mora na documentação. O Devboard lê essa documentação e transforma em um board interativo — sem banco de dados, sem conta.
+        </p>
       </div>
 
-      <!-- Conteúdo do Checklist -->
-      <div class="px-6 py-5 space-y-3.5">
-        <p class="text-xs leading-relaxed text-muted-foreground">
-          O Devboard mapeia e sincroniza a documentação técnica da sua pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> em um quadro interativo. Siga os passos abaixo para configurar seu repositório:
-        </p>
+      <!-- Conteúdo dos 3 Passos -->
+      <div class="px-6 py-4 space-y-3">
+        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Como funciona em 3 passos:</h3>
 
-        <div class="space-y-3 pt-1">
-          <!-- Item 1 -->
-          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+        <div class="space-y-2.5">
+          <!-- Passo 1 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-2.5">
             <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
-              <i data-lucide="folder-tree" class="h-4 w-4"></i>
+              <i data-lucide="folder-open" class="h-4 w-4"></i>
             </div>
             <div class="space-y-0.5">
-              <h3 class="text-xs font-semibold">1. Estrutura de Documentos</h3>
+              <h4 class="text-xs font-semibold text-foreground">Aponte para <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">/docs</code></h4>
               <p class="text-[11px] leading-normal text-muted-foreground">
-                Crie ou defina a pasta <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">/docs</code> seguindo os diretórios de status (ex: <code class="font-mono text-[10px]">01-preparation</code>, <code class="font-mono text-[10px]">02-approved</code>).
+                Sua pasta <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px]">/docs</code> já tem a estrutura? Pronto. Se não, copie o template de exemplo de <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px]">docs/PADRONIZATION.md</code>.
               </p>
             </div>
           </div>
 
-          <!-- Item 2 -->
-          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+          <!-- Passo 2 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-2.5">
             <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
               <i data-lucide="terminal" class="h-4 w-4"></i>
             </div>
             <div class="space-y-0.5">
-              <h3 class="text-xs font-semibold">2. Servidor Local & Live Refresh</h3>
+              <h4 class="text-xs font-semibold text-foreground">Rode o servidor (opcional)</h4>
               <p class="text-[11px] leading-normal text-muted-foreground">
-                Execute <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">node roadmap/roadmap-server.js</code> para atualização automática. Sem o servidor, o board opera em Modo Estático.
+                <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">node roadmap/roadmap-server.js</code><br>
+                Sem ele, o board funciona em modo estático. Com ele, atualiza em tempo real.
               </p>
             </div>
           </div>
 
-          <!-- Item 3 -->
-          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+          <!-- Passo 3 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-2.5">
             <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
-              <i data-lucide="file-code" class="h-4 w-4"></i>
+              <i data-lucide="settings" class="h-4 w-4"></i>
             </div>
             <div class="space-y-0.5">
-              <h3 class="text-xs font-semibold">3. Padronização dos READMEs</h3>
+              <h4 class="text-xs font-semibold text-foreground">Personalize a identidade</h4>
               <p class="text-[11px] leading-normal text-muted-foreground">
-                Consulte <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">docs/PADRONIZATION.md</code> para o formato de metadados e tags suportadas.
-              </p>
-            </div>
-          </div>
-
-          <!-- Item 4 -->
-          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
-            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
-              <i data-lucide="sliders" class="h-4 w-4"></i>
-            </div>
-            <div class="space-y-0.5">
-              <h3 class="text-xs font-semibold">4. Personalização</h3>
-              <p class="text-[11px] leading-normal text-muted-foreground">
-                Acesse o painel de Configurações no canto superior direito para alterar nome do projeto, tema e preferências.
+                Nome do projeto, descrição e tema visual ficam no painel de Configurações (ícone de engrenagem, canto superior direito).
               </p>
             </div>
           </div>
@@ -551,11 +547,11 @@
       <!-- Footer do Modal (Ações) -->
       <div class="flex items-center justify-end gap-2 border-t border-border/50 bg-muted/20 px-6 py-3.5">
         <button id="btn-welcome-later" class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer">
-          Fechar por agora
+          Ver depois
         </button>
-        <button id="btn-welcome-dismiss" class="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
-          <i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i>
-          Não mostrar novamente
+        <button id="btn-welcome-confirm" class="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
+          <i data-lucide="check" class="h-3.5 w-3.5"></i>
+          Entendido, vamos lá!
         </button>
       </div>
     </div>
@@ -597,13 +593,14 @@
             
             <div class="flex items-center justify-between py-1.5 border-t border-border/30 mt-3">
               <div>
-                <label class="text-xs font-medium text-foreground block">Modo Escuro</label>
-                <span class="text-[11px] text-muted-foreground">Cores escuras ou claras</span>
+                <label class="text-xs font-medium text-foreground block">Modo de Cor</label>
+                <span class="text-[11px] text-muted-foreground">Sistema, Escuro ou Claro</span>
               </div>
-              <button id="btn-theme-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer" aria-label="Alternar tema">
-                <i data-lucide="sun" class="h-4 w-4" id="icon-theme-sun"></i>
+              <button id="btn-theme-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer" aria-label="Alternar modo de cor">
+                <i data-lucide="sun" class="h-4 w-4 hidden" id="icon-theme-sun"></i>
                 <i data-lucide="moon" class="h-4 w-4 hidden" id="icon-theme-moon"></i>
-                <span id="text-theme">Claro</span>
+                <i data-lucide="monitor" class="h-4 w-4" id="icon-theme-system"></i>
+                <span id="text-theme">Sistema</span>
               </button>
             </div>
           </div>

@@ -1225,8 +1225,9 @@ function setupEventListeners() {
   const btnTheme = document.getElementById("btn-theme-toggle");
   if (btnTheme) {
     btnTheme.addEventListener("click", () => {
-      state.dark = !state.dark;
-      localStorage.setItem("theme", state.dark ? "dark" : "light");
+      const cycle = { system: "dark", dark: "light", light: "system" };
+      state.themeMode = cycle[state.themeMode] || "dark";
+      localStorage.setItem("theme", state.themeMode);
       applyTheme();
     });
   }
@@ -1417,7 +1418,7 @@ function setupEventListeners() {
     });
   }
 
-  // Modal de Boas-Vindas (Checklist de Setup)
+  // Modal de Boas-Vindas (Apresentação e Setup)
   const btnCloseWelcome = document.getElementById("btn-close-welcome");
   if (btnCloseWelcome) {
     btnCloseWelcome.addEventListener("click", () => closeWelcomeModal(false));
@@ -1425,6 +1426,10 @@ function setupEventListeners() {
   const btnWelcomeLater = document.getElementById("btn-welcome-later");
   if (btnWelcomeLater) {
     btnWelcomeLater.addEventListener("click", () => closeWelcomeModal(false));
+  }
+  const btnWelcomeConfirm = document.getElementById("btn-welcome-confirm");
+  if (btnWelcomeConfirm) {
+    btnWelcomeConfirm.addEventListener("click", () => closeWelcomeModal(true));
   }
   const btnWelcomeDismiss = document.getElementById("btn-welcome-dismiss");
   if (btnWelcomeDismiss) {
@@ -1573,11 +1578,10 @@ function updateViewButtons() {
   }
 }
 
-// --- CONTROLE DE TEMAS (Claro/Escuro e Tema Visual) ---
+// --- CONTROLE DE TEMAS (Sistema / Escuro / Claro e Tema Visual) ---
 function initTheme() {
   const storedThemeMode = localStorage.getItem("theme");
-  const isDark = storedThemeMode === "dark" || !storedThemeMode;
-  state.dark = isDark;
+  state.themeMode = storedThemeMode || "system";
   
   const savedVisualTheme = localStorage.getItem("visualTheme") || "default";
   state.visualTheme = savedVisualTheme;
@@ -1587,21 +1591,58 @@ function initTheme() {
   
   applyTheme();
   applyHideCancelledUI();
+
+  // Escutar alterações do SO em tempo real se estiver no modo 'system'
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (state.themeMode === "system") {
+        applyTheme();
+      }
+    });
+  }
 }
 
 function applyTheme() {
-  if (state.dark) {
+  let isDark;
+  if (state.themeMode === "dark") {
+    isDark = true;
+  } else if (state.themeMode === "light") {
+    isDark = false;
+  } else {
+    // 'system'
+    isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  state.dark = isDark;
+
+  if (isDark) {
     document.documentElement.classList.add("dark");
-    document.getElementById("icon-theme-moon").classList.remove("hidden");
-    document.getElementById("icon-theme-sun").classList.add("hidden");
-    document.getElementById("text-theme").textContent = "Escuro";
   } else {
     document.documentElement.classList.remove("dark");
-    document.getElementById("icon-theme-sun").classList.remove("hidden");
-    document.getElementById("icon-theme-moon").classList.add("hidden");
-    document.getElementById("text-theme").textContent = "Claro";
   }
-  
+
+  const iconSun = document.getElementById("icon-theme-sun");
+  const iconMoon = document.getElementById("icon-theme-moon");
+  const iconSystem = document.getElementById("icon-theme-system");
+  const textTheme = document.getElementById("text-theme");
+
+  if (iconSun && iconMoon && iconSystem && textTheme) {
+    iconSun.classList.add("hidden");
+    iconMoon.classList.add("hidden");
+    iconSystem.classList.add("hidden");
+
+    if (state.themeMode === "dark") {
+      iconMoon.classList.remove("hidden");
+      textTheme.textContent = "Escuro";
+    } else if (state.themeMode === "light") {
+      iconSun.classList.remove("hidden");
+      textTheme.textContent = "Claro";
+    } else {
+      iconSystem.classList.remove("hidden");
+      textTheme.textContent = "Sistema";
+    }
+  }
+
   document.documentElement.dataset.theme = state.visualTheme;
   const selectTheme = document.getElementById("select-visual-theme");
   if (selectTheme) selectTheme.value = state.visualTheme;
