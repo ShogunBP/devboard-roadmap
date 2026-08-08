@@ -67,12 +67,29 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 
 - [x] Testar abrir `roadmap.html` direto (`file://`) sem o server rodando — confirmar que funciona com o `data.js` estático como fallback
   - [x] Indicador visual discreto (badge "modo estático") quando o polling falhar/não houver servidor, em vez de só logar no console
+- [x] Tela de boas-vindas (checklist de setup) — modal interativo no primeiro acesso (ver detalhamento abaixo)
 - [x] Testar publicação em GitHub Pages (ou hospedagem estática equivalente) com um `data.js`/`data.json` já commitado — código preparado e publicado (ver detalhamento abaixo); ativação final do GitHub Pages nas configurações do repositório é passo manual do usuário, fora do escopo de agente
 - [x] Documentar no próprio projeto (`README.md` da raiz) como usar em outro projeto: copiar pasta, ajustar caminho relativo do `docs/`, rodar o server
 - [x] Revisar visualmente o design (cores, cards, modal) — sistema de temas visuais implementado e validado (ver detalhamento abaixo)
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Tela de boas-vindas (checklist de setup) (concluída)
+
+Adicionada uma tela de boas-vindas (`#welcome-modal`) exibida no primeiro acesso de um novo navegador/máquina, contendo um checklist informativo de setup em 4 passos:
+1. **Estrutura de Documentos:** Organização da pasta `/docs` seguindo os diretórios de status (`01-preparation`, `02-approved`, etc.).
+2. **Servidor Local & Live Refresh:** Execução do script `node roadmap/roadmap-server.js` para sincronização em tempo real (destacando o funcionamento em Modo Estático como fallback).
+3. **Padronização dos READMEs:** Apontamento para o guia `docs/PADRONIZATION.md` e sintaxe de metadados.
+4. **Personalização:** Indicação da engrenagem de Configurações para definir nome do projeto, tema e preferências.
+
+**Persistência e Comportamento:**
+- Persistência 100% via `localStorage` (chave `devboard-welcome-seen`).
+- Ao clicar no botão principal "Não mostrar novamente" (`#btn-welcome-dismiss`), a chave é gravada como `'true'` e o modal não reaparece mais naquele navegador.
+- Ao clicar em "Fechar por agora" (`#btn-welcome-later`), o modal fecha temporariamente sem gravar no `localStorage`, reaparecendo na próxima recarga de página.
+- 100% integrado ao sistema de temas visuais (Padrão, Terminal, Clean, Ficha de Arquivo) e aos modos Claro e Escuro, herdando as variáveis de cores semânticas (`var(--background)`, `var(--card)`, `var(--border)`, `var(--foreground)`, `var(--primary)`).
+
+Validado com o agente de browser em aba anônima/sessão limpa, testando dismiss persistente, fechamento temporário e consistência nos 4 temas visuais em ambos os modos de cor.
 
 ### Sistema de temas visuais (concluído)
 

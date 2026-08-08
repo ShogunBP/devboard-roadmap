@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProjectConfig();
   renderApp();
   startPolling();
+  checkWelcomeModal();
 });
 
 // --- INICIALIZAÇÃO DOS DADOS ---
@@ -1416,9 +1417,32 @@ function setupEventListeners() {
     });
   }
 
-  // Esc para fechar modal ou drawer
+  // Modal de Boas-Vindas (Checklist de Setup)
+  const btnCloseWelcome = document.getElementById("btn-close-welcome");
+  if (btnCloseWelcome) {
+    btnCloseWelcome.addEventListener("click", () => closeWelcomeModal(false));
+  }
+  const btnWelcomeLater = document.getElementById("btn-welcome-later");
+  if (btnWelcomeLater) {
+    btnWelcomeLater.addEventListener("click", () => closeWelcomeModal(false));
+  }
+  const btnWelcomeDismiss = document.getElementById("btn-welcome-dismiss");
+  if (btnWelcomeDismiss) {
+    btnWelcomeDismiss.addEventListener("click", () => closeWelcomeModal(true));
+  }
+  const welcomeBackdrop = document.getElementById("welcome-modal-backdrop");
+  if (welcomeBackdrop) {
+    welcomeBackdrop.addEventListener("click", () => closeWelcomeModal(false));
+  }
+
+  // Esc para fechar modal, drawer ou boas-vindas
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      const welcomeModal = document.getElementById("welcome-modal");
+      if (welcomeModal && !welcomeModal.classList.contains("hidden")) {
+        closeWelcomeModal(false);
+        return;
+      }
       const drawer = document.getElementById("settings-drawer");
       if (drawer && !drawer.classList.contains("hidden")) {
         closeSettings();
@@ -1598,5 +1622,31 @@ function applyHideCancelledUI() {
       iconOff.classList.remove("hidden");
       iconOn.classList.add("hidden");
     }
+  }
+}
+
+// --- MODAL DE BOAS-VINDAS (CHECKLIST DE SETUP) ---
+function checkWelcomeModal() {
+  const seen = localStorage.getItem("devboard-welcome-seen");
+  if (!seen) {
+    openWelcomeModal();
+  }
+}
+
+function openWelcomeModal() {
+  const modal = document.getElementById("welcome-modal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+function closeWelcomeModal(dontShowAgain = false) {
+  const modal = document.getElementById("welcome-modal");
+  if (modal) {
+    modal.classList.add("hidden");
+  }
+  if (dontShowAgain) {
+    localStorage.setItem("devboard-welcome-seen", "true");
   }
 }

@@ -116,6 +116,7 @@ button, select, [role="button"], .cursor-pointer {
 #btn-tablet-settings,
 #btn-close-settings,
 #btn-close-modal,
+#btn-close-welcome,
 #btn-info-modal {
   transition: all 0.15s ease-in-out !important;
 }
@@ -131,6 +132,7 @@ button, select, [role="button"], .cursor-pointer {
 #btn-tablet-settings:hover,
 #btn-close-settings:hover,
 #btn-close-modal:hover,
+#btn-close-welcome:hover,
 #btn-info-modal:hover {
   background-color: var(--accent) !important;
   color: var(--accent-foreground) !important;
@@ -150,6 +152,7 @@ button, select, [role="button"], .cursor-pointer {
 #btn-tablet-settings:active,
 #btn-close-settings:active,
 #btn-close-modal:active,
+#btn-close-welcome:active,
 #btn-info-modal:active {
   transform: scale(0.95);
   box-shadow: none;

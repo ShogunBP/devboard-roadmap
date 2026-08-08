@@ -463,6 +463,104 @@
     </div>
   </div>
 
+  <!-- Modal de Boas-Vindas (Checklist de Setup) -->
+  <div id="welcome-modal" class="fixed inset-0 z-50 hidden">
+    <!-- Fundo Escuro com Backdrop Blur -->
+    <div class="fixed inset-0 bg-background/80 backdrop-blur-sm modal-overlay" id="welcome-modal-backdrop"></div>
+
+    <!-- Painel do Modal -->
+    <div class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content overflow-hidden">
+      
+      <!-- Header do Modal -->
+      <div class="flex items-center justify-between border-b border-border/50 px-6 py-4 bg-muted/20">
+        <div class="flex items-center gap-2.5">
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+            <i data-lucide="sparkles" class="h-5 w-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold leading-tight">Bem-vindo ao Devboard!</h2>
+            <p class="text-xs text-muted-foreground">Checklist rápido de inicialização do projeto</p>
+          </div>
+        </div>
+        <button id="btn-close-welcome" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
+          <i data-lucide="x" class="h-4 w-4"></i>
+        </button>
+      </div>
+
+      <!-- Conteúdo do Checklist -->
+      <div class="px-6 py-5 space-y-3.5">
+        <p class="text-xs leading-relaxed text-muted-foreground">
+          O Devboard mapeia e sincroniza a documentação técnica da sua pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> em um quadro interativo. Siga os passos abaixo para configurar seu repositório:
+        </p>
+
+        <div class="space-y-3 pt-1">
+          <!-- Item 1 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
+              <i data-lucide="folder-tree" class="h-4 w-4"></i>
+            </div>
+            <div class="space-y-0.5">
+              <h3 class="text-xs font-semibold">1. Estrutura de Documentos</h3>
+              <p class="text-[11px] leading-normal text-muted-foreground">
+                Crie ou defina a pasta <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">/docs</code> seguindo os diretórios de status (ex: <code class="font-mono text-[10px]">01-preparation</code>, <code class="font-mono text-[10px]">02-approved</code>).
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
+              <i data-lucide="terminal" class="h-4 w-4"></i>
+            </div>
+            <div class="space-y-0.5">
+              <h3 class="text-xs font-semibold">2. Servidor Local & Live Refresh</h3>
+              <p class="text-[11px] leading-normal text-muted-foreground">
+                Execute <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">node roadmap/roadmap-server.js</code> para atualização automática. Sem o servidor, o board opera em Modo Estático.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
+              <i data-lucide="file-code" class="h-4 w-4"></i>
+            </div>
+            <div class="space-y-0.5">
+              <h3 class="text-xs font-semibold">3. Padronização dos READMEs</h3>
+              <p class="text-[11px] leading-normal text-muted-foreground">
+                Consulte <code class="rounded bg-muted px-1 py-0.2 font-mono text-[10px] text-foreground">docs/PADRONIZATION.md</code> para o formato de metadados e tags suportadas.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground border border-primary/20">
+              <i data-lucide="sliders" class="h-4 w-4"></i>
+            </div>
+            <div class="space-y-0.5">
+              <h3 class="text-xs font-semibold">4. Personalização</h3>
+              <p class="text-[11px] leading-normal text-muted-foreground">
+                Acesse o painel de Configurações no canto superior direito para alterar nome do projeto, tema e preferências.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer do Modal (Ações) -->
+      <div class="flex items-center justify-end gap-2 border-t border-border/50 bg-muted/20 px-6 py-3.5">
+        <button id="btn-welcome-later" class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer">
+          Fechar por agora
+        </button>
+        <button id="btn-welcome-dismiss" class="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
+          <i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i>
+          Não mostrar novamente
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Drawer de Configurações -->
   <div id="settings-drawer" class="fixed inset-0 z-50 hidden">
     <!-- Overlay Escuro -->
