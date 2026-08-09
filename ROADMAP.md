@@ -75,17 +75,21 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
 
-### Tela de boas-vindas e modo de cor de 3 estados (concluída)
+### Onboarding Wizard Modal (v2) e modo de cor de 3 estados (concluída)
 
-- **Modal de boas-vindas reformulado (`#welcome-modal`):** Apresentação concisa do produto com hero layout (ícone `layout-grid`, slogan *"Kanban & Roadmap vivo direto dos seus docs"*, parágrafo explicativo) e guia de 3 passos simples ("Aponte para `/docs`", "Rode o servidor (opcional)", "Personalize a identidade").
-  - Botão principal: **"Entendido, vamos lá!"** (`#btn-welcome-confirm` / `#btn-welcome-dismiss`) — grava `devboard-welcome-seen='true'` e oculta permanentemente.
-  - Botão secundário: **"Ver depois"** (`#btn-welcome-later`) — oculta apenas na sessão atual.
+- **Onboarding Wizard de 2 Momentos (`#welcome-modal`):**
+  - **Momento 1 — Tela de Apresentação:** Apresentação hero da proposta do produto ("Kanban & Roadmap vivo direto dos seus docs") com CTA principal **"Entendido, vamos lá!"** (`#btn-welcome-confirm`), opção **"Não mostrar novamente"** (`#btn-welcome-dismiss`) e **"Ver depois"** (`#btn-welcome-later`).
+  - **Momento 2 — Wizard de 4 Passos com Navegação Animada:**
+    1. **O que é o Devboard?** (Proposta local, sem banco, sem SaaS).
+    2. **Configure a pasta `/docs`** (Convenção e referência a `docs/PADRONIZATION.md`).
+    3. **Rode o servidor local (opcional)** (Instruções do `node roadmap/roadmap-server.js`).
+    4. **Personalize o projeto** (Identidade e temas no painel de Configurações).
+  - **Indicadores & Controles:** Dots de paginação com iluminação ativa, contador de passos (`N / 4`), link discreto **"Pular tutorial"** (não grava no `localStorage`), botão **"← Voltar"** (retorna aos slides anteriores e volta ao Momento 1 quando acionado no Slide 1) e botão **"Concluir ✓"** no slide final (salva `devboard-welcome-seen='true'`).
 - **Modo de cor com 3 estados ("Sistema", "Escuro", "Claro"):**
-  - O seletor no painel de configurações alterna no ciclo: `Sistema` (`monitor`) → `Escuro` (`moon`) → `Claro` (`sun`) → `Sistema`.
-  - O estado **padrão** em novos acessos passa a ser **"Sistema"** (`system`), que consulta o `prefers-color-scheme` do SO via `matchMedia`.
-  - Inclui script inline anti-FOUC no `<head>` de `roadmap.html` para aplicar a preferência sem salto visual e listener em tempo real para mudanças de preferência do SO.
+  - Alternância no ciclo: `Sistema` (`monitor`) → `Escuro` (`moon`) → `Claro` (`sun`) → `Sistema`.
+  - Padrão em novos acessos em **"Sistema"** (`system`), com script anti-FOUC no `<head>` e listener em tempo real para mudanças do SO.
 
-Validado com o agente de browser testando a alternância dos 3 estados do botão de tema, persistência após recarga da página e renderização do modal reformulado em múltiplos temas visuais.
+Validado integralmente com o agente de browser em todos os botões de navegação, persistência, pulo, retorno e herança nos temas visuais (Padrão, Terminal, Clean, Ficha de Arquivo).
 
 ### Sistema de temas visuais (concluído)
 

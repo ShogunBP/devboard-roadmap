@@ -1418,18 +1418,22 @@ function setupEventListeners() {
     });
   }
 
-  // Modal de Boas-Vindas (Apresentação e Setup)
+  // Modal de Boas-Vindas (Onboarding Wizard v2)
+  const btnWelcomeConfirm = document.getElementById("btn-welcome-confirm");
+  if (btnWelcomeConfirm) {
+    btnWelcomeConfirm.addEventListener("click", switchToWizard);
+  }
   const btnCloseWelcome = document.getElementById("btn-close-welcome");
   if (btnCloseWelcome) {
     btnCloseWelcome.addEventListener("click", () => closeWelcomeModal(false));
   }
+  const btnCloseWizard = document.getElementById("btn-close-wizard");
+  if (btnCloseWizard) {
+    btnCloseWizard.addEventListener("click", () => closeWelcomeModal(false));
+  }
   const btnWelcomeLater = document.getElementById("btn-welcome-later");
   if (btnWelcomeLater) {
     btnWelcomeLater.addEventListener("click", () => closeWelcomeModal(false));
-  }
-  const btnWelcomeConfirm = document.getElementById("btn-welcome-confirm");
-  if (btnWelcomeConfirm) {
-    btnWelcomeConfirm.addEventListener("click", () => closeWelcomeModal(true));
   }
   const btnWelcomeDismiss = document.getElementById("btn-welcome-dismiss");
   if (btnWelcomeDismiss) {
@@ -1438,6 +1442,41 @@ function setupEventListeners() {
   const welcomeBackdrop = document.getElementById("welcome-modal-backdrop");
   if (welcomeBackdrop) {
     welcomeBackdrop.addEventListener("click", () => closeWelcomeModal(false));
+  }
+
+  const btnWelcomePrev = document.getElementById("btn-welcome-prev");
+  if (btnWelcomePrev) {
+    btnWelcomePrev.addEventListener("click", () => {
+      if (currentWizardStep === 0) {
+        // Volta ao Momento 1 (intro)
+        const intro = document.getElementById("welcome-intro");
+        const wizard = document.getElementById("welcome-wizard");
+        if (intro && wizard) {
+          wizard.classList.add("hidden");
+          intro.classList.remove("hidden");
+        }
+      } else {
+        showWizardStep(currentWizardStep - 1);
+      }
+    });
+  }
+
+  const btnWelcomeNext = document.getElementById("btn-welcome-next");
+  if (btnWelcomeNext) {
+    btnWelcomeNext.addEventListener("click", () => showWizardStep(currentWizardStep + 1));
+  }
+
+  const btnWelcomeFinish = document.getElementById("btn-welcome-finish");
+  if (btnWelcomeFinish) {
+    btnWelcomeFinish.addEventListener("click", () => closeWelcomeModal(true));
+  }
+
+  const btnWelcomeSkip = document.getElementById("btn-welcome-skip");
+  if (btnWelcomeSkip) {
+    btnWelcomeSkip.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeWelcomeModal(false);
+    });
   }
 
   // Esc para fechar modal, drawer ou boas-vindas
@@ -1666,7 +1705,10 @@ function applyHideCancelledUI() {
   }
 }
 
-// --- MODAL DE BOAS-VINDAS (CHECKLIST DE SETUP) ---
+// --- MODAL DE BOAS-VINDAS (ONBOARDING WIZARD V2) ---
+let currentWizardStep = 0;
+const TOTAL_WIZARD_STEPS = 4;
+
 function checkWelcomeModal() {
   const seen = localStorage.getItem("devboard-welcome-seen");
   if (!seen) {
@@ -1677,8 +1719,82 @@ function checkWelcomeModal() {
 function openWelcomeModal() {
   const modal = document.getElementById("welcome-modal");
   if (modal) {
+    const intro = document.getElementById("welcome-intro");
+    const wizard = document.getElementById("welcome-wizard");
+    if (intro && wizard) {
+      intro.classList.remove("hidden");
+      wizard.classList.add("hidden");
+    }
+    currentWizardStep = 0;
     modal.classList.remove("hidden");
     if (window.lucide) lucide.createIcons();
+  }
+}
+
+function switchToWizard() {
+  const intro = document.getElementById("welcome-intro");
+  const wizard = document.getElementById("welcome-wizard");
+  if (intro && wizard) {
+    intro.classList.add("hidden");
+    wizard.classList.remove("hidden");
+    showWizardStep(0);
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+function showWizardStep(step) {
+  if (step < 0) step = 0;
+  if (step >= TOTAL_WIZARD_STEPS) step = TOTAL_WIZARD_STEPS - 1;
+
+  currentWizardStep = step;
+
+  // Animação de slide via translateX
+  const container = document.getElementById("welcome-slides-container");
+  if (container) {
+    container.style.transform = `translateX(-${step * 100}%)`;
+  }
+
+  // Atualizar dots
+  const dots = document.querySelectorAll("#welcome-dots .dot");
+  dots.forEach((dot, idx) => {
+    if (idx === step) {
+      dot.classList.add("active");
+    } else {
+      dot.classList.remove("active");
+    }
+  });
+
+  // Atualizar texto do contador "N / 4"
+  const counter = document.getElementById("welcome-step-counter");
+  if (counter) {
+    counter.textContent = `${step + 1} / ${TOTAL_WIZARD_STEPS}`;
+  }
+
+  // Controle de visibilidade dos botões
+  const btnNext = document.getElementById("btn-welcome-next");
+  const btnFinish = document.getElementById("btn-welcome-finish");
+  const btnSkip = document.getElementById("btn-welcome-skip");
+
+  if (step === TOTAL_WIZARD_STEPS - 1) {
+    if (btnNext) {
+      btnNext.classList.add("hidden");
+      btnNext.classList.remove("inline-flex");
+    }
+    if (btnFinish) {
+      btnFinish.classList.remove("hidden");
+      btnFinish.classList.add("inline-flex");
+    }
+    if (btnSkip) btnSkip.classList.add("hidden");
+  } else {
+    if (btnNext) {
+      btnNext.classList.remove("hidden");
+      btnNext.classList.add("inline-flex");
+    }
+    if (btnFinish) {
+      btnFinish.classList.add("hidden");
+      btnFinish.classList.remove("inline-flex");
+    }
+    if (btnSkip) btnSkip.classList.remove("hidden");
   }
 }
 

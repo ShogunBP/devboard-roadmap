@@ -516,3 +516,36 @@ button, select, [role="button"], .cursor-pointer {
   transform: translateX(0);
 }
 
+/* Onboarding Wizard Modal Styles */
+.welcome-modal-content {
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.welcome-moment {
+  width: 100%;
+}
+
+.welcome-dots .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--muted-foreground);
+  opacity: 0.35;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.welcome-dots .dot.active {
+  opacity: 1;
+  background-color: var(--primary);
+  transform: scale(1.25);
+}
+
+.welcome-slides-wrapper {
+  width: 100%;
+}
+
+.welcome-slides-container {
+  will-change: transform;
+}
+
