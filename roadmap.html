@@ -472,34 +472,57 @@
     </div>
   </div>
 
-  <!-- Modal de Boas-Vindas (Onboarding Wizard v2) -->
+  <!-- Modal de Boas-Vindas (Onboarding Wizard v3) -->
   <div id="welcome-modal" class="fixed inset-0 z-50 hidden">
     <!-- Fundo Escuro com Backdrop Blur -->
     <div class="fixed inset-0 bg-background/80 backdrop-blur-sm modal-overlay" id="welcome-modal-backdrop"></div>
 
-    <!-- Painel do Modal -->
-    <div class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-md sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content welcome-modal-content overflow-hidden">
+    <!-- Painel do Modal (sm:max-w-lg para evitar cortes) -->
+    <div class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content welcome-modal-content overflow-hidden">
       
       <!-- MOMENTO 1: Tela de Apresentação -->
       <div id="welcome-intro" class="welcome-moment flex flex-col">
-        <!-- Hero/Header do Intro -->
-        <div class="flex flex-col items-center text-center px-6 pt-6 pb-4 bg-muted/20 border-b border-border/50 relative">
+        <!-- Header do Intro -->
+        <div class="flex flex-col items-center text-center px-6 pt-6 pb-5 bg-muted/20 border-b border-border/50 relative">
           <button id="btn-close-welcome" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
             <i data-lucide="x" class="h-4 w-4"></i>
           </button>
 
+          <!-- 1. Ícone grande -->
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 mb-3 shadow-sm">
             <i data-lucide="layout-grid" class="h-6 w-6"></i>
           </div>
-          <h2 id="welcome-title" class="text-xl font-bold leading-tight tracking-tight text-foreground">Devboard</h2>
-          <p class="text-xs font-semibold text-primary mt-0.5">Kanban & Roadmap vivo direto dos seus docs</p>
 
-          <p class="text-xs text-muted-foreground mt-2.5 leading-relaxed max-w-xs">
+          <!-- 2. Título -->
+          <h2 id="welcome-title" class="text-xl font-bold leading-tight tracking-tight text-foreground">Devboard</h2>
+
+          <!-- 3. Seletor de Modo de Cor (Light / Dark / System) -->
+          <div class="mt-2.5 mb-2 flex items-center gap-2 bg-background/80 border border-border/80 rounded-lg p-1.5 shadow-sm">
+            <span class="text-[11px] font-medium text-muted-foreground pl-1.5">Modo de Cor:</span>
+            <button id="btn-welcome-theme-toggle" class="inline-flex items-center justify-center rounded-md border border-input bg-card px-2.5 py-1 text-xs font-semibold text-foreground transition-all duration-150 hover:bg-muted hover:text-foreground cursor-pointer gap-1.5 shadow-xs">
+              <i data-lucide="sun" class="h-3.5 w-3.5 hidden" id="icon-welcome-theme-sun"></i>
+              <i data-lucide="moon" class="h-3.5 w-3.5 hidden" id="icon-welcome-theme-moon"></i>
+              <i data-lucide="monitor" class="h-3.5 w-3.5" id="icon-welcome-theme-system"></i>
+              <span id="text-welcome-theme">Sistema</span>
+            </button>
+          </div>
+
+          <!-- 4. Slogan -->
+          <p class="text-xs font-semibold text-primary mt-1">Kanban & Roadmap vivo direto dos seus docs</p>
+
+          <!-- 5. Parágrafo curto de contexto -->
+          <p class="text-xs text-muted-foreground mt-2.5 leading-relaxed max-w-sm">
             Seu planejamento mora na documentação. O Devboard lê essa documentação e transforma em um board interativo — sem banco de dados, sem conta.
           </p>
+
+          <!-- 6. Mensagem de chamada para o tutorial -->
+          <div class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
+            <i data-lucide="clock" class="h-3.5 w-3.5"></i>
+            Leva menos de 1 minuto para configurar tudo
+          </div>
         </div>
 
-        <!-- Ações do Momento 1 -->
+        <!-- 7. 3 Botões de Ação -->
         <div class="flex flex-col gap-2.5 p-6 bg-card">
           <button id="btn-welcome-confirm" class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
             Entendido, vamos lá!
@@ -517,18 +540,19 @@
         </div>
       </div>
 
-      <!-- MOMENTO 2: Wizard de Passos (4 Slides) -->
+      <!-- MOMENTO 2: Wizard de Passos (5 Slides) -->
       <div id="welcome-wizard" class="welcome-moment hidden flex flex-col">
         <!-- Header do Wizard (Dots + Contador + Close Button) -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-muted/20">
+        <div class="flex items-center justify-between px-6 py-3.5 border-b border-border/50 bg-muted/20">
           <div class="welcome-progress flex items-center gap-3">
             <div class="welcome-dots flex items-center gap-1.5" id="welcome-dots">
               <span class="dot active" data-step="0"></span>
               <span class="dot" data-step="1"></span>
               <span class="dot" data-step="2"></span>
               <span class="dot" data-step="3"></span>
+              <span class="dot" data-step="4"></span>
             </div>
-            <span id="welcome-step-counter" class="text-[11px] font-semibold text-muted-foreground">1 / 4</span>
+            <span id="welcome-step-counter" class="text-[11px] font-semibold text-muted-foreground">1 / 5</span>
           </div>
           <button id="btn-close-wizard" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
             <i data-lucide="x" class="h-4 w-4"></i>
@@ -539,63 +563,96 @@
         <div class="welcome-slides-wrapper overflow-hidden relative">
           <div class="welcome-slides-container flex transition-transform duration-300 ease-in-out" id="welcome-slides-container">
             
-            <!-- Slide 1 -->
-            <div class="welcome-slide min-w-full p-6 space-y-3 shrink-0" data-slide="0">
+            <!-- Slide 1: O que é o Devboard -->
+            <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3 box-border" data-slide="0">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm mb-1">
                 <i data-lucide="layout-grid" class="h-5 w-5"></i>
               </div>
-              <h3 class="text-base font-bold text-foreground">O que é o Devboard?</h3>
-              <p class="text-xs text-muted-foreground leading-relaxed">
-                Devboard é uma ferramenta local que lê a pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> do seu projeto e transforma os READMEs de planejamento em um Kanban interativo e um Roadmap visual — sem banco de dados, sem SaaS, sem conta.
+              <h3 class="text-base font-bold text-foreground">1. O que é o Devboard?</h3>
+              <p class="text-xs text-muted-foreground leading-relaxed break-words">
+                O Devboard é uma ferramenta local que lê a pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> do seu projeto e transforma os READMEs de planejamento em um Kanban interativo e um Roadmap visual — sem banco de dados, sem SaaS, sem conta.
               </p>
-              <p class="text-xs font-medium text-foreground/80 bg-muted/30 p-2.5 rounded-md border border-border/40">
-                ⚡ Tudo roda no seu computador ou na sua CI.
+              <p class="text-xs font-medium text-foreground/90 bg-muted/40 p-3 rounded-lg border border-border/50 leading-relaxed">
+                ⚡ Tudo roda no seu computador ou na sua CI. Todas as tarefas ficam salvas como arquivos Markdown no seu repositório Git.
               </p>
             </div>
 
-            <!-- Slide 2 -->
-            <div class="welcome-slide min-w-full p-6 space-y-3 shrink-0" data-slide="1">
+            <!-- Slide 2: Configure a pasta /docs -->
+            <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3 box-border" data-slide="1">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm mb-1">
                 <i data-lucide="folder-open" class="h-5 w-5"></i>
               </div>
-              <h3 class="text-base font-bold text-foreground">Configure a pasta /docs</h3>
-              <p class="text-xs text-muted-foreground leading-relaxed">
+              <h3 class="text-base font-bold text-foreground">2. Configure a pasta /docs</h3>
+              <p class="text-xs text-muted-foreground leading-relaxed break-words">
                 Sua pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> precisa seguir a convenção esperada pelo Devboard. Se você ainda não tem uma estrutura, copie o template de exemplo de <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">docs/PADRONIZATION.md</code>.
               </p>
-              <p class="text-xs text-muted-foreground leading-relaxed">
-                Cada subpasta em <code class="font-mono text-[11px]">/docs</code> representa uma categoria (ex: <code class="font-mono text-[11px]">features/</code>, <code class="font-mono text-[11px]">bugs/</code>, <code class="font-mono text-[11px]">infra/</code>). Cada <code class="font-mono text-[11px]">README.md</code> interno vira um card.
+              <p class="text-xs text-muted-foreground leading-relaxed break-words">
+                Cada subpasta em <code class="font-mono text-[11px]">/docs</code> representa uma categoria (ex: <code class="font-mono text-[11px]">features/</code>, <code class="font-mono text-[11px]">bugs/</code>, <code class="font-mono text-[11px]">infra/</code>). Cada <code class="font-mono text-[11px]">README.md</code> interno vira um card no Kanban.
               </p>
             </div>
 
-            <!-- Slide 3 -->
-            <div class="welcome-slide min-w-full p-6 space-y-3 shrink-0" data-slide="2">
+            <!-- Slide 3: Rode o servidor local -->
+            <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3 box-border" data-slide="2">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm mb-1">
                 <i data-lucide="terminal" class="h-5 w-5"></i>
               </div>
-              <h3 class="text-base font-bold text-foreground">Rode o servidor local (opcional)</h3>
-              <p class="text-xs text-muted-foreground leading-relaxed">
-                Para atualização em tempo real, execute:
+              <h3 class="text-base font-bold text-foreground">3. Rode o servidor local (opcional)</h3>
+              <p class="text-xs text-muted-foreground leading-relaxed break-words">
+                Para sincronização e atualização automática em tempo real, execute no terminal:
               </p>
-              <div class="bg-muted p-2.5 rounded-md font-mono text-xs text-foreground border border-border/50 select-all">
+              <div class="bg-muted p-2.5 rounded-md font-mono text-xs text-foreground border border-border/50 select-all font-semibold">
                 node roadmap/roadmap-server.js
               </div>
-              <p class="text-[11px] text-muted-foreground leading-relaxed">
-                Sem o servidor, o board funciona em modo estático com o último snapshot commitado em <code class="font-mono text-[10px]">data.js</code>. Com ele, as mudanças nos <code class="font-mono text-[10px]">/docs</code> aparecem automaticamente.
+              <p class="text-[11px] text-muted-foreground leading-relaxed break-words">
+                Sem o servidor, o board funciona em modo estático lendo o último snapshot commitado em <code class="font-mono text-[10px]">data.js</code>. Com ele, as mudanças nos arquivos em <code class="font-mono text-[10px]">/docs</code> aparecem automaticamente no quadro.
               </p>
             </div>
 
-            <!-- Slide 4 -->
-            <div class="welcome-slide min-w-full p-6 space-y-3 shrink-0" data-slide="3">
+            <!-- Slide 4: Personalize o projeto -->
+            <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3 box-border" data-slide="3">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm mb-1">
-                <i data-lucide="settings" class="h-5 w-5"></i>
+                <i data-lucide="sliders" class="h-5 w-5"></i>
               </div>
-              <h3 class="text-base font-bold text-foreground">Personalize o projeto</h3>
-              <p class="text-xs text-muted-foreground leading-relaxed">
-                Nome do projeto, descrição e tema visual ficam no painel de Configurações — ícone de engrenagem no canto superior direito.
+              <h3 class="text-base font-bold text-foreground">4. Personalize a experiência</h3>
+              <p class="text-xs text-muted-foreground leading-relaxed break-words">
+                No painel de Configurações (ícone de engrenagem no canto superior direito), você pode alterar o tema visual da aplicação, definir preferências de visualização e ajustar o intervalo de sincronização.
               </p>
-              <p class="text-xs text-muted-foreground leading-relaxed">
-                Você pode escolher entre múltiplos temas visuais e alternar entre modo claro, escuro ou seguir o sistema operacional.
+              <p class="text-xs text-muted-foreground leading-relaxed break-words">
+                Você pode escolher entre 4 temas visuais exclusivos (Padrão, Terminal, Clean, Ficha de Arquivo) e alternar entre os modos claro, escuro ou seguir a preferência do sistema operacional.
               </p>
+            </div>
+
+            <!-- Slide 5: Identidade do Projeto -->
+            <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3.5 box-border" data-slide="4">
+              <div class="flex items-center gap-2.5">
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
+                  <i data-lucide="settings" class="h-4 w-4"></i>
+                </div>
+                <div>
+                  <h3 class="text-base font-bold text-foreground leading-tight">5. Identidade do Projeto</h3>
+                  <p class="text-[11px] text-muted-foreground">Configure os dados principais exibidos no cabeçalho</p>
+                </div>
+              </div>
+
+              <!-- Aviso de Modo Demo / Somente leitura -->
+              <div id="wizard-demo-mode-notice" class="hidden text-[11px] font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md p-2 flex items-center gap-1.5">
+                <i data-lucide="lock" class="h-3.5 w-3.5 shrink-0"></i> Edição indisponível no modo demo (somente leitura).
+              </div>
+
+              <div class="space-y-2.5 text-left">
+                <div>
+                  <label for="wizard-project-name" class="text-xs font-medium text-muted-foreground block mb-1">Nome do Projeto</label>
+                  <input type="text" id="wizard-project-name" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                </div>
+                <div>
+                  <label for="wizard-project-description" class="text-xs font-medium text-muted-foreground block mb-1">Descrição</label>
+                  <textarea id="wizard-project-description" rows="2" class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
+                </div>
+                <div>
+                  <label for="wizard-project-badge" class="text-xs font-medium text-muted-foreground block mb-1">Selo / Badge</label>
+                  <input type="text" id="wizard-project-badge" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                </div>
+              </div>
             </div>
 
           </div>

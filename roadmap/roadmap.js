@@ -1232,6 +1232,16 @@ function setupEventListeners() {
     });
   }
 
+  const btnWelcomeTheme = document.getElementById("btn-welcome-theme-toggle");
+  if (btnWelcomeTheme) {
+    btnWelcomeTheme.addEventListener("click", () => {
+      const cycle = { system: "dark", dark: "light", light: "system" };
+      state.themeMode = cycle[state.themeMode] || "dark";
+      localStorage.setItem("theme", state.themeMode);
+      applyTheme();
+    });
+  }
+
   const selectVisualTheme = document.getElementById("select-visual-theme");
   if (selectVisualTheme) {
     selectVisualTheme.addEventListener("change", (e) => {
@@ -1468,7 +1478,23 @@ function setupEventListeners() {
 
   const btnWelcomeFinish = document.getElementById("btn-welcome-finish");
   if (btnWelcomeFinish) {
-    btnWelcomeFinish.addEventListener("click", () => closeWelcomeModal(true));
+    btnWelcomeFinish.addEventListener("click", async () => {
+      if (currentWizardStep === 4) {
+        // Sincroniza valores do passo 5 do wizard com os inputs do drawer
+        const wizName = document.getElementById("wizard-project-name");
+        const wizDesc = document.getElementById("wizard-project-description");
+        const wizBadge = document.getElementById("wizard-project-badge");
+        const inputName = document.getElementById("input-project-name");
+        const inputDesc = document.getElementById("input-project-description");
+        const inputBadge = document.getElementById("input-project-badge");
+        if (wizName && inputName) inputName.value = wizName.value;
+        if (wizDesc && inputDesc) inputDesc.value = wizDesc.value;
+        if (wizBadge && inputBadge) inputBadge.value = wizBadge.value;
+
+        await saveProjectIdentity();
+      }
+      closeWelcomeModal(true);
+    });
   }
 
   const btnWelcomeSkip = document.getElementById("btn-welcome-skip");
@@ -1682,6 +1708,29 @@ function applyTheme() {
     }
   }
 
+  // Sincronizar seletor de tema da Tela Inicial de Boas-Vindas
+  const welcomeIconSun = document.getElementById("icon-welcome-theme-sun");
+  const welcomeIconMoon = document.getElementById("icon-welcome-theme-moon");
+  const welcomeIconSystem = document.getElementById("icon-welcome-theme-system");
+  const welcomeTextTheme = document.getElementById("text-welcome-theme");
+
+  if (welcomeIconSun && welcomeIconMoon && welcomeIconSystem && welcomeTextTheme) {
+    welcomeIconSun.classList.add("hidden");
+    welcomeIconMoon.classList.add("hidden");
+    welcomeIconSystem.classList.add("hidden");
+
+    if (state.themeMode === "dark") {
+      welcomeIconMoon.classList.remove("hidden");
+      welcomeTextTheme.textContent = "Escuro";
+    } else if (state.themeMode === "light") {
+      welcomeIconSun.classList.remove("hidden");
+      welcomeTextTheme.textContent = "Claro";
+    } else {
+      welcomeIconSystem.classList.remove("hidden");
+      welcomeTextTheme.textContent = "Sistema";
+    }
+  }
+
   document.documentElement.dataset.theme = state.visualTheme;
   const selectTheme = document.getElementById("select-visual-theme");
   if (selectTheme) selectTheme.value = state.visualTheme;
@@ -1705,11 +1754,14 @@ function applyHideCancelledUI() {
   }
 }
 
-// --- MODAL DE BOAS-VINDAS (ONBOARDING WIZARD V2) ---
+// --- MODAL DE BOAS-VINDAS (ONBOARDING WIZARD V3) ---
 let currentWizardStep = 0;
-const TOTAL_WIZARD_STEPS = 4;
+const TOTAL_WIZARD_STEPS = 5;
 
 function checkWelcomeModal() {
+  if (window.location.search.includes("reset_welcome=1")) {
+    localStorage.removeItem("devboard-welcome-seen");
+  }
   const seen = localStorage.getItem("devboard-welcome-seen");
   if (!seen) {
     openWelcomeModal();
@@ -1726,6 +1778,18 @@ function openWelcomeModal() {
       wizard.classList.add("hidden");
     }
     currentWizardStep = 0;
+    
+    // Preencher campos de identidade no wizard
+    const wizName = document.getElementById("wizard-project-name");
+    const wizDesc = document.getElementById("wizard-project-description");
+    const wizBadge = document.getElementById("wizard-project-badge");
+    const inputName = document.getElementById("input-project-name");
+    const inputDesc = document.getElementById("input-project-description");
+    const inputBadge = document.getElementById("input-project-badge");
+    if (wizName && inputName) wizName.value = inputName.value;
+    if (wizDesc && inputDesc) wizDesc.value = inputDesc.value;
+    if (wizBadge && inputBadge) wizBadge.value = inputBadge.value;
+
     modal.classList.remove("hidden");
     if (window.lucide) lucide.createIcons();
   }
@@ -1748,6 +1812,33 @@ function showWizardStep(step) {
 
   currentWizardStep = step;
 
+  // Se estiver no Passo 5 (Identidade), sincronizar valores e gerenciar modo demo
+  if (step === 4) {
+    const wizName = document.getElementById("wizard-project-name");
+    const wizDesc = document.getElementById("wizard-project-description");
+    const wizBadge = document.getElementById("wizard-project-badge");
+    const inputName = document.getElementById("input-project-name");
+    const inputDesc = document.getElementById("input-project-description");
+    const inputBadge = document.getElementById("input-project-badge");
+    const demoNotice = document.getElementById("wizard-demo-mode-notice");
+
+    if (wizName && inputName) wizName.value = inputName.value;
+    if (wizDesc && inputDesc) wizDesc.value = inputDesc.value;
+    if (wizBadge && inputBadge) wizBadge.value = inputBadge.value;
+
+    if (isDemoMode) {
+      if (wizName) wizName.disabled = true;
+      if (wizDesc) wizDesc.disabled = true;
+      if (wizBadge) wizBadge.disabled = true;
+      if (demoNotice) demoNotice.classList.remove("hidden");
+    } else {
+      if (wizName) wizName.disabled = false;
+      if (wizDesc) wizDesc.disabled = false;
+      if (wizBadge) wizBadge.disabled = false;
+      if (demoNotice) demoNotice.classList.add("hidden");
+    }
+  }
+
   // Animação de slide via translateX
   const container = document.getElementById("welcome-slides-container");
   if (container) {
@@ -1764,7 +1855,7 @@ function showWizardStep(step) {
     }
   });
 
-  // Atualizar texto do contador "N / 4"
+  // Atualizar texto do contador "N / 5"
   const counter = document.getElementById("welcome-step-counter");
   if (counter) {
     counter.textContent = `${step + 1} / ${TOTAL_WIZARD_STEPS}`;

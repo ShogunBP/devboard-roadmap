@@ -75,21 +75,19 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
 
-### Onboarding Wizard Modal (v2) e modo de cor de 3 estados (concluída)
+### Onboarding Wizard Modal (v3) e modo de cor de 3 estados (concluída)
 
-- **Onboarding Wizard de 2 Momentos (`#welcome-modal`):**
-  - **Momento 1 — Tela de Apresentação:** Apresentação hero da proposta do produto ("Kanban & Roadmap vivo direto dos seus docs") com CTA principal **"Entendido, vamos lá!"** (`#btn-welcome-confirm`), opção **"Não mostrar novamente"** (`#btn-welcome-dismiss`) e **"Ver depois"** (`#btn-welcome-later`).
-  - **Momento 2 — Wizard de 4 Passos com Navegação Animada:**
+- **Onboarding Wizard Reestruturado de 2 Momentos (`#welcome-modal`):**
+  - **Momento 1 — Tela Inicial (Intro Presentation):** Estrutura refinada com 7 elementos exatos em ordem vertical: Ícone central `layout-grid`, título **Devboard**, **Seletor de Modo de Cor** de 3 estados (`Sistema` / `Escuro` / `Claro`), slogan *"Kanban & Roadmap vivo direto dos seus docs"*, parágrafo explicativo de contexto, badge de chamada ("Leva menos de 1 minuto para configurar tudo") e 3 botões de ação (**"Entendido, vamos lá! →"**, **"Não mostrar novamente"**, **"Ver depois"**).
+  - **Momento 2 — Wizard de 5 Passos (Largura Expandida `sm:max-w-lg` sem cortes):**
     1. **O que é o Devboard?** (Proposta local, sem banco, sem SaaS).
-    2. **Configure a pasta `/docs`** (Convenção e referência a `docs/PADRONIZATION.md`).
-    3. **Rode o servidor local (opcional)** (Instruções do `node roadmap/roadmap-server.js`).
-    4. **Personalize o projeto** (Identidade e temas no painel de Configurações).
-  - **Indicadores & Controles:** Dots de paginação com iluminação ativa, contador de passos (`N / 4`), link discreto **"Pular tutorial"** (não grava no `localStorage`), botão **"← Voltar"** (retorna aos slides anteriores e volta ao Momento 1 quando acionado no Slide 1) e botão **"Concluir ✓"** no slide final (salva `devboard-welcome-seen='true'`).
-- **Modo de cor com 3 estados ("Sistema", "Escuro", "Claro"):**
-  - Alternância no ciclo: `Sistema` (`monitor`) → `Escuro` (`moon`) → `Claro` (`sun`) → `Sistema`.
-  - Padrão em novos acessos em **"Sistema"** (`system`), com script anti-FOUC no `<head>` e listener em tempo real para mudanças do SO.
+    2. **Configure a pasta `/docs`** (Convenção de categorias e referência a `docs/PADRONIZATION.md`).
+    3. **Rode o servidor local (opcional)** (Instruções em bloco de código do `node roadmap/roadmap-server.js`).
+    4. **Personalize a experiência** (Temas visuais, preferências e modos de cor).
+    5. **Identidade do Projeto** (Formulário real de configuração com inputs para Nome do Projeto, Descrição e Selo/Badge, sincronizado com o servidor via `POST /config` e com aviso automático para Modo Demo).
+  - **Indicadores & Controles:** Dots de paginação ativas, contador textual (`N / 5`), link **"Pular tutorial"**, botão **"← Voltar"** (regressa entre os slides e retorna ao Momento 1 a partir do Slide 1) e botão **"Concluir ✓"** exibido exclusivamente no Slide 5 (salva `devboard-welcome-seen='true'` e persiste a identidade do projeto).
 
-Validado integralmente com o agente de browser em todos os botões de navegação, persistência, pulo, retorno e herança nos temas visuais (Padrão, Terminal, Clean, Ficha de Arquivo).
+Validado integralmente com o agente de browser em todos os 5 passos, alternância do seletor de cor na Tela Inicial, navegação bidirecional e herança nos temas visuais.
 
 ### Sistema de temas visuais (concluído)
 
