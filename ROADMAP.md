@@ -75,19 +75,21 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal) — pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
 
-### Onboarding Wizard Modal (v3) e modo de cor de 3 estados (concluída)
+### Onboarding Wizard Modal (v4) e modo de cor de 3 estados (concluída)
 
-- **Onboarding Wizard Reestruturado de 2 Momentos (`#welcome-modal`):**
+- **Onboarding Wizard Refinado de 2 Momentos (`#welcome-modal`):**
   - **Momento 1 — Tela Inicial (Intro Presentation):** Estrutura refinada com 7 elementos exatos em ordem vertical: Ícone central `layout-grid`, título **Devboard**, **Seletor de Modo de Cor** de 3 estados (`Sistema` / `Escuro` / `Claro`), slogan *"Kanban & Roadmap vivo direto dos seus docs"*, parágrafo explicativo de contexto, badge de chamada ("Leva menos de 1 minuto para configurar tudo") e 3 botões de ação (**"Entendido, vamos lá! →"**, **"Não mostrar novamente"**, **"Ver depois"**).
-  - **Momento 2 — Wizard de 5 Passos (Largura Expandida `sm:max-w-lg` sem cortes):**
-    1. **O que é o Devboard?** (Proposta local, sem banco, sem SaaS).
-    2. **Configure a pasta `/docs`** (Convenção de categorias e referência a `docs/PADRONIZATION.md`).
-    3. **Rode o servidor local (opcional)** (Instruções em bloco de código do `node roadmap/roadmap-server.js`).
-    4. **Personalize a experiência** (Temas visuais, preferências e modos de cor).
-    5. **Identidade do Projeto** (Formulário real de configuração com inputs para Nome do Projeto, Descrição e Selo/Badge, sincronizado com o servidor via `POST /config` e com aviso automático para Modo Demo).
-  - **Indicadores & Controles:** Dots de paginação ativas, contador textual (`N / 5`), link **"Pular tutorial"**, botão **"← Voltar"** (regressa entre os slides e retorna ao Momento 1 a partir do Slide 1) e botão **"Concluir ✓"** exibido exclusivamente no Slide 5 (salva `devboard-welcome-seen='true'` e persiste a identidade do projeto).
+  - **Momento 2 — Wizard de 5 Passos com Cabeçalho Padronizado:**
+    1. **O que é o Devboard?** (Cabeçalho padronizado: ícone `layout-grid` ao lado do título + subtítulo).
+    2. **Configure a pasta `/docs`** (Cabeçalho padronizado: ícone `folder-open` ao lado do título + subtítulo).
+    3. **Rode o servidor local (opcional)** (Cabeçalho padronizado: ícone `terminal` ao lado do título + subtítulo).
+    4. **Personalize a experiência** (Cabeçalho padronizado: ícone `sliders` ao lado do título + subtítulo).
+    5. **Identidade do Projeto** (Formulário real de configuração com inputs para Nome do Projeto, Descrição e Selo/Badge, sincronizado via `POST /config`).
+  - **Hierarquia Visual e Navegação dos Botões no Passo Final (5/5):**
+    - Botão principal primário: **"Começar a usar →"** (`bg-primary`, destaque visual no passo de encerramento).
+    - Botão de retorno discreto: **"Voltar ao início"** (estilo link sem borda, retorna diretamente ao Passo 1/5 ao ser clicado).
 
-Validado integralmente com o agente de browser em todos os 5 passos, alternância do seletor de cor na Tela Inicial, navegação bidirecional e herança nos temas visuais.
+Validado integralmente com o agente de browser em todos os 5 passos, hierarquia visual de botões, atalho de retorno ao início e herança nos temas visuais.
 
 ### Sistema de temas visuais (concluído)
 

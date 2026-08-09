@@ -1457,7 +1457,10 @@ function setupEventListeners() {
   const btnWelcomePrev = document.getElementById("btn-welcome-prev");
   if (btnWelcomePrev) {
     btnWelcomePrev.addEventListener("click", () => {
-      if (currentWizardStep === 0) {
+      if (currentWizardStep === 4) {
+        // No passo 5/5, "Voltar ao início" pula direto para o passo 1 (slide 0)
+        showWizardStep(0);
+      } else if (currentWizardStep === 0) {
         // Volta ao Momento 1 (intro)
         const intro = document.getElementById("welcome-intro");
         const wizard = document.getElementById("welcome-wizard");
@@ -1861,9 +1864,10 @@ function showWizardStep(step) {
     counter.textContent = `${step + 1} / ${TOTAL_WIZARD_STEPS}`;
   }
 
-  // Controle de visibilidade dos botões
+  // Controle de visibilidade e estilização dos botões
   const btnNext = document.getElementById("btn-welcome-next");
   const btnFinish = document.getElementById("btn-welcome-finish");
+  const btnPrev = document.getElementById("btn-welcome-prev");
   const btnSkip = document.getElementById("btn-welcome-skip");
 
   if (step === TOTAL_WIZARD_STEPS - 1) {
@@ -1874,6 +1878,12 @@ function showWizardStep(step) {
     if (btnFinish) {
       btnFinish.classList.remove("hidden");
       btnFinish.classList.add("inline-flex");
+      btnFinish.innerHTML = `Começar a usar <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>`;
+      btnFinish.className = "inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer font-medium";
+    }
+    if (btnPrev) {
+      btnPrev.innerHTML = `Voltar ao início`;
+      btnPrev.className = "text-xs font-medium text-muted-foreground hover:text-foreground underline-offset-4 hover:underline cursor-pointer transition-colors bg-transparent border-0 px-2 py-1.5 shadow-none";
     }
     if (btnSkip) btnSkip.classList.add("hidden");
   } else {
@@ -1885,8 +1895,14 @@ function showWizardStep(step) {
       btnFinish.classList.add("hidden");
       btnFinish.classList.remove("inline-flex");
     }
+    if (btnPrev) {
+      btnPrev.innerHTML = `← Voltar`;
+      btnPrev.className = "rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground cursor-pointer";
+    }
     if (btnSkip) btnSkip.classList.remove("hidden");
   }
+
+  if (window.lucide) lucide.createIcons();
 }
 
 function closeWelcomeModal(dontShowAgain = false) {
