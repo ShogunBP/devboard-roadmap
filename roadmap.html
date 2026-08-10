@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Devboard: Kanban & Roadmap para Documentação</title>
-  <meta name="description" content="Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de features, bugs e refatorações, direto da documentação do projeto.">
+  <title>Devboard, Kanban & Roadmap para Documentação</title>
+  <meta name="description"
+    content="Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de features, bugs e refatorações, direto da documentação do projeto.">
 
   <!-- Favicon & Manifest -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -16,8 +18,9 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Devboard: Kanban & Roadmap para Documentação">
-  <meta property="og:description" content="Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de features, bugs e refatorações, direto da documentação do projeto.">
+  <meta property="og:title" content="Devboard, Kanban & Roadmap para Documentação">
+  <meta property="og:description"
+    content="Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de features, bugs e refatorações, direto da documentação do projeto.">
   <meta property="og:image" content="https://shogunbp.github.io/devboard-roadmap/roadmap/favicon/og-banner.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -26,13 +29,14 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Devboard: Kanban & Roadmap para Documentação">
-  <meta name="twitter:description" content="Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de features, bugs e refatorações, direto da documentação do projeto.">
+  <meta name="twitter:title" content="Devboard, Kanban & Roadmap para Documentação">
+  <meta name="twitter:description"
+    content="Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de features, bugs e refatorações, direto da documentação do projeto.">
   <meta name="twitter:image" content="https://shogunbp.github.io/devboard-roadmap/roadmap/favicon/og-banner.jpg">
-  
-  
+
+
   <script>
-    (function() {
+    (function () {
       const theme = localStorage.getItem('visualTheme') || 'default';
       const storedThemeMode = localStorage.getItem('theme');
       document.documentElement.dataset.theme = theme;
@@ -53,12 +57,12 @@
       }
     })();
   </script>
-<!-- Estilos base e variáveis de cor customizadas -->
+  <!-- Estilos base e variáveis de cor customizadas -->
   <link rel="stylesheet" href="roadmap/roadmap.css?v=5">
 
   <!-- TailwindCSS via CDN para funcionamento imediato sem build -->
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-  
+
   <!-- Configuração do Tailwind para usar nossas variáveis CSS (compatível com v4) -->
   <style type="text/tailwindcss">
     @theme {
@@ -87,331 +91,383 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body class="min-h-screen bg-background text-foreground font-sans">
-  
+
   <header class="border-b border-border/70 bg-[var(--gradient-surface)] backdrop-blur">
     <div class="mx-auto max-w-[1400px] px-6 py-8">
-    <div class="mx-auto max-w-[1400px] px-4 py-4 md:px-6 md:py-8">
-      <!-- HEADER MOBILE (< 768px) -->
-      <div id="mobile-header" class="block md:hidden">
-        <!-- Linha 1: Título/Resumo à esquerda, 3 Botões circulares à direita -->
-        <div class="flex items-center justify-between gap-3">
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-1.5 flex-wrap mb-1">
-              <div id="mobile-project-badge" class="inline-flex items-center gap-1 rounded-full border border-border bg-card/60 px-2 py-0.5 text-[10px] text-muted-foreground">
-                <i data-lucide="sparkles" class="h-3 w-3 text-primary"></i>
-                <span id="mobile-project-badge-text">Roadmap 2026</span>
+      <div class="mx-auto max-w-[1400px] px-4 py-4 md:px-6 md:py-8">
+        <!-- HEADER MOBILE (< 768px) -->
+        <div id="mobile-header" class="block md:hidden">
+          <!-- Linha 1: Título/Resumo à esquerda, 3 Botões circulares à direita -->
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                <div id="mobile-project-badge"
+                  class="inline-flex items-center gap-1 rounded-full border border-border bg-card/60 px-2 py-0.5 text-[10px] text-muted-foreground">
+                  <i data-lucide="sparkles" class="h-3 w-3 text-primary"></i>
+                  <span id="mobile-project-badge-text">Roadmap 2026</span>
+                </div>
+                <div id="mobile-static-mode-badge"
+                  class="hidden items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-500">
+                  <i data-lucide="wifi-off" class="h-3 w-3"></i> Estático
+                </div>
               </div>
-              <div id="mobile-static-mode-badge" class="hidden items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-500">
-                <i data-lucide="wifi-off" class="h-3 w-3"></i> Estático
+              <h1 id="mobile-project-name" class="text-base font-bold tracking-tight text-foreground truncate">
+                Kanban & Roadmap Interativo
+              </h1>
+              <span id="mobile-stats-summary" class="text-[11px] text-muted-foreground block truncate mt-0.5">
+                0 tarefas · 0% concluído
+              </span>
+            </div>
+
+            <!-- 3 Botões circulares à direita -->
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="btn-mobile-search" onclick="toggleMobileSearch()"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm"
+                title="Buscar">
+                <i data-lucide="search" class="h-4 w-4"></i>
+              </button>
+
+              <button id="btn-mobile-filter" onclick="toggleMobileFilterPanel()"
+                class="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm"
+                title="Filtros">
+                <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+                <span id="mobile-filter-dot"
+                  class="hidden absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background"></span>
+              </button>
+
+              <button id="btn-mobile-settings" onclick="openSettings()"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm"
+                title="Configurações">
+                <i data-lucide="settings" class="h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Linha 1 Expansível: Busca Mobile -->
+          <div id="mobile-search-bar" class="hidden mt-3">
+            <div class="relative w-full">
+              <i data-lucide="search"
+                class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
+              <input type="text" id="input-mobile-search" placeholder="Buscar por título ou tags…"
+                class="flex h-9 w-full rounded-lg border border-input bg-card px-3 py-1 text-sm shadow-sm pl-9 focus:outline-none focus:ring-1 focus:ring-ring">
+            </div>
+          </div>
+
+          <!-- Linha 1 Expansível: Painel de Filtros Mobile -->
+          <div id="mobile-filter-panel"
+            class="hidden mt-3 rounded-lg border border-border bg-card p-3 space-y-3 shadow-md">
+            <div class="grid grid-cols-2 gap-2">
+              <select id="select-mobile-category"
+                class="flex h-8 w-full rounded-md border border-input bg-background text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
+                <option value="all">Categorias</option>
+                <option value="bugs">🐛 Bugs</option>
+                <option value="features">✨ Features</option>
+                <option value="enhancements">🔧 Melhorias</option>
+                <option value="refactoring">♻️ Refactoring</option>
+              </select>
+
+              <select id="select-mobile-area"
+                class="flex h-8 w-full rounded-md border border-input bg-background text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
+                <option value="all">Áreas</option>
+                <option value="active">Ativos</option>
+                <option value="archive">Arquivados</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="text-[10px] font-semibold uppercase text-muted-foreground mb-1.5">Prioridade</div>
+              <div class="flex flex-wrap items-center gap-1.5" id="mobile-priority-filters">
+                <!-- Renderizado dinamicamente pelo JS -->
               </div>
             </div>
-            <h1 id="mobile-project-name" class="text-base font-bold tracking-tight text-foreground truncate">
-              Kanban & Roadmap Interativo
-            </h1>
-            <span id="mobile-stats-summary" class="text-[11px] text-muted-foreground block truncate mt-0.5">
-              0 tarefas · 0% concluído
-            </span>
           </div>
 
-          <!-- 3 Botões circulares à direita -->
-          <div class="flex items-center gap-2 shrink-0">
-            <button id="btn-mobile-search" onclick="toggleMobileSearch()" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm" title="Buscar">
-              <i data-lucide="search" class="h-4 w-4"></i>
-            </button>
+          <!-- Linha 2: Faixa fina de Estatísticas (Grid 4 colunas) -->
+          <div
+            class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-1 rounded-lg border border-border/80 bg-card/60 text-center">
+            <div>
+              <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Tarefas</div>
+              <div id="mobile-stat-total" class="text-sm font-semibold tabular-nums text-foreground">0</div>
+            </div>
+            <div>
+              <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Concluídas</div>
+              <div id="mobile-stat-done" class="text-sm font-semibold tabular-nums text-green-500">0</div>
+            </div>
+            <div>
+              <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Em Exec.</div>
+              <div id="mobile-stat-progress" class="text-sm font-semibold tabular-nums text-yellow-500">0</div>
+            </div>
+            <div>
+              <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Progresso</div>
+              <div id="mobile-stat-avg" class="text-sm font-semibold tabular-nums text-primary">0%</div>
+            </div>
+          </div>
 
-            <button id="btn-mobile-filter" onclick="toggleMobileFilterPanel()" class="relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm" title="Filtros">
-              <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
-              <span id="mobile-filter-dot" class="hidden absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background"></span>
+          <!-- Linha 3: Toggle Kanban / Roadmap -->
+          <div class="flex rounded-lg border border-border bg-card p-1 mt-3">
+            <button id="btn-mobile-view-kanban" onclick="setView('kanban')"
+              class="flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 bg-primary text-primary-foreground shadow cursor-pointer">
+              <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i> Kanban
             </button>
-
-            <button id="btn-mobile-settings" onclick="openSettings()" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm" title="Configurações">
-              <i data-lucide="settings" class="h-4 w-4"></i>
+            <button id="btn-mobile-view-roadmap" onclick="setView('roadmap')"
+              class="flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 hover:bg-muted hover:text-foreground cursor-pointer">
+              <i data-lucide="git-branch" class="h-3.5 w-3.5"></i> Roadmap
             </button>
           </div>
         </div>
 
-        <!-- Linha 1 Expansível: Busca Mobile -->
-        <div id="mobile-search-bar" class="hidden mt-3">
-          <div class="relative w-full">
-            <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
-            <input type="text" id="input-mobile-search" placeholder="Buscar por título ou tags…" class="flex h-9 w-full rounded-lg border border-input bg-card px-3 py-1 text-sm shadow-sm pl-9 focus:outline-none focus:ring-1 focus:ring-ring">
+        <!-- HEADER TABLET (768px–1023px) -->
+        <div id="tablet-header" class="hidden md:block lg:hidden">
+          <!-- Linha 1: Identidade + Resumo à esquerda, Ações à direita -->
+          <div class="flex items-center justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <div id="tablet-project-badge"
+                  class="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-2.5 py-0.5 text-xs text-muted-foreground">
+                  <i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i>
+                  <span id="tablet-project-badge-text">Roadmap 2026</span>
+                </div>
+                <div id="tablet-static-mode-badge"
+                  class="hidden items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-500">
+                  <i data-lucide="wifi-off" class="h-3.5 w-3.5"></i> Modo estático
+                </div>
+              </div>
+              <h1 id="tablet-project-name" class="text-xl font-bold tracking-tight text-foreground truncate">
+                Kanban & Roadmap Interativo
+              </h1>
+              <span id="tablet-stats-summary" class="text-xs text-muted-foreground block truncate mt-0.5">
+                0 tarefas · 0% concluído
+              </span>
+            </div>
+
+            <!-- Botões de Ação (Exportar, Importar, Configurações) -->
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="btn-tablet-export-json"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm"
+                title="Exportar dados (JSON)">
+                <i data-lucide="download" class="h-4 w-4"></i>
+              </button>
+              <button id="btn-tablet-import-json"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm"
+                title="Importar dados (JSON)">
+                <i data-lucide="upload" class="h-4 w-4"></i>
+              </button>
+              <button id="btn-tablet-settings" onclick="openSettings()"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm"
+                title="Configurações">
+                <i data-lucide="settings" class="h-4 w-4"></i>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Linha 1 Expansível: Painel de Filtros Mobile -->
-        <div id="mobile-filter-panel" class="hidden mt-3 rounded-lg border border-border bg-card p-3 space-y-3 shadow-md">
-          <div class="grid grid-cols-2 gap-2">
-            <select id="select-mobile-category" class="flex h-8 w-full rounded-md border border-input bg-background text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
-              <option value="all">Categorias</option>
-              <option value="bugs">🐛 Bugs</option>
-              <option value="features">✨ Features</option>
-              <option value="enhancements">🔧 Melhorias</option>
-              <option value="refactoring">♻️ Refactoring</option>
-            </select>
-
-            <select id="select-mobile-area" class="flex h-8 w-full rounded-md border border-input bg-background text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
-              <option value="all">Áreas</option>
-              <option value="active">Ativos</option>
-              <option value="archive">Arquivados</option>
-            </select>
+          <!-- Linha 2: Slim Stats Grid (4 colunas) -->
+          <div
+            class="grid grid-cols-4 gap-2 mt-4 py-2.5 px-3 rounded-lg border border-border/80 bg-card/60 text-center">
+            <div>
+              <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Tarefas</div>
+              <div id="tablet-stat-total" class="text-base font-semibold tabular-nums text-foreground">0</div>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Concluídas</div>
+              <div id="tablet-stat-done" class="text-base font-semibold tabular-nums text-green-500">0</div>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Em Execução</div>
+              <div id="tablet-stat-progress" class="text-base font-semibold tabular-nums text-yellow-500">0</div>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Progresso Médio</div>
+              <div id="tablet-stat-avg" class="text-base font-semibold tabular-nums text-primary">0%</div>
+            </div>
           </div>
 
-          <div>
-            <div class="text-[10px] font-semibold uppercase text-muted-foreground mb-1.5">Prioridade</div>
-            <div class="flex flex-wrap items-center gap-1.5" id="mobile-priority-filters">
+          <!-- Linha 3: Controles Organizados (Visão, Busca, Filtros, Prioridades) -->
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <!-- Toggle Visão -->
+              <div class="inline-flex rounded-lg border border-border bg-card p-1">
+                <button id="btn-tablet-view-kanban" onclick="setView('kanban')"
+                  class="inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 bg-primary text-primary-foreground shadow cursor-pointer">
+                  <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i> Kanban
+                </button>
+                <button id="btn-tablet-view-roadmap" onclick="setView('roadmap')"
+                  class="inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 hover:bg-muted hover:text-foreground cursor-pointer">
+                  <i data-lucide="git-branch" class="h-3.5 w-3.5"></i> Roadmap
+                </button>
+              </div>
+
+              <!-- Busca -->
+              <div class="relative w-44">
+                <i data-lucide="search"
+                  class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"></i>
+                <input type="text" id="input-tablet-search" placeholder="Buscar por título ou tags…"
+                  class="flex h-8 w-full rounded-md border border-input bg-card px-2.5 py-1 text-xs shadow-sm pl-8 focus:outline-none focus:ring-1 focus:ring-ring">
+              </div>
+
+              <!-- Categoria -->
+              <div class="relative w-36">
+                <select id="select-tablet-category"
+                  class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
+                  <option value="all">Categorias</option>
+                  <option value="bugs">🐛 Bugs</option>
+                  <option value="features">✨ Features</option>
+                  <option value="enhancements">🔧 Melhorias</option>
+                  <option value="refactoring">♻️ Refactoring</option>
+                </select>
+              </div>
+
+              <!-- Área -->
+              <div class="relative w-28">
+                <select id="select-tablet-area"
+                  class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
+                  <option value="all">Áreas</option>
+                  <option value="active">Ativos</option>
+                  <option value="archive">Arquivados</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Prioridades -->
+            <div class="flex items-center gap-1.5" id="tablet-priority-filters">
               <!-- Renderizado dinamicamente pelo JS -->
             </div>
           </div>
         </div>
 
-        <!-- Linha 2: Faixa fina de Estatísticas (Grid 4 colunas) -->
-        <div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-1 rounded-lg border border-border/80 bg-card/60 text-center">
-          <div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Tarefas</div>
-            <div id="mobile-stat-total" class="text-sm font-semibold tabular-nums text-foreground">0</div>
-          </div>
-          <div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Concluídas</div>
-            <div id="mobile-stat-done" class="text-sm font-semibold tabular-nums text-green-500">0</div>
-          </div>
-          <div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Em Exec.</div>
-            <div id="mobile-stat-progress" class="text-sm font-semibold tabular-nums text-yellow-500">0</div>
-          </div>
-          <div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Progresso</div>
-            <div id="mobile-stat-avg" class="text-sm font-semibold tabular-nums text-primary">0%</div>
-          </div>
-        </div>
+        <!-- HEADER DESKTOP (>= 1024px) -->
+        <div id="desktop-header" class="hidden lg:block">
+          <div class="flex flex-wrap items-start justify-between gap-6">
+            <div id="header-identity" class="transition-opacity duration-200 opacity-0">
+              <div class="mb-2 flex items-center gap-2 flex-wrap">
+                <div id="project-badge"
+                  class="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
+                  <i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i>
+                  Roadmap 2026 · Produto
+                </div>
 
-        <!-- Linha 3: Toggle Kanban / Roadmap -->
-        <div class="flex rounded-lg border border-border bg-card p-1 mt-3">
-          <button id="btn-mobile-view-kanban" onclick="setView('kanban')" class="flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 bg-primary text-primary-foreground shadow cursor-pointer">
-            <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i> Kanban
-          </button>
-          <button id="btn-mobile-view-roadmap" onclick="setView('roadmap')" class="flex-1 inline-flex items-center justify-center rounded-md text-xs font-medium h-7 gap-1 hover:bg-muted hover:text-foreground cursor-pointer">
-            <i data-lucide="git-branch" class="h-3.5 w-3.5"></i> Roadmap
-          </button>
-        </div>
-      </div>
+                <!-- Indicador de Modo Estático -->
+                <div id="static-mode-badge"
+                  class="relative hidden items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-500 dark:text-amber-400 transition-all duration-200">
+                  <i data-lucide="wifi-off" class="h-3.5 w-3.5"></i>
+                  <span>Modo estático</span>
+                  <button id="btn-static-info"
+                    class="ml-0.5 rounded-full p-0.5 hover:bg-amber-500/20 text-amber-500 dark:text-amber-400 cursor-pointer focus:outline-none"
+                    title="Saiba mais sobre o modo estático">
+                    <i data-lucide="help-circle" class="h-3.5 w-3.5"></i>
+                  </button>
 
-      <!-- HEADER TABLET (768px–1023px) -->
-      <div id="tablet-header" class="hidden md:block lg:hidden">
-        <!-- Linha 1: Identidade + Resumo à esquerda, Ações à direita -->
-        <div class="flex items-center justify-between gap-4">
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2 flex-wrap mb-1">
-              <div id="tablet-project-badge" class="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-2.5 py-0.5 text-xs text-muted-foreground">
-                <i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i>
-                <span id="tablet-project-badge-text">Roadmap 2026</span>
-              </div>
-              <div id="tablet-static-mode-badge" class="hidden items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-500">
-                <i data-lucide="wifi-off" class="h-3.5 w-3.5"></i> Modo estático
-              </div>
-            </div>
-            <h1 id="tablet-project-name" class="text-xl font-bold tracking-tight text-foreground truncate">
-              Kanban & Roadmap Interativo
-            </h1>
-            <span id="tablet-stats-summary" class="text-xs text-muted-foreground block truncate mt-0.5">
-              0 tarefas · 0% concluído
-            </span>
-          </div>
-
-          <!-- Botões de Ação (Exportar, Importar, Configurações) -->
-          <div class="flex items-center gap-2 shrink-0">
-            <button id="btn-tablet-export-json" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm" title="Exportar dados (JSON)">
-              <i data-lucide="download" class="h-4 w-4"></i>
-            </button>
-            <button id="btn-tablet-import-json" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm" title="Importar dados (JSON)">
-              <i data-lucide="upload" class="h-4 w-4"></i>
-            </button>
-            <button id="btn-tablet-settings" onclick="openSettings()" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50 active:scale-95 active:bg-muted/80 transition-all duration-150 cursor-pointer shadow-sm" title="Configurações">
-              <i data-lucide="settings" class="h-4 w-4"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Linha 2: Slim Stats Grid (4 colunas) -->
-        <div class="grid grid-cols-4 gap-2 mt-4 py-2.5 px-3 rounded-lg border border-border/80 bg-card/60 text-center">
-          <div>
-            <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Tarefas</div>
-            <div id="tablet-stat-total" class="text-base font-semibold tabular-nums text-foreground">0</div>
-          </div>
-          <div>
-            <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Concluídas</div>
-            <div id="tablet-stat-done" class="text-base font-semibold tabular-nums text-green-500">0</div>
-          </div>
-          <div>
-            <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Em Execução</div>
-            <div id="tablet-stat-progress" class="text-base font-semibold tabular-nums text-yellow-500">0</div>
-          </div>
-          <div>
-            <div class="text-[10px] uppercase tracking-wide text-muted-foreground">Progresso Médio</div>
-            <div id="tablet-stat-avg" class="text-base font-semibold tabular-nums text-primary">0%</div>
-          </div>
-        </div>
-
-        <!-- Linha 3: Controles Organizados (Visão, Busca, Filtros, Prioridades) -->
-        <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex flex-wrap items-center gap-2.5">
-            <!-- Toggle Visão -->
-            <div class="inline-flex rounded-lg border border-border bg-card p-1">
-              <button id="btn-tablet-view-kanban" onclick="setView('kanban')" class="inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 bg-primary text-primary-foreground shadow cursor-pointer">
-                <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i> Kanban
-              </button>
-              <button id="btn-tablet-view-roadmap" onclick="setView('roadmap')" class="inline-flex items-center justify-center rounded-md text-xs font-medium h-7 px-3 gap-1 hover:bg-muted hover:text-foreground cursor-pointer">
-                <i data-lucide="git-branch" class="h-3.5 w-3.5"></i> Roadmap
-              </button>
-            </div>
-
-            <!-- Busca -->
-            <div class="relative w-44">
-              <i data-lucide="search" class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"></i>
-              <input type="text" id="input-tablet-search" placeholder="Buscar por título ou tags…" class="flex h-8 w-full rounded-md border border-input bg-card px-2.5 py-1 text-xs shadow-sm pl-8 focus:outline-none focus:ring-1 focus:ring-ring">
-            </div>
-
-            <!-- Categoria -->
-            <div class="relative w-36">
-              <select id="select-tablet-category" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
-                <option value="all">Categorias</option>
-                <option value="bugs">🐛 Bugs</option>
-                <option value="features">✨ Features</option>
-                <option value="enhancements">🔧 Melhorias</option>
-                <option value="refactoring">♻️ Refactoring</option>
-              </select>
-            </div>
-
-            <!-- Área -->
-            <div class="relative w-28">
-              <select id="select-tablet-area" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-2 py-1 text-xs shadow-sm cursor-pointer">
-                <option value="all">Áreas</option>
-                <option value="active">Ativos</option>
-                <option value="archive">Arquivados</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Prioridades -->
-          <div class="flex items-center gap-1.5" id="tablet-priority-filters">
-            <!-- Renderizado dinamicamente pelo JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- HEADER DESKTOP (>= 1024px) -->
-      <div id="desktop-header" class="hidden lg:block">
-        <div class="flex flex-wrap items-start justify-between gap-6">
-          <div id="header-identity" class="transition-opacity duration-200 opacity-0">
-            <div class="mb-2 flex items-center gap-2 flex-wrap">
-              <div id="project-badge" class="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground">
-                <i data-lucide="sparkles" class="h-3.5 w-3.5 text-primary"></i>
-                Roadmap 2026 · Produto
-              </div>
-              
-              <!-- Indicador de Modo Estático -->
-              <div id="static-mode-badge" class="relative hidden items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-500 dark:text-amber-400 transition-all duration-200">
-                <i data-lucide="wifi-off" class="h-3.5 w-3.5"></i>
-                <span>Modo estático</span>
-                <button id="btn-static-info" class="ml-0.5 rounded-full p-0.5 hover:bg-amber-500/20 text-amber-500 dark:text-amber-400 cursor-pointer focus:outline-none" title="Saiba mais sobre o modo estático">
-                  <i data-lucide="help-circle" class="h-3.5 w-3.5"></i>
-                </button>
-                
-                <!-- Popover de Informação do Modo Estático -->
-                <div id="static-mode-popover" class="absolute left-0 top-full mt-2 w-80 hidden rounded-lg border border-border bg-card p-3.5 text-xs text-foreground shadow-xl z-[70] leading-relaxed">
-                  <div class="font-semibold mb-1 flex items-center gap-1.5 text-amber-500 dark:text-amber-400">
-                    <i data-lucide="info" class="h-4 w-4"></i>
-                    Modo Estático (Sem servidor)
+                  <!-- Popover de Informação do Modo Estático -->
+                  <div id="static-mode-popover"
+                    class="absolute left-0 top-full mt-2 w-80 hidden rounded-lg border border-border bg-card p-3.5 text-xs text-foreground shadow-xl z-[70] leading-relaxed">
+                    <div class="font-semibold mb-1 flex items-center gap-1.5 text-amber-500 dark:text-amber-400">
+                      <i data-lucide="info" class="h-4 w-4"></i>
+                      Modo Estático (Sem servidor)
+                    </div>
+                    <p class="text-muted-foreground mb-2">
+                      Este roadmap está sendo visualizado sem o servidor de atualização ativo, mostrando um snapshot dos
+                      dados.
+                    </p>
+                    <div class="rounded border border-border/60 bg-muted/40 p-2 font-mono text-[11px] text-foreground">
+                      node roadmap/roadmap-server.js
+                    </div>
+                    <p id="static-mode-instruction" class="text-[11px] text-muted-foreground mt-2">
+                      Rode o comando acima no terminal na raiz do projeto. O endereço para acessar (com a porta
+                      configurada) aparecerá no terminal ao iniciar o servidor.
+                    </p>
                   </div>
-                  <p class="text-muted-foreground mb-2">
-                    Este roadmap está sendo visualizado sem o servidor de atualização ativo, mostrando um snapshot dos dados.
-                  </p>
-                  <div class="rounded border border-border/60 bg-muted/40 p-2 font-mono text-[11px] text-foreground">
-                    node roadmap/roadmap-server.js
-                  </div>
-                  <p id="static-mode-instruction" class="text-[11px] text-muted-foreground mt-2">
-                    Rode o comando acima no terminal na raiz do projeto. O endereço para acessar (com a porta configurada) aparecerá no terminal ao iniciar o servidor.
-                  </p>
                 </div>
               </div>
+              <h1 id="project-name" class="text-3xl font-semibold tracking-tight md:text-4xl">
+                Kanban & Roadmap Interativo
+              </h1>
+              <p id="project-description" class="mt-2 max-w-2xl text-sm text-muted-foreground">
+                Arraste tarefas entre colunas, alterne para a visão de roadmap por trimestre e
+                clique em qualquer card para ver detalhes, subtarefas e progresso.
+              </p>
             </div>
-            <h1 id="project-name" class="text-3xl font-semibold tracking-tight md:text-4xl">
-              Kanban & Roadmap Interativo
-            </h1>
-            <p id="project-description" class="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Arraste tarefas entre colunas, alterne para a visão de roadmap por trimestre e
-              clique em qualquer card para ver detalhes, subtarefas e progresso.
-            </p>
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-4" id="stats-container">
+              <!-- Estatísticas serão renderizadas aqui pelo JS -->
+            </div>
           </div>
-          <div class="grid grid-cols-2 gap-3 lg:grid-cols-4" id="stats-container">
-            <!-- Estatísticas serão renderizadas aqui pelo JS -->
-          </div>
-        </div>
 
-        <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
-          <!-- Grupo Esquerdo - Visualização de dados e Filtros -->
-          <div class="flex flex-wrap items-center gap-3">
-            <!-- Controles de Visão -->
-            <div class="inline-flex rounded-lg border border-border bg-card p-1">
-              <button id="btn-view-kanban" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow cursor-pointer">
-                <i data-lucide="layout-grid" class="h-4 w-4"></i> Kanban
+          <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <!-- Grupo Esquerdo - Visualização de dados e Filtros -->
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Controles de Visão -->
+              <div class="inline-flex rounded-lg border border-border bg-card p-1">
+                <button id="btn-view-kanban"
+                  class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-8 px-3 gap-1.5 bg-primary text-primary-foreground shadow cursor-pointer">
+                  <i data-lucide="layout-grid" class="h-4 w-4"></i> Kanban
+                </button>
+                <button id="btn-view-roadmap"
+                  class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted hover:text-foreground h-8 px-3 gap-1.5 cursor-pointer">
+                  <i data-lucide="git-branch" class="h-4 w-4"></i> Roadmap
+                </button>
+              </div>
+
+              <!-- Busca -->
+              <div class="relative min-w-[200px] max-w-xs">
+                <i data-lucide="search"
+                  class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
+                <input type="text" id="input-search" placeholder="Buscar por título ou tags…"
+                  class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 hover:border-primary/50">
+              </div>
+
+              <!-- Filtro de Categoria -->
+              <div class="relative min-w-[140px]">
+                <select id="select-category"
+                  class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                  <option value="all">Categorias</option>
+                  <option value="bugs">🐛 Bugs</option>
+                  <option value="features">✨ Features</option>
+                  <option value="enhancements">🔧 Melhorias</option>
+                  <option value="refactoring">♻️ Refactoring</option>
+                </select>
+              </div>
+
+              <!-- Filtro de Área -->
+              <div class="relative min-w-[110px]">
+                <select id="select-area"
+                  class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                  <option value="all">Áreas</option>
+                  <option value="active">Ativos</option>
+                  <option value="archive">Arquivados</option>
+                </select>
+              </div>
+
+              <!-- Filtros de Prioridade -->
+              <div class="flex items-center gap-1.5" id="priority-filters">
+                <!-- Filtros renderizados por JS -->
+              </div>
+            </div>
+
+            <!-- Grupo Direito - Ações -->
+            <div class="flex items-center gap-2">
+              <!-- Importar/Exportar -->
+              <button id="btn-export-json"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm"
+                title="Exportar dados (JSON)">
+                <i data-lucide="download" class="h-4 w-4"></i>
               </button>
-              <button id="btn-view-roadmap" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-muted hover:text-foreground h-8 px-3 gap-1.5 cursor-pointer">
-                <i data-lucide="git-branch" class="h-4 w-4"></i> Roadmap
+              <button id="btn-import-json"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm"
+                title="Importar dados (JSON)">
+                <i data-lucide="upload" class="h-4 w-4"></i>
+              </button>
+              <input type="file" id="input-file-json" accept=".json" class="hidden">
+
+              <!-- Configurações (Engrenagem) -->
+              <button id="btn-open-settings"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm"
+                title="Configurações">
+                <i data-lucide="settings" class="h-4 w-4"></i>
               </button>
             </div>
-
-            <!-- Busca -->
-            <div class="relative min-w-[200px] max-w-xs">
-              <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
-              <input type="text" id="input-search" placeholder="Buscar por título ou tags…" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-9 hover:border-primary/50">
-            </div>
-
-            <!-- Filtro de Categoria -->
-            <div class="relative min-w-[140px]">
-              <select id="select-category" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                <option value="all">Categorias</option>
-                <option value="bugs">🐛 Bugs</option>
-                <option value="features">✨ Features</option>
-                <option value="enhancements">🔧 Melhorias</option>
-                <option value="refactoring">♻️ Refactoring</option>
-              </select>
-            </div>
-
-            <!-- Filtro de Área -->
-            <div class="relative min-w-[110px]">
-              <select id="select-area" class="flex h-8 w-full rounded-md border border-input bg-card text-muted-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                <option value="all">Áreas</option>
-                <option value="active">Ativos</option>
-                <option value="archive">Arquivados</option>
-              </select>
-            </div>
-
-            <!-- Filtros de Prioridade -->
-            <div class="flex items-center gap-1.5" id="priority-filters">
-              <!-- Filtros renderizados por JS -->
-            </div>
-          </div>
-
-          <!-- Grupo Direito - Ações -->
-          <div class="flex items-center gap-2">
-            <!-- Importar/Exportar -->
-            <button id="btn-export-json" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm" title="Exportar dados (JSON)">
-              <i data-lucide="download" class="h-4 w-4"></i>
-            </button>
-            <button id="btn-import-json" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm" title="Importar dados (JSON)">
-              <i data-lucide="upload" class="h-4 w-4"></i>
-            </button>
-            <input type="file" id="input-file-json" accept=".json" class="hidden">
-
-            <!-- Configurações (Engrenagem) -->
-            <button id="btn-open-settings" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground hover:border-primary/50 cursor-pointer shadow-sm" title="Configurações">
-              <i data-lucide="settings" class="h-4 w-4"></i>
-            </button>
           </div>
         </div>
       </div>
-    </div>
     </div>
   </header>
 
@@ -435,10 +491,11 @@
   <div id="task-modal" class="fixed inset-0 z-50 hidden">
     <!-- Fundo Escuro -->
     <div class="fixed inset-0 bg-background/80 backdrop-blur-sm modal-overlay" id="task-modal-backdrop"></div>
-    
+
     <!-- Painel do Modal -->
-    <div class="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[90vh] flex-col rounded-t-[20px] border border-border bg-background sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:mt-0 sm:h-auto sm:max-h-[85vh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl shadow-lg modal-content">
-      
+    <div
+      class="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-[90vh] flex-col rounded-t-[20px] border border-border bg-background sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:mt-0 sm:h-auto sm:max-h-[85vh] sm:w-full sm:max-w-2xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl shadow-lg modal-content">
+
       <!-- Header do Modal -->
       <div class="flex items-start justify-between border-b border-border/50 px-6 py-4">
         <div class="flex items-center gap-2 flex-wrap" id="modal-header-badges">
@@ -447,14 +504,18 @@
         <div class="flex items-center gap-1">
           <!-- Info Button with Popover -->
           <div class="relative">
-            <button id="btn-info-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer" title="Instruções de edição">
+            <button id="btn-info-modal"
+              class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer"
+              title="Instruções de edição">
               <i data-lucide="help-circle" class="h-4 w-4"></i>
             </button>
-            <div id="info-tooltip" class="absolute right-0 top-full mt-2 w-72 hidden rounded-lg border border-border bg-card p-3 shadow-lg z-[70]">
+            <div id="info-tooltip"
+              class="absolute right-0 top-full mt-2 w-72 hidden rounded-lg border border-border bg-card p-3 shadow-lg z-[70]">
               <!-- Conteúdo preenchido via JS -->
             </div>
           </div>
-          <button id="btn-close-modal" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
+          <button id="btn-close-modal"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
             <i data-lucide="x" class="h-4 w-4"></i>
           </button>
         </div>
@@ -464,7 +525,7 @@
       <div class="flex-1 overflow-y-auto px-6 py-6" id="modal-body">
         <!-- Renderizado via JS -->
       </div>
-      
+
       <!-- Footer do Modal (Ações) -->
       <div class="flex items-center justify-between border-t border-border/50 bg-muted/20 px-6 py-4" id="modal-footer">
         <!-- Renderizado via JS -->
@@ -478,18 +539,22 @@
     <div class="fixed inset-0 bg-background/80 backdrop-blur-sm modal-overlay" id="welcome-modal-backdrop"></div>
 
     <!-- Painel do Modal (sm:max-w-lg para evitar cortes) -->
-    <div class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content welcome-modal-content overflow-hidden">
-      
+    <div
+      class="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 rounded-xl border border-border bg-card shadow-2xl modal-content welcome-modal-content overflow-hidden">
+
       <!-- MOMENTO 1: Tela de Apresentação -->
       <div id="welcome-intro" class="welcome-moment flex flex-col">
         <!-- Header do Intro -->
-        <div class="flex flex-col items-center text-center px-6 pt-6 pb-5 bg-muted/20 border-b border-border/50 relative">
-          <button id="btn-close-welcome" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
+        <div
+          class="flex flex-col items-center text-center px-6 pt-6 pb-5 bg-muted/20 border-b border-border/50 relative">
+          <button id="btn-close-welcome"
+            class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
             <i data-lucide="x" class="h-4 w-4"></i>
           </button>
 
           <!-- 1. Ícone grande -->
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 mb-3 shadow-sm">
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 mb-3 shadow-sm">
             <i data-lucide="layout-grid" class="h-6 w-6"></i>
           </div>
 
@@ -497,9 +562,11 @@
           <h2 id="welcome-title" class="text-xl font-bold leading-tight tracking-tight text-foreground">Devboard</h2>
 
           <!-- 3. Seletor de Modo de Cor (Light / Dark / System) -->
-          <div class="mt-2.5 mb-2 flex items-center gap-2 bg-background/80 border border-border/80 rounded-lg p-1.5 shadow-sm">
+          <div
+            class="mt-2.5 mb-2 flex items-center gap-2 bg-background/80 border border-border/80 rounded-lg p-1.5 shadow-sm">
             <span class="text-[11px] font-medium text-muted-foreground pl-1.5">Modo de Cor:</span>
-            <button id="btn-welcome-theme-toggle" class="inline-flex items-center justify-center rounded-md border border-input bg-card px-2.5 py-1 text-xs font-semibold text-foreground transition-all duration-150 hover:bg-muted hover:text-foreground cursor-pointer gap-1.5 shadow-xs">
+            <button id="btn-welcome-theme-toggle"
+              class="inline-flex items-center justify-center rounded-md border border-input bg-card px-2.5 py-1 text-xs font-semibold text-foreground transition-all duration-150 hover:bg-muted hover:text-foreground cursor-pointer gap-1.5 shadow-xs">
               <i data-lucide="sun" class="h-3.5 w-3.5 hidden" id="icon-welcome-theme-sun"></i>
               <i data-lucide="moon" class="h-3.5 w-3.5 hidden" id="icon-welcome-theme-moon"></i>
               <i data-lucide="monitor" class="h-3.5 w-3.5" id="icon-welcome-theme-system"></i>
@@ -512,11 +579,12 @@
 
           <!-- 5. Parágrafo curto de contexto -->
           <p class="text-xs text-muted-foreground mt-2.5 leading-relaxed max-w-sm">
-            Seu planejamento mora na documentação. O Devboard lê essa documentação e transforma em um board interativo, sem banco de dados e sem conta.
+            Seu planejamento mora na documentação. O Devboard lê essa documentação e transforma em um board interativo, sem banco de dados, sem conta.
           </p>
 
           <!-- 6. Mensagem de chamada para o tutorial -->
-          <div class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
+          <div
+            class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
             <i data-lucide="clock" class="h-3.5 w-3.5"></i>
             Leva menos de 1 minuto para configurar tudo
           </div>
@@ -524,16 +592,19 @@
 
         <!-- 7. 3 Botões de Ação -->
         <div class="flex flex-col gap-2.5 p-6 bg-card">
-          <button id="btn-welcome-confirm" class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
+          <button id="btn-welcome-confirm"
+            class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
             Entendido, vamos lá!
             <i data-lucide="arrow-right" class="h-4 w-4"></i>
           </button>
 
           <div class="flex items-center justify-between pt-1">
-            <button id="btn-welcome-dismiss" class="text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+            <button id="btn-welcome-dismiss"
+              class="text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               Não mostrar novamente
             </button>
-            <button id="btn-welcome-later" class="text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+            <button id="btn-welcome-later"
+              class="text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               Ver depois
             </button>
           </div>
@@ -554,19 +625,22 @@
             </div>
             <span id="welcome-step-counter" class="text-[11px] font-semibold text-muted-foreground">1 / 5</span>
           </div>
-          <button id="btn-close-wizard" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
+          <button id="btn-close-wizard"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
             <i data-lucide="x" class="h-4 w-4"></i>
           </button>
         </div>
 
         <!-- Viewport do Slide -->
         <div class="welcome-slides-wrapper overflow-hidden relative">
-          <div class="welcome-slides-container flex transition-transform duration-300 ease-in-out" id="welcome-slides-container">
-            
+          <div class="welcome-slides-container flex transition-transform duration-300 ease-in-out"
+            id="welcome-slides-container">
+
             <!-- Slide 1: O que é o Devboard -->
             <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3.5 box-border" data-slide="0">
               <div class="flex items-center gap-2.5">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
+                <div
+                  class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
                   <i data-lucide="layout-grid" class="h-4 w-4"></i>
                 </div>
                 <div>
@@ -575,17 +649,23 @@
                 </div>
               </div>
               <p class="text-xs text-muted-foreground leading-relaxed break-words">
-                O Devboard é uma ferramenta local que lê a pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> do seu projeto e transforma os READMEs de planejamento em um Kanban interativo e um Roadmap visual, sem banco de dados, sem SaaS e sem conta.
+                O Devboard é uma ferramenta local que lê a pasta <code
+                  class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code>
+                do seu projeto e transforma os READMEs de planejamento em um Kanban interativo e um Roadmap visual, sem
+                banco de dados, sem SaaS, sem conta.
               </p>
-              <p class="text-xs font-medium text-foreground/90 bg-muted/40 p-3 rounded-lg border border-border/50 leading-relaxed">
-                ⚡ Tudo roda no seu computador ou na sua CI. Todas as tarefas ficam salvas como arquivos Markdown no seu repositório Git.
+              <p
+                class="text-xs font-medium text-foreground/90 bg-muted/40 p-3 rounded-lg border border-border/50 leading-relaxed">
+                ⚡ Tudo roda no seu computador ou na sua CI. Todas as tarefas ficam salvas como arquivos Markdown no seu
+                repositório Git.
               </p>
             </div>
 
             <!-- Slide 2: Configure a pasta /docs -->
             <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3.5 box-border" data-slide="1">
               <div class="flex items-center gap-2.5">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
+                <div
+                  class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
                   <i data-lucide="folder-open" class="h-4 w-4"></i>
                 </div>
                 <div>
@@ -594,17 +674,25 @@
                 </div>
               </div>
               <p class="text-xs text-muted-foreground leading-relaxed break-words">
-                Sua pasta <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code> precisa seguir a convenção esperada pelo Devboard. Se você ainda não tem uma estrutura, copie o template de exemplo de <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">docs/PADRONIZATION.md</code>.
+                Sua pasta <code
+                  class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">/docs</code>
+                precisa seguir a convenção esperada pelo Devboard. Se você ainda não tem uma estrutura, copie o template
+                de exemplo de <code
+                  class="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border/50">docs/PADRONIZATION.md</code>.
               </p>
               <p class="text-xs text-muted-foreground leading-relaxed break-words">
-                Cada subpasta em <code class="font-mono text-[11px]">/docs</code> representa uma categoria (ex: <code class="font-mono text-[11px]">features/</code>, <code class="font-mono text-[11px]">bugs/</code>, <code class="font-mono text-[11px]">infra/</code>). Cada <code class="font-mono text-[11px]">README.md</code> interno vira um card no Kanban.
+                Cada subpasta em <code class="font-mono text-[11px]">/docs</code> representa uma categoria (ex: <code
+                  class="font-mono text-[11px]">features/</code>, <code class="font-mono text-[11px]">bugs/</code>,
+                <code class="font-mono text-[11px]">infra/</code>). Cada <code
+                  class="font-mono text-[11px]">README.md</code> interno vira um card no Kanban.
               </p>
             </div>
 
             <!-- Slide 3: Rode o servidor local -->
             <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3.5 box-border" data-slide="2">
               <div class="flex items-center gap-2.5">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
+                <div
+                  class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
                   <i data-lucide="terminal" class="h-4 w-4"></i>
                 </div>
                 <div>
@@ -615,18 +703,22 @@
               <p class="text-xs text-muted-foreground leading-relaxed break-words">
                 Para sincronização e atualização automática em tempo real, execute no terminal:
               </p>
-              <div class="bg-muted p-2.5 rounded-md font-mono text-xs text-foreground border border-border/50 select-all font-semibold">
+              <div
+                class="bg-muted p-2.5 rounded-md font-mono text-xs text-foreground border border-border/50 select-all font-semibold">
                 node roadmap/roadmap-server.js
               </div>
               <p class="text-[11px] text-muted-foreground leading-relaxed break-words">
-                Sem o servidor, o board funciona em modo estático lendo o último snapshot commitado em <code class="font-mono text-[10px]">data.js</code>. Com ele, as mudanças nos arquivos em <code class="font-mono text-[10px]">/docs</code> aparecem automaticamente no quadro.
+                Sem o servidor, o board funciona em modo estático lendo o último snapshot commitado em <code
+                  class="font-mono text-[10px]">data.js</code>. Com ele, as mudanças nos arquivos em <code
+                  class="font-mono text-[10px]">/docs</code> aparecem automaticamente no quadro.
               </p>
             </div>
 
             <!-- Slide 4: Personalize o projeto -->
             <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3.5 box-border" data-slide="3">
               <div class="flex items-center gap-2.5">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
+                <div
+                  class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
                   <i data-lucide="sliders" class="h-4 w-4"></i>
                 </div>
                 <div>
@@ -635,17 +727,20 @@
                 </div>
               </div>
               <p class="text-xs text-muted-foreground leading-relaxed break-words">
-                No painel de Configurações (ícone de engrenagem no canto superior direito), você pode alterar o tema visual da aplicação, definir preferências de visualização e ajustar o intervalo de sincronização.
+                No painel de Configurações (ícone de engrenagem no canto superior direito), você pode alterar o tema
+                visual da aplicação, definir preferências de visualização e ajustar o intervalo de sincronização.
               </p>
               <p class="text-xs text-muted-foreground leading-relaxed break-words">
-                Você pode escolher entre 4 temas visuais exclusivos (Padrão, Terminal, Clean, Ficha de Arquivo) e alternar entre os modos claro, escuro ou seguir a preferência do sistema operacional.
+                Você pode escolher entre 4 temas visuais exclusivos (Padrão, Terminal, Clean, Ficha de Arquivo) e
+                alternar entre os modos claro, escuro ou seguir a preferência do sistema operacional.
               </p>
             </div>
 
             <!-- Slide 5: Identidade do Projeto -->
             <div class="welcome-slide w-full shrink-0 flex-none p-6 space-y-3.5 box-border" data-slide="4">
               <div class="flex items-center gap-2.5">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
+                <div
+                  class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm shrink-0">
                   <i data-lucide="settings" class="h-4 w-4"></i>
                 </div>
                 <div>
@@ -655,22 +750,30 @@
               </div>
 
               <!-- Aviso de Modo Demo / Somente leitura -->
-              <div id="wizard-demo-mode-notice" class="hidden text-[11px] font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md p-2 flex items-center gap-1.5">
-                <i data-lucide="lock" class="h-3.5 w-3.5 shrink-0"></i> Edição indisponível no modo demo (somente leitura).
+              <div id="wizard-demo-mode-notice"
+                class="hidden text-[11px] font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md p-2 flex items-center gap-1.5">
+                <i data-lucide="lock" class="h-3.5 w-3.5 shrink-0"></i> Edição indisponível no modo demo (somente
+                leitura).
               </div>
 
               <div class="space-y-2.5 text-left">
                 <div>
-                  <label for="wizard-project-name" class="text-xs font-medium text-muted-foreground block mb-1">Nome do Projeto</label>
-                  <input type="text" id="wizard-project-name" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                  <label for="wizard-project-name" class="text-xs font-medium text-muted-foreground block mb-1">Nome do
+                    Projeto</label>
+                  <input type="text" id="wizard-project-name"
+                    class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 </div>
                 <div>
-                  <label for="wizard-project-description" class="text-xs font-medium text-muted-foreground block mb-1">Descrição</label>
-                  <textarea id="wizard-project-description" rows="2" class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
+                  <label for="wizard-project-description"
+                    class="text-xs font-medium text-muted-foreground block mb-1">Descrição</label>
+                  <textarea id="wizard-project-description" rows="2"
+                    class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
                 </div>
                 <div>
-                  <label for="wizard-project-badge" class="text-xs font-medium text-muted-foreground block mb-1">Selo / Badge</label>
-                  <input type="text" id="wizard-project-badge" class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                  <label for="wizard-project-badge" class="text-xs font-medium text-muted-foreground block mb-1">Selo /
+                    Badge</label>
+                  <input type="text" id="wizard-project-badge"
+                    class="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 </div>
               </div>
             </div>
@@ -681,18 +784,22 @@
         <!-- Rodapé de Navegação do Wizard -->
         <div class="flex items-center justify-between border-t border-border/50 bg-muted/20 px-6 py-3.5">
           <div id="welcome-footer-left" class="flex items-center">
-            <a href="#" id="btn-welcome-skip" class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer no-underline">
+            <a href="#" id="btn-welcome-skip"
+              class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer no-underline">
               Pular tutorial
             </a>
           </div>
           <div id="welcome-footer-right" class="flex items-center gap-2">
-            <button id="btn-welcome-prev" class="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground cursor-pointer">
+            <button id="btn-welcome-prev"
+              class="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground cursor-pointer">
               ← Voltar
             </button>
-            <button id="btn-welcome-next" class="inline-flex items-center gap-1 rounded-md bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
+            <button id="btn-welcome-next"
+              class="inline-flex items-center gap-1 rounded-md bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer">
               Próximo →
             </button>
-            <button id="btn-welcome-finish" class="items-center gap-1 rounded-md bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer hidden">
+            <button id="btn-welcome-finish"
+              class="items-center gap-1 rounded-md bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer hidden">
               <i data-lucide="check" class="h-3.5 w-3.5"></i>
               Concluir
             </button>
@@ -708,42 +815,48 @@
   <div id="settings-drawer" class="fixed inset-0 z-50 hidden">
     <!-- Overlay Escuro -->
     <div class="fixed inset-0 bg-background/80 backdrop-blur-sm drawer-overlay" id="settings-drawer-backdrop"></div>
-    
+
     <!-- Painel do Drawer -->
-    <div class="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-background shadow-2xl drawer-content">
+    <div
+      class="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-background shadow-2xl drawer-content">
       <!-- Header do Drawer -->
       <div class="flex items-center justify-between border-b border-border/50 px-6 py-4">
         <h3 class="text-base font-semibold flex items-center gap-2">
           <i data-lucide="settings" class="h-4 w-4 text-primary"></i>
           Configurações
         </h3>
-        <button id="btn-close-settings" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
+        <button id="btn-close-settings"
+          class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground cursor-pointer">
           <i data-lucide="x" class="h-4 w-4"></i>
         </button>
       </div>
 
       <!-- Conteúdo do Drawer -->
       <div class="flex-1 overflow-y-auto p-6 space-y-6">
-        <!-- Grupo 1: Aparência -->
+        <!-- Grupo 1, Aparência -->
         <div class="space-y-4">
           <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Aparência</h4>
           <div class="space-y-3">
             <div>
-              <label for="select-visual-theme" class="text-xs font-medium text-muted-foreground block mb-1.5">Tema Visual</label>
-              <select id="select-visual-theme" class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <label for="select-visual-theme" class="text-xs font-medium text-muted-foreground block mb-1.5">Tema
+                Visual</label>
+              <select id="select-visual-theme"
+                class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 <option value="default">Padrão</option>
                 <option value="terminal">Terminal</option>
                 <option value="clean">Clean</option>
                 <option value="ficha">Ficha de Arquivo</option>
               </select>
             </div>
-            
+
             <div class="flex items-center justify-between py-1.5 border-t border-border/30 mt-3">
               <div>
                 <label class="text-xs font-medium text-foreground block">Modo de Cor</label>
                 <span class="text-[11px] text-muted-foreground">Sistema, Escuro ou Claro</span>
               </div>
-              <button id="btn-theme-toggle" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer" aria-label="Alternar modo de cor">
+              <button id="btn-theme-toggle"
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer"
+                aria-label="Alternar modo de cor">
                 <i data-lucide="sun" class="h-4 w-4 hidden" id="icon-theme-sun"></i>
                 <i data-lucide="moon" class="h-4 w-4 hidden" id="icon-theme-moon"></i>
                 <i data-lucide="monitor" class="h-4 w-4" id="icon-theme-system"></i>
@@ -753,7 +866,7 @@
           </div>
         </div>
 
-        <!-- Grupo 2: Comportamento -->
+        <!-- Grupo 2, Comportamento -->
         <div class="space-y-4 pt-4 border-t border-border/50">
           <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Comportamento</h4>
           <div class="space-y-3">
@@ -762,7 +875,9 @@
                 <label class="text-xs font-medium text-foreground block">Ocultar Cancelados</label>
                 <span class="text-[11px] text-muted-foreground">Ocultar colunas e cards cancelados</span>
               </div>
-              <button id="btn-toggle-cancelled" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer" title="Ocultar tarefas canceladas">
+              <button id="btn-toggle-cancelled"
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none border border-input bg-background shadow-sm hover:bg-muted hover:text-foreground hover:border-primary/50 h-8 px-3 gap-1.5 cursor-pointer"
+                title="Ocultar tarefas canceladas">
                 <i data-lucide="eye-off" class="h-4 w-4" id="icon-cancelled-off"></i>
                 <i data-lucide="eye" class="h-4 w-4 hidden" id="icon-cancelled-on"></i>
                 <span id="text-cancelled">Ocultar cancelados</span>
@@ -770,8 +885,10 @@
             </div>
 
             <div class="border-t border-border/30 pt-3">
-              <label for="select-polling-interval" class="text-xs font-medium text-muted-foreground block mb-1.5">Atualização Automática (Polling)</label>
-              <select id="select-polling-interval" class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <label for="select-polling-interval"
+                class="text-xs font-medium text-muted-foreground block mb-1.5">Atualização Automática (Polling)</label>
+              <select id="select-polling-interval"
+                class="flex h-9 w-full rounded-md border border-input bg-card text-foreground px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 <option value="2500">2.5 segundos (Padrão)</option>
                 <option value="5000">5 segundos</option>
                 <option value="10000">10 segundos</option>
@@ -781,46 +898,58 @@
           </div>
         </div>
 
-        <!-- Grupo 3: Identidade do Projeto -->
+        <!-- Grupo 3, Identidade do Projeto -->
         <div class="space-y-4 pt-4 border-t border-border/50">
           <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Identidade do Projeto</h4>
           <p class="text-[11px] text-muted-foreground leading-relaxed">
-            Diferente das opções acima (que salvam no seu navegador), estes campos são salvos no servidor e exibidos para todos.
+            Diferente das opções acima (que salvam no seu navegador), estes campos são salvos no servidor e exibidos
+            para todos.
           </p>
-          <div id="demo-mode-notice" class="hidden text-[11px] font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md p-2 flex items-center gap-1.5">
+          <div id="demo-mode-notice"
+            class="hidden text-[11px] font-medium text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-md p-2 flex items-center gap-1.5">
             <i data-lucide="lock" class="h-3.5 w-3.5 shrink-0"></i> Edição indisponível no modo demo (somente leitura).
           </div>
           <div class="space-y-3">
             <div>
-              <label for="input-project-name" class="text-xs font-medium text-muted-foreground block mb-1">Nome do Projeto</label>
-              <input type="text" id="input-project-name" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <label for="input-project-name" class="text-xs font-medium text-muted-foreground block mb-1">Nome do
+                Projeto</label>
+              <input type="text" id="input-project-name"
+                class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
             </div>
             <div>
-              <label for="input-project-description" class="text-xs font-medium text-muted-foreground block mb-1">Descrição</label>
-              <textarea id="input-project-description" rows="3" class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
+              <label for="input-project-description"
+                class="text-xs font-medium text-muted-foreground block mb-1">Descrição</label>
+              <textarea id="input-project-description" rows="3"
+                class="flex w-full rounded-md border border-input bg-transparent px-3 py-1.5 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"></textarea>
             </div>
             <div>
-              <label for="input-project-badge" class="text-xs font-medium text-muted-foreground block mb-1">Selo / Badge</label>
-              <input type="text" id="input-project-badge" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+              <label for="input-project-badge" class="text-xs font-medium text-muted-foreground block mb-1">Selo /
+                Badge</label>
+              <input type="text" id="input-project-badge"
+                class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors duration-150 hover:border-primary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
             </div>
-            <button id="btn-save-identity" class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none bg-primary text-primary-foreground shadow hover:bg-primary/90 hover:shadow-md cursor-pointer h-9 px-4 py-2 gap-1.5 font-medium">
+            <button id="btn-save-identity"
+              class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-150 focus-visible:outline-none bg-primary text-primary-foreground shadow hover:bg-primary/90 hover:shadow-md cursor-pointer h-9 px-4 py-2 gap-1.5 font-medium">
               <i data-lucide="save" class="h-4 w-4"></i> Salvar identidade do projeto
             </button>
           </div>
         </div>
 
-        <!-- Grupo 4: Informações Técnicas -->
+        <!-- Grupo 4, Informações Técnicas -->
         <div class="space-y-3 rounded-lg border border-border bg-muted/30 p-4 pt-4 mt-6">
           <h4 class="text-xs font-semibold text-foreground flex items-center gap-1.5">
             <i data-lucide="info" class="h-4 w-4 text-primary"></i>
             Informações Técnicas
           </h4>
           <div class="space-y-1.5 text-xs text-muted-foreground leading-normal">
-            <div><strong>Servidor:</strong> <span id="tech-server-address" class="font-mono text-muted-foreground/70 italic">(inicie o servidor para ver o endereço)</span></div>
-            <div><strong>Status:</strong> <span id="tech-polling-status" class="font-mono text-green-500 font-medium">Polling ativo</span></div>
+            <div><strong>Servidor:</strong> <span id="tech-server-address"
+                class="font-mono text-muted-foreground/70 italic">(inicie o servidor para ver o endereço)</span></div>
+            <div><strong>Status:</strong> <span id="tech-polling-status"
+                class="font-mono text-green-500 font-medium">Polling ativo</span></div>
           </div>
           <span class="text-[10px] text-muted-foreground block leading-relaxed border-t border-border/50 pt-2 mt-2">
-            Porta definida em <code class="font-mono bg-muted px-1 rounded">roadmap-server.js</code>: editar exige reiniciar o servidor.
+            Porta definida em <code class="font-mono bg-muted px-1 rounded">roadmap-server.js</code>, editar exige
+            reiniciar o servidor.
           </span>
         </div>
       </div>
@@ -830,4 +959,5 @@
   <script src="roadmap/data.js"></script>
   <script src="roadmap/roadmap.js"></script>
 </body>
+
 </html>
