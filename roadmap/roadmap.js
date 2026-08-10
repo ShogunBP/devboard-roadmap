@@ -1864,13 +1864,16 @@ function showWizardStep(step) {
     counter.textContent = `${step + 1} / ${TOTAL_WIZARD_STEPS}`;
   }
 
-  // Controle de visibilidade e estilização dos botões
+  // Controle de visibilidade e posicionamento dos botões no rodapé
+  const footerLeft = document.getElementById("welcome-footer-left");
+  const footerRight = document.getElementById("welcome-footer-right");
   const btnNext = document.getElementById("btn-welcome-next");
   const btnFinish = document.getElementById("btn-welcome-finish");
   const btnPrev = document.getElementById("btn-welcome-prev");
   const btnSkip = document.getElementById("btn-welcome-skip");
 
   if (step === TOTAL_WIZARD_STEPS - 1) {
+    if (btnSkip) btnSkip.classList.add("hidden");
     if (btnNext) {
       btnNext.classList.add("hidden");
       btnNext.classList.remove("inline-flex");
@@ -1881,12 +1884,13 @@ function showWizardStep(step) {
       btnFinish.innerHTML = `Começar a usar <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>`;
       btnFinish.className = "inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow transition hover:bg-primary/90 cursor-pointer font-medium";
     }
-    if (btnPrev) {
+    if (btnPrev && footerLeft) {
       btnPrev.innerHTML = `Voltar ao início`;
-      btnPrev.className = "text-xs font-medium text-muted-foreground hover:text-foreground underline-offset-4 hover:underline cursor-pointer transition-colors bg-transparent border-0 px-2 py-1.5 shadow-none";
+      btnPrev.className = "text-xs font-medium text-muted-foreground hover:text-foreground underline-offset-4 hover:underline cursor-pointer transition-colors bg-transparent border-0 p-0 shadow-none";
+      footerLeft.appendChild(btnPrev);
     }
-    if (btnSkip) btnSkip.classList.add("hidden");
   } else {
+    if (btnSkip) btnSkip.classList.remove("hidden");
     if (btnNext) {
       btnNext.classList.remove("hidden");
       btnNext.classList.add("inline-flex");
@@ -1895,11 +1899,15 @@ function showWizardStep(step) {
       btnFinish.classList.add("hidden");
       btnFinish.classList.remove("inline-flex");
     }
-    if (btnPrev) {
+    if (btnPrev && footerRight) {
       btnPrev.innerHTML = `← Voltar`;
       btnPrev.className = "rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground cursor-pointer";
+      if (btnNext) {
+        footerRight.insertBefore(btnPrev, btnNext);
+      } else {
+        footerRight.appendChild(btnPrev);
+      }
     }
-    if (btnSkip) btnSkip.classList.remove("hidden");
   }
 
   if (window.lucide) lucide.createIcons();
