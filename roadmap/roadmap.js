@@ -1797,6 +1797,8 @@ function updateViewButtons() {
 }
 
 // --- CONTROLE DE TEMAS (Sistema / Escuro / Claro e Tema Visual) ---
+let mediaQueryDark = null;
+
 function initTheme() {
   const storedThemeMode = localStorage.getItem("theme");
   state.themeMode = storedThemeMode || "system";
@@ -1807,20 +1809,26 @@ function initTheme() {
   const savedHideCancelled = localStorage.getItem("hideCancelled");
   state.hideCancelled = savedHideCancelled === "true";
   
+  // Registrar listener do sistema apenas uma vez em um objeto persistente
+  if (window.matchMedia && !mediaQueryDark) {
+    mediaQueryDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleSystemThemeChange = (e) => {
+      if (state.themeMode === "system") {
+        applyTheme(e.matches);
+      }
+    };
+    if (mediaQueryDark.addEventListener) {
+      mediaQueryDark.addEventListener("change", handleSystemThemeChange);
+    } else if (mediaQueryDark.addListener) {
+      mediaQueryDark.addListener(handleSystemThemeChange);
+    }
+  }
+
   applyTheme();
   applyHideCancelledUI();
-
-  // Escutar alterações do SO em tempo real se estiver no modo 'system'
-  if (window.matchMedia) {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-      if (state.themeMode === "system") {
-        applyTheme();
-      }
-    });
-  }
 }
 
-function applyTheme() {
+function applyTheme(systemIsDark = null) {
   let isDark;
   if (state.themeMode === "dark") {
     isDark = true;
@@ -1828,15 +1836,24 @@ function applyTheme() {
     isDark = false;
   } else {
     // 'system'
-    isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (typeof systemIsDark === "boolean") {
+      isDark = systemIsDark;
+    } else if (mediaQueryDark) {
+      isDark = mediaQueryDark.matches;
+    } else {
+      isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
   }
 
   state.dark = isDark;
 
-  if (isDark) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
+  const hasDarkClass = document.documentElement.classList.contains("dark");
+  if (isDark !== hasDarkClass) {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }
 
   const iconSun = document.getElementById("icon-theme-sun");

@@ -75,7 +75,19 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Sincronização da Identidade do Projeto (localStorage + config.json via timestamp) — permite edições offline em modo estático com sincronia automática ao reconectar o servidor (ver detalhamento abaixo)
 - [x] Hover nos botões de visualização e prioridade + Accordion no Roadmap em mobile/tablet (ver detalhamento abaixo)
+- [x] Investigação e correção de flicker no modo "Sistema" ao redimensionar com DevTools (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Investigação e Correção de Flicker no Modo "Sistema" (concluída)
+
+- **Causa Raiz Identificada:**
+  - `window.matchMedia("(prefers-color-scheme: dark)")` estava sendo recriado de forma efêmera no `initTheme()` a cada carregamento, anexando listeners a instâncias temporárias sem referência persistente.
+  - A função `applyTheme()` executava mutações incondicionais da classe `dark` no `document.documentElement` e manipulava o DOM de ícones sempre que invocada, mesmo quando o estado de escuro/claro não sofria alteração.
+  - Durante o redimensionamento ativo no DevTools (que força reavaliações frequentes de media queries), a ausência de trava de estado gerava mutações de DOM a cada evento.
+- **Correção Aplicada:**
+  - Instância persistente `mediaQueryDark` mantida em variável de escopo principal e listener de evento `change` registrado apenas uma única vez.
+  - Trava de alteração `if (isDark !== hasDarkClass)` adicionada em `applyTheme()`, garantindo que classes e ícones só sofram mutação no DOM quando houver mudança real de estado.
+  - Correção aplicada com base na causa raiz identificada no código (listener e mutação incondicional no `matchMedia`), sem necessidade de polling ou hacks de debounce.
 
 ### Hover nos botões e Accordion no Roadmap em mobile/tablet (concluído)
 
