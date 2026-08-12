@@ -369,20 +369,21 @@ function setStaticMode(isStatic) {
     }
   }
 
-  // Trava formulário de Identidade do Projeto se estiver no Modo Demo
+  // Trava formulário de Identidade do Projeto se estiver no Modo Demo, e exibe notices apropriados
   const demoNotice = document.getElementById("demo-mode-notice");
+  const fileNotice = document.getElementById("file-mode-notice");
+  const wizDemoNotice = document.getElementById("wizard-demo-mode-notice");
+  const wizFileNotice = document.getElementById("wizard-file-mode-notice");
+
   const inputName = document.getElementById("input-project-name");
   const inputDesc = document.getElementById("input-project-description");
   const inputBadge = document.getElementById("input-project-badge");
   const btnSave = document.getElementById("btn-save-identity");
 
-  if (demoNotice) {
-    if (isDemo) {
-      demoNotice.classList.remove("hidden");
-    } else {
-      demoNotice.classList.add("hidden");
-    }
-  }
+  if (demoNotice) demoNotice.classList.toggle("hidden", !isDemo);
+  if (fileNotice) fileNotice.classList.toggle("hidden", !isFileProtocol);
+  if (wizDemoNotice) wizDemoNotice.classList.toggle("hidden", !isDemo);
+  if (wizFileNotice) wizFileNotice.classList.toggle("hidden", !isFileProtocol);
 
   [inputName, inputDesc, inputBadge].forEach(el => {
     if (el) {

@@ -119,6 +119,9 @@ flicker observado pelo usuário.
   - As alterações são salvas imediatamente em `localStorage` (chave `devboard-project-identity`) com timestamp de atualização (`updatedAt: ISO 8601`).
   - Feedback visual no botão de salvar exibe **"Salvo localmente"** (com ícone `hard-drive`), diferenciando de erro genérico.
   - Em Modo Demo (GitHub Pages), o formulário permanece bloqueado com aviso **"Somente leitura (demo)"**, prevenindo sobrescritas.
+  - **Aviso Informativo de Modo Arquivo (`file://`):** Adicionado aviso sutil no painel de Configurações (`#file-mode-notice`) e no Passo 5 do Wizard (`#wizard-file-mode-notice`) informando que alterações sob `file://` são salvas no armazenamento local do navegador, e que para atualizar o `config.json` no disco para todos os acessos é necessário utilizar o servidor local (`http://localhost:3003`).
+- **Diagnóstico da Restrição de Origem do Navegador:**
+  - Diagnosticado que navegadores isolam `localStorage` por origem (`http://localhost:3003` vs `file://`) e bloqueiam `fetch('roadmap/config.json')` sob `file://`. Trata-se de uma restrição nativa de segurança do navegador entre origens web distintas, não um bug no código da aplicação.
 - **Sincronização Automática por Timestamp:**
   - Quando o servidor `roadmap-server.js` está ativo (ou reconecta durante a execução), `loadProjectConfig()` compara os timestamps `updatedAt` do `config.json` no disco e do `localStorage` local.
   - Se o `localStorage` for mais recente, envia `POST /config` de forma transparente para atualizar `roadmap/config.json` no disco.

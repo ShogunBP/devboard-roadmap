@@ -1,7 +1,7 @@
 {
-  "projectName": "Devboard",
-  "projectDescription": "Acompanhe em tempo real o planejamento, progresso e critérios de conclusão de novas features, bugs e refatorações.",
-  "projectBadge": "Universal Roadmap - 2026",
-  "updatedAt": "2026-08-12T20:02:25.122Z",
+  "projectName": "Projeto Editado no Server",
+  "projectDescription": "Descrição salva via HTTP no servidor",
+  "projectBadge": "Server 3003",
+  "updatedAt": "2026-08-12T22:08:31.322Z",
   "serverPort": 3003
 }
