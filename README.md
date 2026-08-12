@@ -170,18 +170,20 @@ O devboard-roadmap inclui 4 temas visuais, cada um com variante clara e escura:
 | **Clean** | Design limpo e minimalista, inspirado no shadcn/ui |
 | **Ficha de Arquivo** | Estética de ficha de papel, com tipografia serifada e "carimbos" de status |
 
-Alterne entre temas pelo seletor no header. A escolha persiste no `localStorage`.
+Alterne entre temas pelo seletor no painel de Configurações. A escolha persiste no `localStorage`.
 
 ---
 
 ## ⚙️ Painel de Configurações
 
-Acessível pelo ícone de engrenagem no header, dividido em 4 grupos:
+Acessível pelo ícone de engrenagem no header, abre um drawer lateral (desliza a partir da direita, com overlay desfocado por trás), dividido em 4 grupos:
 
 - **Aparência** *(preferência pessoal, salva no navegador)*: tema visual, modo escuro.
 - **Comportamento** *(preferência pessoal, salva no navegador)*: ocultar tarefas canceladas, intervalo de atualização automática (polling), aplicado imediatamente sem precisar recarregar a página.
 - **Identidade do Projeto** *(configuração compartilhada, salva em `roadmap/config.json`)*: nome do projeto, descrição, selo/badge exibidos no header. Diferente do grupo acima, isso vale para qualquer pessoa que abrir este roadmap, não só para quem está configurando.
 - **Informações técnicas** *(somente leitura)*: porta do servidor atual, status do polling.
+
+O drawer fecha clicando no "X", clicando fora dele (no overlay) ou pressionando `Esc`. Ao salvar a Identidade do Projeto, a confirmação aparece na hora ("Salvo!"), sem precisar recarregar a página. A barra de controles principal do header foi reorganizada em dois grupos: à esquerda, alternador de visão (Kanban/Roadmap), busca e filtros; à direita, exportar/importar JSON e o botão de Configurações. Tema visual, modo escuro e ocultar cancelados saíram da barra principal e ficaram concentrados dentro do drawer, para manter o header mais limpo.
 
 ---
 

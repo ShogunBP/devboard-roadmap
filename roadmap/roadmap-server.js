@@ -350,11 +350,14 @@ const server = http.createServer((req, res) => {
         }
 
         payload.serverPort = PORT;
+        if (!payload.updatedAt) {
+          payload.updatedAt = new Date().toISOString();
+        }
         const configPath = path.join(projectRoot, 'roadmap', 'config.json');
         fs.writeFileSync(configPath, JSON.stringify(payload, null, 2), 'utf8');
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true }));
+        res.end(JSON.stringify({ success: true, config: payload }));
       } catch (err) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Payload JSON inválido.' }));

@@ -77,39 +77,114 @@ const DEFAULT_CONFIG = {
 };
 
 // --- CONFIGURAÇÃO DE IDENTIDADE DO PROJETO ---
+async function syncLocalToServer(identity) {
+  try {
+    await fetch('/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(identity)
+    });
+    console.log("[roadmap] Sincronização: localStorage mais recente enviado para o servidor (config.json).");
+  } catch (err) {
+    console.warn("[roadmap] Falha ao sincronizar localStorage com o servidor:", err);
+  }
+}
+
 async function loadProjectConfig() {
   const identityContainer = document.getElementById("header-identity");
   let cfg = { ...DEFAULT_CONFIG };
 
+  // 1. Ler entrada do localStorage
+  let localIdentity = null;
+  try {
+    const rawLocal = localStorage.getItem("devboard-project-identity");
+    if (rawLocal) {
+      localIdentity = JSON.parse(rawLocal);
+    }
+  } catch (e) {
+    console.warn("[roadmap] Erro ao ler devboard-project-identity do localStorage:", e);
+  }
+
+  // 2. Ler config.json do servidor
+  let serverConfig = null;
   try {
     const res = await fetch('roadmap/config.json?_t=' + Date.now());
     if (res.ok) {
-      const config = await res.json();
-      if (config.serverPort) {
-        state.serverPort = config.serverPort;
+      serverConfig = await res.json();
+      if (serverConfig.serverPort) {
+        state.serverPort = serverConfig.serverPort;
       }
-      cfg.projectName = config.projectName || cfg.projectName;
-      cfg.projectDescription = config.projectDescription || cfg.projectDescription;
-      cfg.projectBadge = config.projectBadge || cfg.projectBadge;
     }
   } catch (err) {
-    console.warn("[roadmap] Falha ao carregar config.json (usando fallbacks estáticos).");
-  } finally {
-    updateHeader(cfg.projectName, cfg.projectDescription, cfg.projectBadge);
-    updateDynamicServerPortUI();
-    
-    // Popular inputs do drawer sempre (mesmo em modo estático/file://)
-    const inputName = document.getElementById("input-project-name");
-    const inputDesc = document.getElementById("input-project-description");
-    const inputBadge = document.getElementById("input-project-badge");
-    if (inputName) inputName.value = cfg.projectName;
-    if (inputDesc) inputDesc.value = cfg.projectDescription;
-    if (inputBadge) inputBadge.value = cfg.projectBadge;
+    console.warn("[roadmap] Falha ao carregar config.json do servidor (servidor offline ou modo estático).");
+  }
 
-    if (identityContainer) {
-      identityContainer.classList.remove("opacity-0");
-      identityContainer.classList.add("opacity-100");
+  // 3. Comparar timestamps e resolver a configuração mais recente
+  let winningConfig = null;
+
+  if (serverConfig && localIdentity) {
+    const serverTime = serverConfig.updatedAt ? new Date(serverConfig.updatedAt).getTime() : 0;
+    const localTime = localIdentity.updatedAt ? new Date(localIdentity.updatedAt).getTime() : 0;
+
+    if (localTime > serverTime) {
+      // localStorage é mais recente: vence! Atualiza o servidor via POST /config
+      winningConfig = {
+        projectName: localIdentity.projectName || cfg.projectName,
+        projectDescription: localIdentity.projectDescription || cfg.projectDescription,
+        projectBadge: localIdentity.projectBadge || cfg.projectBadge,
+        updatedAt: localIdentity.updatedAt
+      };
+      syncLocalToServer(winningConfig);
+    } else {
+      // Servidor é mais recente (ou igual): vence! Atualiza o localStorage
+      winningConfig = {
+        projectName: serverConfig.projectName || cfg.projectName,
+        projectDescription: serverConfig.projectDescription || cfg.projectDescription,
+        projectBadge: serverConfig.projectBadge || cfg.projectBadge,
+        updatedAt: serverConfig.updatedAt || new Date().toISOString()
+      };
+      try {
+        localStorage.setItem("devboard-project-identity", JSON.stringify(winningConfig));
+      } catch (e) {}
     }
+  } else if (serverConfig) {
+    winningConfig = {
+      projectName: serverConfig.projectName || cfg.projectName,
+      projectDescription: serverConfig.projectDescription || cfg.projectDescription,
+      projectBadge: serverConfig.projectBadge || cfg.projectBadge,
+      updatedAt: serverConfig.updatedAt || new Date().toISOString()
+    };
+    try {
+      localStorage.setItem("devboard-project-identity", JSON.stringify(winningConfig));
+    } catch (e) {}
+  } else if (localIdentity) {
+    winningConfig = {
+      projectName: localIdentity.projectName || cfg.projectName,
+      projectDescription: localIdentity.projectDescription || cfg.projectDescription,
+      projectBadge: localIdentity.projectBadge || cfg.projectBadge,
+      updatedAt: localIdentity.updatedAt || new Date().toISOString()
+    };
+  } else {
+    winningConfig = { ...DEFAULT_CONFIG, updatedAt: new Date().toISOString() };
+  }
+
+  cfg = winningConfig;
+
+  // 4. Atualizar UI
+  updateHeader(cfg.projectName, cfg.projectDescription, cfg.projectBadge);
+  updateDynamicServerPortUI();
+  
+  // Popular inputs do drawer sempre (mesmo em modo estático/file://)
+  const inputName = document.getElementById("input-project-name");
+  const inputDesc = document.getElementById("input-project-description");
+  const inputBadge = document.getElementById("input-project-badge");
+  if (inputName) inputName.value = cfg.projectName;
+  if (inputDesc) inputDesc.value = cfg.projectDescription;
+  if (inputBadge) inputBadge.value = cfg.projectBadge;
+
+  if (identityContainer) {
+    identityContainer.classList.remove("opacity-0");
+    identityContainer.classList.add("opacity-100");
   }
 }
 
@@ -161,19 +236,28 @@ function updateHeader(name, desc, badge) {
 }
 
 async function saveProjectIdentity() {
-  const name = document.getElementById("input-project-name").value;
-  const desc = document.getElementById("input-project-description").value;
-  const badge = document.getElementById("input-project-badge").value;
+  const inputName = document.getElementById("input-project-name");
+  const inputDesc = document.getElementById("input-project-description");
+  const inputBadge = document.getElementById("input-project-badge");
+
+  const name = inputName ? inputName.value : "";
+  const desc = inputDesc ? inputDesc.value : "";
+  const badge = inputBadge ? inputBadge.value : "";
   
   const btn = document.getElementById("btn-save-identity");
-  const originalText = btn.innerHTML;
+  const originalText = btn ? btn.innerHTML : "";
 
-  const showBtnFeedback = (text, icon, isError = false) => {
+  const showBtnFeedback = (text, icon, isError = false, isWarning = false) => {
+    if (!btn) return;
     btn.innerHTML = `<i data-lucide="${icon}" class="h-4 w-4"></i> ${text}`;
     if (isError) {
       btn.style.backgroundColor = "var(--destructive)";
       btn.style.color = "var(--destructive-foreground)";
       btn.style.borderColor = "var(--destructive)";
+    } else if (isWarning) {
+      btn.style.backgroundColor = "var(--status-in-progress)";
+      btn.style.color = "#ffffff";
+      btn.style.borderColor = "var(--status-in-progress)";
     } else {
       btn.style.backgroundColor = "var(--status-done)";
       btn.style.color = "#ffffff";
@@ -190,27 +274,43 @@ async function saveProjectIdentity() {
     }, 2500);
   };
   
+  if (isDemoMode) {
+    showBtnFeedback("Somente leitura (demo)", "alert-circle", true);
+    return;
+  }
+
+  const nowIso = new Date().toISOString();
+  const localIdentity = {
+    projectName: name,
+    projectDescription: desc,
+    projectBadge: badge,
+    updatedAt: nowIso
+  };
+
+  // Salva no localStorage em qualquer caso (servidor ligado ou desligado)
+  try {
+    localStorage.setItem("devboard-project-identity", JSON.stringify(localIdentity));
+  } catch (e) {
+    console.warn("[roadmap] Falha ao salvar identidade no localStorage:", e);
+  }
+
+  // Atualiza header na interface imediatamente
+  updateHeader(name, desc, badge);
+
   try {
     const res = await fetch('/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        projectName: name,
-        projectDescription: desc,
-        projectBadge: badge
-      })
+      body: JSON.stringify(localIdentity)
     });
     
     if (res.ok) {
-      // Atualiza header imediatamente sem recarregar
-      updateHeader(name, desc, badge);
-      showBtnFeedback("Salvo!", "check", false);
+      showBtnFeedback("Salvo no servidor!", "check", false);
     } else {
-      showBtnFeedback("Somente leitura (demo)", "alert-circle", true);
+      showBtnFeedback("Salvo localmente", "hard-drive", false, true);
     }
   } catch (err) {
-    console.error(err);
-    showBtnFeedback("Somente leitura (demo)", "alert-circle", true);
+    showBtnFeedback("Salvo localmente", "hard-drive", false, true);
   }
 }
 
@@ -222,8 +322,15 @@ function setStaticMode(isStatic) {
   const isDemo = isStatic && !isFileProtocol;
 
   if (isStaticMode === isStatic && isDemoMode === isDemo) return;
+
+  const wasStatic = isStaticMode;
   isStaticMode = isStatic;
   isDemoMode = isDemo;
+
+  // Se o servidor acabou de ser reconectado (transição de estático para servidor ativo), sincroniza a identidade
+  if (wasStatic && !isStatic) {
+    loadProjectConfig();
+  }
 
   const staticBadge = document.getElementById("static-mode-badge");
   const mobStaticBadge = document.getElementById("mobile-static-mode-badge");

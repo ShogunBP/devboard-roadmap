@@ -1,4 +1,4 @@
-﻿# 🗺️ Roadmap: roadmap-universal
+# 🗺️ Roadmap: roadmap-universal
 
 Plano de implementação do sistema de visualização de docs (kanban/roadmap estático que lê `/docs` de qualquer projeto). Documento de acompanhamento: não segue o fluxo formal de `/docs/PADRONIZATION.md` (esse próprio projeto ainda não tem docs sobre si mesmo), é só um guia de fases pra manter o controle do que já foi decidido e o que falta.
 
@@ -73,7 +73,22 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Revisar visualmente o design (cores, cards, modal): sistema de temas visuais implementado e validado (ver detalhamento abaixo)
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
+- [x] Sincronização da Identidade do Projeto (localStorage + config.json via timestamp) — permite edições offline em modo estático com sincronia automática ao reconectar o servidor (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Sincronização de Identidade do Projeto (localStorage + config.json) (concluída)
+
+- **Edição Offline e Modo Estático (`file://` / servidor desligado):**
+  - Permite alterar Nome do Projeto, Descrição e Selo/Badge no painel de Configurações ou no Passo 5 do Onboarding Wizard mesmo com o servidor local desligado.
+  - As alterações são salvas imediatamente em `localStorage` (chave `devboard-project-identity`) com timestamp de atualização (`updatedAt: ISO 8601`).
+  - Feedback visual no botão de salvar exibe **"Salvo localmente"** (com ícone `hard-drive`), diferenciando de erro genérico.
+  - Em Modo Demo (GitHub Pages), o formulário permanece bloqueado com aviso **"Somente leitura (demo)"**, prevenindo sobrescritas.
+- **Sincronização Automática por Timestamp:**
+  - Quando o servidor `roadmap-server.js` está ativo (ou reconecta durante a execução), `loadProjectConfig()` compara os timestamps `updatedAt` do `config.json` no disco e do `localStorage` local.
+  - Se o `localStorage` for mais recente, envia `POST /config` de forma transparente para atualizar `roadmap/config.json` no disco.
+  - Se o `config.json` do servidor for mais recente (ou igual), atualiza a cópia local do `localStorage`.
+- **Manutenção de Escopo:**
+  - Exclusivo para o grupo Identidade do Projeto. Temas, modo escuro, polling e ocultação de cancelados permanecem estritamente em `localStorage`.
 
 ### Onboarding Wizard Modal (v4) e modo de cor de 3 estados (concluída)
 
