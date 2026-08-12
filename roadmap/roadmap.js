@@ -1644,7 +1644,7 @@ function setupEventListeners() {
   if (btnWelcomeSkip) {
     btnWelcomeSkip.addEventListener("click", (e) => {
       e.preventDefault();
-      closeWelcomeModal(false);
+      closeWelcomeModal(true);
     });
   }
 

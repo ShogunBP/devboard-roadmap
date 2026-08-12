@@ -114,11 +114,11 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
     3. **Rode o servidor local (opcional)** (Cabeçalho padronizado: ícone `terminal` ao lado do título + subtítulo).
     4. **Personalize a experiência** (Cabeçalho padronizado: ícone `sliders` ao lado do título + subtítulo).
     5. **Identidade do Projeto** (Formulário real de configuração com inputs para Nome do Projeto, Descrição e Selo/Badge, sincronizado via `POST /config`).
-  - **Hierarquia Visual e Navegação dos Botões no Passo Final (5/5):**
-    - Botão principal primário: **"Começar a usar →"** (`bg-primary`, destaque visual no passo de encerramento).
-    - Botão de retorno discreto: **"Voltar ao início"** (estilo link sem borda, retorna diretamente ao Passo 1/5 ao ser clicado).
+  - **Comportamento do botão "Pular tutorial" (rodapé dos slides):**
+    - Corrigido para chamar `closeWelcomeModal(true)`, registrando `devboard-welcome-seen = "true"` no `localStorage` e impedindo a reexibição no próximo carregamento (mesmo comportamento de **"Não mostrar novamente"**).
+    - O botão **"Ver depois"** (Tela Inicial) mantém o comportamento de fechar sem registrar no `localStorage` (`closeWelcomeModal(false)`), reexibindo o modal no próximo carregamento.
 
-Validado integralmente com o agente de browser em todos os 5 passos, hierarquia visual de botões, atalho de retorno ao início e herança nos temas visuais.
+Validado integralmente com o agente de browser em todos os 5 passos, hierarquia visual de botões, atalho de retorno ao início, persistência no "Pular tutorial" e herança nos temas visuais.
 
 ### Sistema de temas visuais (concluído)
 
