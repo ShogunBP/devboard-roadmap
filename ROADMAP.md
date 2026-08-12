@@ -74,7 +74,21 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reestruturar informação exibida no card mini e no modal de detalhes (ver detalhamento abaixo)
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Sincronização da Identidade do Projeto (localStorage + config.json via timestamp) — permite edições offline em modo estático com sincronia automática ao reconectar o servidor (ver detalhamento abaixo)
+- [x] Hover nos botões de visualização e prioridade + Accordion no Roadmap em mobile/tablet (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Hover nos botões e Accordion no Roadmap em mobile/tablet (concluído)
+
+- **Hover em Botões de Controle e Filtro:**
+  - Adicionado efeito de hover padronizado aos botões de alternância de visão (Kanban/Roadmap) e filtros de prioridade (Todas, Alta, Média, Baixa) em desktop, tablet e mobile.
+  - Botões ativos recebem realce sutil (`hover:bg-primary/90 hover:shadow`), e botões inativos aplicam transição suave (`transition: all 0.15s ease-in-out`, `hover:bg-muted hover:text-foreground hover:border-primary/50`).
+  - Totalmente compatível com os 4 temas visuais (Padrão, Terminal, Clean, Ficha de Arquivo) e modos claro/escuro.
+- **Accordion no Roadmap em Mobile/Tablet (< 1024px):**
+  - As colunas de trimestre da visão Roadmap (Q1, Q2, Q3, Q4, Sem Data) passam a empilhar verticalmente em accordion abaixo de 1024px, idêntico ao Kanban.
+  - Cada trimestre exibe cabeçalho interativo (nome, rótulo de meses, contador de tarefas e chevron expansível).
+  - O primeiro trimestre com tarefas planejadas abre por padrão, e trimestres sem tarefas iniciam colapsados.
+  - O estado de aberto/fechado é mantido em `state.accordionState["roadmap_" + q]`, persistindo durante as atualizações automáticas do polling.
+  - Em telas desktop (>= 1024px), o Roadmap permanece com layout horizontal flex sem accordion.
 
 ### Sincronização de Identidade do Projeto (localStorage + config.json) (concluída)
 

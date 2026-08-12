@@ -658,8 +658,8 @@ function renderPriorityFilters() {
     <button
       onclick="setPriorityFilter('${f.id}')"
       class="rounded-full border px-2.5 py-0.5 text-xs transition-all duration-150 cursor-pointer ${state.priorityFilter === f.id
-      ? 'border-primary bg-primary text-primary-foreground shadow-sm font-medium'
-      : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/40'
+      ? 'border-primary bg-primary text-primary-foreground shadow-sm font-medium hover:bg-primary/90 hover:shadow'
+      : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-primary/50'
     }"
     >${f.label}</button>
   `).join('');
@@ -812,6 +812,12 @@ function renderTaskCard(task) {
 
 function renderRoadmap(filteredTasks) {
   const container = document.getElementById("roadmap-quarters");
+  if (!container) return;
+
+  // Encontrar o primeiro trimestre com tarefas para definir a abertura padrão no mobile/tablet
+  const firstNonEmptyQuarter = QUARTERS.find(q => {
+    return filteredTasks.some(t => getQuarter(t.date) === q);
+  }) || QUARTERS[0];
 
   container.innerHTML = QUARTERS.map(q => {
     const qTasks = filteredTasks.filter(t => getQuarter(t.date) === q);
@@ -821,59 +827,86 @@ function renderRoadmap(filteredTasks) {
     else if (q === "Q2") labelHint = "Abr-Jun";
     else if (q === "Q3") labelHint = "Jul-Set";
     else if (q === "Q4") labelHint = "Out-Dez";
-    else labelHint = "Sem data registrada";
+    else labelHint = "Sem data";
+
+    const accordionKey = "roadmap_" + q;
+    const isDefaultOpen = (q === firstNonEmptyQuarter && qTasks.length > 0);
+    const isOpen = (state.accordionState && state.accordionState[accordionKey] !== undefined)
+      ? state.accordionState[accordionKey]
+      : isDefaultOpen;
 
     return `
-      <section class="roadmap-col flex-1 min-w-[280px] rounded-xl border bg-card/60 p-3 transition border-border">
-        <h3 class="mb-3 text-sm font-semibold flex items-center gap-2 px-1">
-          ${q}
-          <span class="text-xs font-normal text-muted-foreground">
-            ${labelHint}
-          </span>
-        </h3>
-        <div class="relative pl-4 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-border/60">
-          ${qTasks.length === 0 ? '<div class="py-4 text-xs text-muted-foreground italic">Nenhuma tarefa planejada</div>' : ''}
-          <div class="flex flex-col gap-3">
-            ${qTasks.map((t, idx) => {
-      const priorityColor = t.priority ? `var(--priority-${t.priority})` : "transparent";
-      const col = COLUMNS.find(c => c.statuses.includes(t.status)) || { title: t.status };
-      const archiveBadge = t.area === "archive" ? `
-                <span class="inline-flex items-center rounded-md border border-border bg-muted/65 px-1 py-0.2 text-[8px] text-muted-foreground">Arq</span>
-              ` : "";
-      const themeClasses = state.visualTheme === "default" ? "card-blueprint-corner" : "";
-      return `
-                <div class="group relative py-1" onclick="openModal('${t.id}')">
-                  <div class="absolute left-[-21px] top-4 h-2.5 w-2.5 rounded-full border-2 border-background ring-1 ring-border/50 transition-colors" style="background: var(--status-${t.status})"></div>
-                  
-                  <div class="cursor-pointer rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-card)] transition [transition:var(--transition-smooth)] hover:-translate-y-0.5 hover:border-primary/50 ${themeClasses}">
-                    <div class="mb-1.5 flex items-start justify-between gap-2">
-                      <h4 class="text-sm font-medium leading-snug group-hover:text-primary">${t.title}</h4>
-                      <div class="flex items-center gap-2 shrink-0">
-                        ${archiveBadge}
-                        <div class="h-1.5 w-1.5 rounded-full" style="background: ${priorityColor}"></div>
-                      </div>
-                    </div>
+      <section
+        data-quarter="${q}"
+        class="roadmap-col flex-1 min-w-0 lg:min-w-[240px] rounded-xl border bg-card/60 p-3 transition border-border"
+      >
+        <header
+          onclick="toggleColumnAccordion('${accordionKey}')"
+          class="accordion-header flex items-center justify-between p-2 rounded-lg transition-all duration-150 select-none cursor-pointer lg:cursor-default lg:pointer-events-none lg:p-0 lg:bg-transparent lg:border-transparent lg:hover:bg-transparent ${isOpen ? 'mb-2' : 'mb-0 lg:mb-3'}"
+        >
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-semibold flex items-center gap-1.5">
+              ${q}
+              <span class="text-xs font-normal text-muted-foreground">
+                ${labelHint}
+              </span>
+            </h3>
+            <span class="inline-flex items-center rounded-md border border-transparent bg-secondary text-secondary-foreground h-5 px-1.5 text-[10px] font-semibold">
+              ${qTasks.length}
+            </span>
+          </div>
+          <div class="block lg:hidden text-muted-foreground p-1 hover:text-foreground">
+            <i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}" class="h-4 w-4"></i>
+          </div>
+        </header>
+
+        <div class="${isOpen ? 'block' : 'hidden lg:block'} transition-all duration-200">
+          <div class="relative pl-4 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-border/60">
+            ${qTasks.length === 0 ? '<div class="py-4 text-xs text-muted-foreground italic">Nenhuma tarefa planejada</div>' : ''}
+            <div class="flex flex-col gap-3">
+              ${qTasks.map((t) => {
+                const priorityColor = t.priority ? `var(--priority-${t.priority})` : "transparent";
+                const col = COLUMNS.find(c => c.statuses.includes(t.status)) || { title: t.status };
+                const archiveBadge = t.area === "archive" ? `
+                  <span class="inline-flex items-center rounded-md border border-border bg-muted/65 px-1 py-0.2 text-[8px] text-muted-foreground">Arq</span>
+                ` : "";
+                const themeClasses = state.visualTheme === "default" ? "card-blueprint-corner" : "";
+                return `
+                  <div class="group relative py-1" onclick="openModal('${t.id}')">
+                    <div class="absolute left-[-21px] top-4 h-2.5 w-2.5 rounded-full border-2 border-background ring-1 ring-border/50 transition-colors" style="background: var(--status-${t.status})"></div>
                     
-                    <div class="flex items-center justify-between text-[11px] text-muted-foreground">
-                      <div class="flex items-center gap-1.5">
-                        <span class="inline-flex items-center gap-1">
-                          ${getCategoryLabel(t.category)}
+                    <div class="cursor-pointer rounded-lg border border-border bg-card p-3 shadow-[var(--shadow-card)] transition [transition:var(--transition-smooth)] hover:-translate-y-0.5 hover:border-primary/50 ${themeClasses}">
+                      <div class="mb-1.5 flex items-start justify-between gap-2">
+                        <h4 class="text-sm font-medium leading-snug group-hover:text-primary">${t.title}</h4>
+                        <div class="flex items-center gap-2 shrink-0">
+                          ${archiveBadge}
+                          <div class="h-1.5 w-1.5 rounded-full" style="background: ${priorityColor}"></div>
+                        </div>
+                      </div>
+                      
+                      <div class="flex items-center justify-between text-[11px] text-muted-foreground">
+                        <div class="flex items-center gap-1.5">
+                          <span class="inline-flex items-center gap-1">
+                            ${getCategoryLabel(t.category)}
+                          </span>
+                        </div>
+                        <span class="inline-flex items-center gap-1 font-medium" style="color: var(--status-${t.status})">
+                          ${col.title}
+                          ${t.status !== 'done' ? `&middot; ${t.progress}%` : ''}
                         </span>
                       </div>
-                      <span class="inline-flex items-center gap-1 font-medium" style="color: var(--status-${t.status})">
-                        ${col.title}
-                        ${t.status !== 'done' ? `&middot; ${t.progress}%` : ''}
-                      </span>
                     </div>
                   </div>
-                </div>
-              `;
-    }).join('')}
+                `;
+              }).join('')}
+            </div>
           </div>
         </div>
       </section>
     `;
   }).join('');
+
+  if (window.lucide) lucide.createIcons();
 }
 
 // --- MODAL ---
@@ -1735,22 +1768,32 @@ window.closeSettings = function() {
 };
 
 function updateViewButtons() {
-  const btnK = document.getElementById("btn-view-kanban");
-  const btnR = document.getElementById("btn-view-roadmap");
+  const buttonPairs = [
+    { kanban: "btn-view-kanban", roadmap: "btn-view-roadmap" },
+    { kanban: "btn-tablet-view-kanban", roadmap: "btn-tablet-view-roadmap" },
+    { kanban: "btn-mobile-view-kanban", roadmap: "btn-mobile-view-roadmap" }
+  ];
 
-  if (state.view === "kanban") {
-    btnK.classList.remove("bg-transparent", "text-foreground");
-    btnK.classList.add("bg-primary", "text-primary-foreground", "shadow");
+  buttonPairs.forEach(pair => {
+    const btnK = document.getElementById(pair.kanban);
+    const btnR = document.getElementById(pair.roadmap);
 
-    btnR.classList.remove("bg-primary", "text-primary-foreground", "shadow");
-    btnR.classList.add("bg-transparent", "text-foreground");
-  } else {
-    btnR.classList.remove("bg-transparent", "text-foreground");
-    btnR.classList.add("bg-primary", "text-primary-foreground", "shadow");
+    if (!btnK || !btnR) return;
 
-    btnK.classList.remove("bg-primary", "text-primary-foreground", "shadow");
-    btnK.classList.add("bg-transparent", "text-foreground");
-  }
+    if (state.view === "kanban") {
+      btnK.classList.remove("bg-transparent", "text-foreground", "hover:bg-muted");
+      btnK.classList.add("bg-primary", "text-primary-foreground", "shadow", "hover:bg-primary/90");
+
+      btnR.classList.remove("bg-primary", "text-primary-foreground", "shadow", "hover:bg-primary/90");
+      btnR.classList.add("bg-transparent", "text-foreground", "hover:bg-muted");
+    } else {
+      btnR.classList.remove("bg-transparent", "text-foreground", "hover:bg-muted");
+      btnR.classList.add("bg-primary", "text-primary-foreground", "shadow", "hover:bg-primary/90");
+
+      btnK.classList.remove("bg-primary", "text-primary-foreground", "shadow", "hover:bg-primary/90");
+      btnK.classList.add("bg-transparent", "text-foreground", "hover:bg-muted");
+    }
+  });
 }
 
 // --- CONTROLE DE TEMAS (Sistema / Escuro / Claro e Tema Visual) ---

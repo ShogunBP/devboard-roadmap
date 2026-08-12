@@ -217,6 +217,25 @@ button, select, [role="button"], .cursor-pointer {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
+/* View Switchers & Priority Filter Buttons Hover */
+#btn-view-kanban,
+#btn-view-roadmap,
+#btn-tablet-view-kanban,
+#btn-tablet-view-roadmap,
+#btn-mobile-view-kanban,
+#btn-mobile-view-roadmap,
+#priority-filters button,
+#mobile-priority-filters button,
+#tablet-priority-filters button {
+  transition: all 0.15s ease-in-out !important;
+}
+
+#priority-filters button:hover,
+#mobile-priority-filters button:hover,
+#tablet-priority-filters button:hover {
+  transform: translateY(-1px);
+}
+
 /* --- TEMAS VISUAIS --- */
 
 /* Tema: Terminal (Claro) */
