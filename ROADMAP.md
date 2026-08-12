@@ -75,19 +75,29 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Reorganizar header (estatísticas, controles) e adicionar painel de Configurações (ver detalhamento abaixo)
 - [x] Sincronização da Identidade do Projeto (localStorage + config.json via timestamp) — permite edições offline em modo estático com sincronia automática ao reconectar o servidor (ver detalhamento abaixo)
 - [x] Hover nos botões de visualização e prioridade + Accordion no Roadmap em mobile/tablet (ver detalhamento abaixo)
-- [x] Investigação e correção de flicker no modo "Sistema" ao redimensionar com DevTools (ver detalhamento abaixo)
+- [~] Investigação de flicker no modo "Sistema" ao redimensionar com DevTools: causa identificada e correção aplicada, sem reprodução visual confirmada (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
 
-### Investigação e Correção de Flicker no Modo "Sistema" (concluída)
+### Investigação de Flicker no Modo "Sistema" (correção aplicada, validação pendente)
 
-- **Causa Raiz Identificada:**
+**Status real: não confundir com as demais entradas "concluídas" desta fase.** A causa
+raiz abaixo é uma análise de código sólida, e a correção decorre logicamente dela, mas
+o sintoma relatado pelo usuário (flicker entre claro/escuro, reproduzível apenas
+durante o arrasto de redimensionamento com o DevTools aberto, cessando ao soltar) não
+foi reproduzido pelo agente de browser nem antes nem depois da correção. Não há,
+portanto, confirmação visual de que o sintoma de fato desapareceu — apenas de que o
+código corrigido é mais correto que o anterior, independentemente da causa exata do
+flicker observado pelo usuário.
+
+- **Causa Raiz Identificada (por leitura de código, sem reprodução):**
   - `window.matchMedia("(prefers-color-scheme: dark)")` estava sendo recriado de forma efêmera no `initTheme()` a cada carregamento, anexando listeners a instâncias temporárias sem referência persistente.
   - A função `applyTheme()` executava mutações incondicionais da classe `dark` no `document.documentElement` e manipulava o DOM de ícones sempre que invocada, mesmo quando o estado de escuro/claro não sofria alteração.
-  - Durante o redimensionamento ativo no DevTools (que força reavaliações frequentes de media queries), a ausência de trava de estado gerava mutações de DOM a cada evento.
+  - Durante o redimensionamento ativo no DevTools (que força reavaliações frequentes de media queries), a ausência de trava de estado gerava mutações de DOM a cada evento. Esta última ligação (reavaliação de media query durante resize → causa do flicker visual específico relatado) é inferência razoável, não um mecanismo confirmado por reprodução.
 - **Correção Aplicada:**
   - Instância persistente `mediaQueryDark` mantida em variável de escopo principal e listener de evento `change` registrado apenas uma única vez.
-  - Trava de alteração `if (isDark !== hasDarkClass)` adicionada em `applyTheme()`, garantindo que classes e ícones só sofram mutação no DOM quando houver mudança real de estado.
-  - Correção aplicada com base na causa raiz identificada no código (listener e mutação incondicional no `matchMedia`), sem necessidade de polling ou hacks de debounce.
+  - Trava de alteração `if (isDark !== hasDarkClass)` adicionada em `applyTheme()`, garantindo que classes e ícones só sofram mutação no DOM quando houver mudança real de estado. Esse ganho (eliminar mutação de DOM redundante) vale por si só, mesmo que não seja a causa exata do flicker relatado.
+  - Correção aplicada com base na causa raiz identificada no código, sem necessidade de polling ou hacks de debounce.
+- **Pendência:** confirmar com o usuário, em uso real, se o flicker de fato deixou de ocorrer. Se persistir, a causa é outra (ou adicional) e esta entrada deve ser reaberta.
 
 ### Hover nos botões e Accordion no Roadmap em mobile/tablet (concluído)
 
