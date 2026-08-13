@@ -77,7 +77,20 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Hover nos botões de visualização e prioridade + Accordion no Roadmap em mobile/tablet (ver detalhamento abaixo)
 - [~] Investigação de flicker no modo "Sistema" ao redimensionar com DevTools: causa identificada e correção aplicada, sem reprodução visual confirmada (ver detalhamento abaixo)
 - [x] Montagem dinâmica de watchers no servidor para pastas criadas após o boot (ver detalhamento abaixo)
+- [x] Logs narrativos de servidor com timestamp e endpoint POST /log-error para erros do navegador (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Logs Narrativos e Observabilidade do Servidor (concluída)
+
+- **Logs do Servidor com Timestamp e Rastreamento:**
+  - Padronizados os logs do terminal com timestamp (`HH:MM:SS`) e prefixo `[roadmap]`.
+  - Exibido o caminho relativo exato do arquivo modificado ao detectar alterações (`[roadmap] 14:32:07 - Mudança detectada: docs/active/.../README.md`).
+  - Exibidas estatísticas de contagem de tarefas divididas por área e tempo de execução (`[roadmap] 14:32:07 - 18 itens encontrados (6 active, 12 archive)`, `data.js e data.json atualizados (18 tarefas, 11ms)`).
+  - Adicionados avisos amigáveis para falhas de parsing em `scanDirectory` (README sem H1, README sem Data, README sem Prioridade, README sem Tags, etc.).
+- **Encaminhamento de Erros do Navegador (`POST /log-error`):**
+  - Criado o endpoint `POST /log-error` em `roadmap-server.js`.
+  - Adicionada a função helper `reportErrorToServer(message, context)` e escutadores globais de exceções (`error` e `unhandledrejection`) em `roadmap.js`.
+  - Erros do cliente são encaminhados silenciosamente ("fire-and-forget") e impressos no terminal com o prefixo `[navegador]` (`[roadmap] 14:35:10 - [navegador] [contexto] <mensagem>`), sem interferir no modo estático/demo.
 
 ### Montagem Dinâmica de Watchers no Servidor (concluída)
 

@@ -5,6 +5,27 @@ const http = require('http');
 const projectRoot = path.resolve(__dirname, '..');
 const docsDir = path.join(projectRoot, 'docs');
 
+function formatTimestamp(d = new Date()) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function logServer(msg) {
+  console.log(`[roadmap] ${formatTimestamp()} - ${msg}`);
+}
+
+function logWarn(msg) {
+  console.warn(`[roadmap] ${formatTimestamp()} - Aviso: ${msg}`);
+}
+
+function logError(msg, err) {
+  if (err) {
+    console.error(`[roadmap] ${formatTimestamp()} - Erro: ${msg}`, err);
+  } else {
+    console.error(`[roadmap] ${formatTimestamp()} - Erro: ${msg}`);
+  }
+}
+
 /**
  * Clean up title from H1 line, removing H1 syntax and leading emoji if present.
  */
@@ -55,8 +76,11 @@ function scanDirectory(dirPath, area, category, tasks) {
         }
 
         const readmePath = path.join(folderPath, 'README.md');
+        const relFolderPath = path.relative(projectRoot, folderPath).replace(/\\/g, '/');
+        const relReadmePath = path.relative(projectRoot, readmePath).replace(/\\/g, '/');
+
         if (!fs.existsSync(readmePath)) {
-          console.warn(`[roadmap] Aviso: README.md ausente em ${folderPath}`);
+          logWarn(`${relFolderPath} sem README.md`);
           continue;
         }
 
@@ -69,11 +93,16 @@ function scanDirectory(dirPath, area, category, tasks) {
           let title = id; // Default to slug/id
           if (h1Line) {
             title = extractTitle(h1Line);
+          } else {
+            logWarn(`${relReadmePath} sem H1 - usando slug "${id}" como título`);
           }
 
           // Parse Date
           const dateMatch = content.match(/\*\*Data:\*\*\s*`?([0-9\-]+)`?/i);
           const date = dateMatch ? dateMatch[1].trim() : null;
+          if (!date) {
+            logWarn(`${relReadmePath} sem campo Data`);
+          }
 
           // Parse Priority
           const priorityMatch = content.match(/\*\*Prioridade:\*\*\s*`?([a-záéíóúçA-ZÀÉÍÓÚÇ]+)`?/i);
@@ -87,6 +116,8 @@ function scanDirectory(dirPath, area, category, tasks) {
             } else {
               priority = pVal;
             }
+          } else {
+            logWarn(`${relReadmePath} sem campo Prioridade - item listado com prioridade nula`);
           }
 
           // Parse Tags
@@ -97,6 +128,8 @@ function scanDirectory(dirPath, area, category, tasks) {
               .split(',')
               .map(t => t.replace(/`/g, '').trim())
               .filter(t => t.length > 0);
+          } else {
+            logWarn(`${relReadmePath} sem campo Tags`);
           }
 
           // Parse Progress
@@ -188,12 +221,12 @@ function scanDirectory(dirPath, area, category, tasks) {
             path: relativePath
           });
         } catch (err) {
-          console.error(`[roadmap] Erro ao processar o arquivo ${readmePath}:`, err);
+          logError(`Erro ao processar o arquivo ${relReadmePath}:`, err);
         }
       }
     }
   } catch (err) {
-    console.error(`[roadmap] Erro ao ler a pasta ${dirPath}:`, err);
+    logError(`Erro ao ler a pasta ${dirPath}:`, err);
   }
 }
 
@@ -201,9 +234,12 @@ function scanDirectory(dirPath, area, category, tasks) {
  * Generate data.js and data.json files.
  */
 function generateData() {
+  const startTime = Date.now();
   const tasks = [];
   const areas = ['active', 'archive'];
   const categories = ['bugs', 'features', 'enhancements', 'refactoring'];
+
+  logServer('Reprocessando /docs...');
 
   for (const area of areas) {
     for (const category of categories) {
@@ -211,6 +247,10 @@ function generateData() {
       scanDirectory(dirPath, area, category, tasks);
     }
   }
+
+  const activeCount = tasks.filter(t => t.area === 'active').length;
+  const archiveCount = tasks.filter(t => t.area === 'archive').length;
+  logServer(`${tasks.length} itens encontrados (${activeCount} active, ${archiveCount} archive)`);
 
   // Write data.json
   const jsonPath = path.join(projectRoot, 'roadmap', 'data.json');
@@ -220,32 +260,45 @@ function generateData() {
   const jsPath = path.join(projectRoot, 'roadmap', 'data.js');
   const jsContent = `var ROADMAP_TASKS = ${JSON.stringify(tasks, null, 2)};\n`;
   fs.writeFileSync(jsPath, jsContent, 'utf8');
+
+  const elapsed = Date.now() - startTime;
+  logServer(`data.js e data.json atualizados (${tasks.length} tarefas, ${elapsed}ms)`);
 }
 
 // Watcher debounce setup
 let timeoutId = null;
-function triggerRebuild() {
+let lastTriggeredFile = null;
+
+function triggerRebuild(filename) {
+  if (filename) {
+    const relFile = path.relative(projectRoot, path.isAbsolute(filename) ? filename : path.join(docsDir, filename)).replace(/\\/g, '/');
+    lastTriggeredFile = relFile;
+  }
   if (timeoutId) {
     clearTimeout(timeoutId);
   }
   timeoutId = setTimeout(() => {
-    console.log('[roadmap] docs atualizados, gerando data.js/data.json...');
+    if (lastTriggeredFile) {
+      logServer(`Mudança detectada: ${lastTriggeredFile}`);
+      lastTriggeredFile = null;
+    } else {
+      logServer(`Mudança detectada em /docs`);
+    }
     try {
       generateData();
-      console.log('[roadmap] data.js/data.json gerados com sucesso!');
     } catch (err) {
-      console.error('[roadmap] Erro ao gerar dados:', err);
+      logError('Erro ao gerar dados:', err);
     }
   }, 250);
 }
 
 // Initial build
-console.log('[roadmap] Geração inicial...');
+logServer('Geração inicial...');
 try {
   generateData();
-  console.log('[roadmap] Geração inicial concluída com sucesso!');
+  logServer('Geração inicial concluída com sucesso!');
 } catch (err) {
-  console.error('[roadmap] Erro na geração inicial:', err);
+  logError('Erro na geração inicial:', err);
 }
 
 // Recursive watch helper with fallback for other OS
@@ -308,28 +361,30 @@ function checkAndMountWatchers() {
   const activeExists = fs.existsSync(activeDir);
   if (activeExists && !activeFSWatcher) {
     activeFSWatcher = watchRecursive(activeDir, (eventType, filename) => {
-      triggerRebuild();
+      const fullPath = filename ? path.join(activeDir, filename) : activeDir;
+      triggerRebuild(fullPath);
     });
-    console.log(`[roadmap] Pasta encontrada e watcher ativado: ${relActive}`);
+    logServer(`Pasta encontrada e watcher ativado: ${relActive}`);
     triggerRebuild();
   } else if (!activeExists && activeFSWatcher) {
     activeFSWatcher.close();
     activeFSWatcher = null;
-    console.log(`[roadmap] Pasta removida, watcher desativado: ${relActive}`);
+    logServer(`Pasta removida, watcher desativado: ${relActive}`);
   }
 
   // Check archiveDir
   const archiveExists = fs.existsSync(archiveDir);
   if (archiveExists && !archiveFSWatcher) {
     archiveFSWatcher = watchRecursive(archiveDir, (eventType, filename) => {
-      triggerRebuild();
+      const fullPath = filename ? path.join(archiveDir, filename) : archiveDir;
+      triggerRebuild(fullPath);
     });
-    console.log(`[roadmap] Pasta encontrada e watcher ativado: ${relArchive}`);
+    logServer(`Pasta encontrada e watcher ativado: ${relArchive}`);
     triggerRebuild();
   } else if (!archiveExists && archiveFSWatcher) {
     archiveFSWatcher.close();
     archiveFSWatcher = null;
-    console.log(`[roadmap] Pasta removida, watcher desativado: ${relArchive}`);
+    logServer(`Pasta removida, watcher desativado: ${relArchive}`);
   }
 }
 
@@ -339,7 +394,7 @@ checkAndMountWatchers();
 // Periodic check every 3 seconds to auto-detect folder creation or removal
 setInterval(checkAndMountWatchers, 3000);
 
-console.log('[roadmap] Servidor de monitoramento rodando...');
+logServer('Servidor de monitoramento rodando...');
 
 // --- Servidor HTTP ---
 const PORT = 3003;
@@ -408,6 +463,32 @@ const server = http.createServer((req, res) => {
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, config: payload }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Payload JSON inválido.' }));
+      }
+    });
+    return;
+  }
+
+  // Route POST /log-error
+  if (req.method === 'POST' && reqPath === '/log-error') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body);
+        const msg = typeof payload.message === 'string' ? payload.message : JSON.stringify(payload.message);
+        const ctx = payload.context ? `[${payload.context}] ` : '';
+        logServer(`[navegador] ${ctx}${msg}`);
+
+        res.writeHead(200, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        });
+        res.end(JSON.stringify({ success: true }));
       } catch (err) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Payload JSON inválido.' }));

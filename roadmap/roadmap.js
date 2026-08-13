@@ -1,7 +1,39 @@
-// roadmap.js
-
 // Os dados são carregados do arquivo data.js gerado pelo roadmap-server.js.
 let tasks = []; // Array que manterá o estado atual das tarefas
+
+// --- OBSERVABILIDADE E RELATÓRIO DE ERROS ---
+function reportErrorToServer(message, context = "navegador") {
+  // Não envia requisição se estiver comprovadamente em modo estático/demo sem servidor
+  if (isStaticMode || isDemoMode) return;
+  try {
+    const msgStr = typeof message === "string" ? message : (message && message.message ? message.message : String(message));
+    fetch("/log-error", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: msgStr,
+        context,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(() => {});
+  } catch (e) {
+    // Fire and forget
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("error", (e) => {
+    if (e && e.message) {
+      reportErrorToServer(e.message, "uncaught-error");
+    }
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    if (e && e.reason) {
+      const msg = e.reason.message || String(e.reason);
+      reportErrorToServer(msg, "unhandled-rejection");
+    }
+  });
+}
 
 // --- CONFIGURAÇÃO DAS COLUNAS (7 STATUS DO PADRONIZATION) ---
 const COLUMNS = [
@@ -308,9 +340,11 @@ async function saveProjectIdentity() {
       showBtnFeedback("Salvo no servidor!", "check", false);
     } else {
       showBtnFeedback("Salvo localmente", "hard-drive", false, true);
+      reportErrorToServer("Servidor respondeu status não-OK ao salvar config", "saveProjectIdentity");
     }
   } catch (err) {
     showBtnFeedback("Salvo localmente", "hard-drive", false, true);
+    reportErrorToServer(`Falha na requisição ao salvar config: ${err.message || err}`, "saveProjectIdentity");
   }
 }
 
