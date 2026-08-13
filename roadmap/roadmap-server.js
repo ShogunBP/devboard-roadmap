@@ -251,22 +251,41 @@ try {
 // Recursive watch helper with fallback for other OS
 function watchRecursive(dir, callback) {
   try {
-    fs.watch(dir, { recursive: true }, callback);
+    const watcher = fs.watch(dir, { recursive: true }, callback);
+    return {
+      close: () => {
+        try { watcher.close(); } catch (e) {}
+      }
+    };
   } catch (err) {
     // Fallback: watch the directory and all existing subdirectories manually
-    fs.watch(dir, callback);
-    watchSubdirs(dir, callback);
+    const watchers = [];
+    try {
+      const main = fs.watch(dir, callback);
+      watchers.push(main);
+      watchSubdirs(dir, callback, watchers);
+    } catch (e) {}
+    return {
+      close: () => {
+        watchers.forEach(w => {
+          try { w.close(); } catch (e) {}
+        });
+      }
+    };
   }
 }
 
-function watchSubdirs(dir, callback) {
+function watchSubdirs(dir, callback, watchers) {
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       if (entry.isDirectory()) {
         const subPath = path.join(dir, entry.name);
-        fs.watch(subPath, callback);
-        watchSubdirs(subPath, callback);
+        try {
+          const w = fs.watch(subPath, callback);
+          watchers.push(w);
+        } catch (e) {}
+        watchSubdirs(subPath, callback, watchers);
       }
     }
   } catch (err) {
@@ -274,20 +293,51 @@ function watchSubdirs(dir, callback) {
   }
 }
 
-// Watch active and archive directories
+// Dynamic watcher management for active and archive directories
 const activeDir = path.join(docsDir, 'active');
 const archiveDir = path.join(docsDir, 'archive');
 
-if (fs.existsSync(activeDir)) {
-  watchRecursive(activeDir, (eventType, filename) => {
+let activeFSWatcher = null;
+let archiveFSWatcher = null;
+
+function checkAndMountWatchers() {
+  const relActive = path.relative(projectRoot, activeDir).replace(/\\/g, '/');
+  const relArchive = path.relative(projectRoot, archiveDir).replace(/\\/g, '/');
+
+  // Check activeDir
+  const activeExists = fs.existsSync(activeDir);
+  if (activeExists && !activeFSWatcher) {
+    activeFSWatcher = watchRecursive(activeDir, (eventType, filename) => {
+      triggerRebuild();
+    });
+    console.log(`[roadmap] Pasta encontrada e watcher ativado: ${relActive}`);
     triggerRebuild();
-  });
-}
-if (fs.existsSync(archiveDir)) {
-  watchRecursive(archiveDir, (eventType, filename) => {
+  } else if (!activeExists && activeFSWatcher) {
+    activeFSWatcher.close();
+    activeFSWatcher = null;
+    console.log(`[roadmap] Pasta removida, watcher desativado: ${relActive}`);
+  }
+
+  // Check archiveDir
+  const archiveExists = fs.existsSync(archiveDir);
+  if (archiveExists && !archiveFSWatcher) {
+    archiveFSWatcher = watchRecursive(archiveDir, (eventType, filename) => {
+      triggerRebuild();
+    });
+    console.log(`[roadmap] Pasta encontrada e watcher ativado: ${relArchive}`);
     triggerRebuild();
-  });
+  } else if (!archiveExists && archiveFSWatcher) {
+    archiveFSWatcher.close();
+    archiveFSWatcher = null;
+    console.log(`[roadmap] Pasta removida, watcher desativado: ${relArchive}`);
+  }
 }
+
+// Initial check & mount
+checkAndMountWatchers();
+
+// Periodic check every 3 seconds to auto-detect folder creation or removal
+setInterval(checkAndMountWatchers, 3000);
 
 console.log('[roadmap] Servidor de monitoramento rodando...');
 

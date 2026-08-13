@@ -1,7 +1,7 @@
 {
-  "projectName": "Projeto Editado no Server",
-  "projectDescription": "Descrição salva via HTTP no servidor",
-  "projectBadge": "Server 3003",
-  "updatedAt": "2026-08-12T22:08:31.322Z",
+  "projectName": "Portifolio Pessoal",
+  "projectDescription": "Portifolio de projetos e curriculo pessoal",
+  "projectBadge": "ShogunBP",
+  "updatedAt": "2026-08-13T00:27:46.155Z",
   "serverPort": 3003
 }

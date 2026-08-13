@@ -76,7 +76,19 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [x] Sincronização da Identidade do Projeto (localStorage + config.json via timestamp) — permite edições offline em modo estático com sincronia automática ao reconectar o servidor (ver detalhamento abaixo)
 - [x] Hover nos botões de visualização e prioridade + Accordion no Roadmap em mobile/tablet (ver detalhamento abaixo)
 - [~] Investigação de flicker no modo "Sistema" ao redimensionar com DevTools: causa identificada e correção aplicada, sem reprodução visual confirmada (ver detalhamento abaixo)
+- [x] Montagem dinâmica de watchers no servidor para pastas criadas após o boot (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Montagem Dinâmica de Watchers no Servidor (concluída)
+
+- **Problema de Boot com Pastas Inexistentes:**
+  - Anteriormente, o `roadmap-server.js` verificava `fs.existsSync(activeDir)` e `fs.existsSync(archiveDir)` uma única vez durante a inicialização.
+  - Caso o servidor fosse iniciado antes da criação ou reorganização das pastas `/docs/active` ou `/docs/archive` (ex: durante migração ou setup inicial), nenhum watcher era montado para esses caminhos pelo resto da execução do processo Node.js.
+- **Solução Implementada (`checkAndMountWatchers`):**
+  - Implementada a função `checkAndMountWatchers()` executada na inicialização e periodicamente a cada 3 segundos (`setInterval(..., 3000)`).
+  - Detecta automaticamente quando `docs/active` ou `docs/archive` passam a existir no disco, monta os leitores/watchers (`watchRecursive`) e dispara um `triggerRebuild()` imediato para capturar os dados recém-criados.
+  - Se um diretório for removido ou movido, desativa o watcher correspondente (`activeFSWatcher.close()`) de forma limpa, sem exceções não tratadas ou vazamento de listeners.
+  - Confirmado via testes de execução com inicialização sem pastas, criação a quente e edições subsequentes nos READMEs.
 
 ### Investigação de Flicker no Modo "Sistema" (correção aplicada, validação pendente)
 

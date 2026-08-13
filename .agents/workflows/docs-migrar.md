@@ -15,6 +15,41 @@ estrutura antiga, ou nada documentado) na estrutura `/docs` padronizada. Depois 
 migrado, as regras de manutenção contínua de `/docs` (ver `docs-padronizacao`, se
 disponível neste ambiente) passam a valer normalmente.
 
+## Passo 0 — Detectar conflito entre `/docs` de dados e `/docs` contendo o roadmap instalado
+
+Antes de decidir qualquer caminho de destino, verificar se a pasta `/docs` do projeto
+já contém, ela própria, uma subpasta `roadmap/` com os arquivos do devboard-roadmap
+instalado dentro (ex: `docs/roadmap/roadmap-server.js`, `docs/roadmap/roadmap.js`).
+Isso é um cenário real e esperado: o devboard-roadmap costuma ser instalado dentro da
+própria `/docs` do projeto host, e nesse caso a estrutura `active/`/`archive/` de
+dados **não pode** ir para `docs/active`/`docs/archive` diretamente, porque colidiria
+com o significado de `/docs` já usado pelo roadmap para outra coisa (a pasta que
+contém os assets do próprio roadmap, não os dados de planejamento).
+
+Se esse conflito for detectado:
+- O destino correto passa a ser `docs/docs/active/`/`docs/docs/archive/` (uma
+  subpasta `docs/` adicional dentro da `/docs` existente), não `docs/active`/
+  `docs/archive` diretamente. Este é o padrão já adotado manualmente pelo usuário
+  para resolver esse mesmo conflito neste projeto, e deve ser seguido de forma
+  consistente por esta migração automatizada.
+- **Nunca tratar a pasta `docs/roadmap/` (ou qualquer subpasta dela, incluindo
+  `docs/roadmap/favicon/`) como fonte de inventário nem como destino de migração.**
+  Excluir explicitamente esse caminho de qualquer varredura do Passo 1 — arquivos como
+  `roadmap.js`, `roadmap-server.js`, `config.json`, `data.js`, `data.json` dentro dela
+  não são documentação de planejamento e não devem ser lidos, movidos, nem usados como
+  fonte de itens a migrar.
+- Se não houver esse conflito (roadmap está instalado na raiz do projeto, fora de
+  `/docs`, como na instalação padrão documentada no README do devboard-roadmap), o
+  destino padrão continua sendo `docs/active/`/`docs/archive/` diretamente, sem a
+  subpasta extra.
+- Se houver qualquer ambiguidade sobre qual dos dois cenários se aplica (ex: existe uma
+  pasta `roadmap/` em mais de um lugar, ou a estrutura não bate claramente com nenhum
+  dos dois padrões), parar e perguntar ao usuário qual é o caminho de destino correto
+  antes de prosseguir, em vez de assumir.
+
+Confirmar o caminho de destino resolvido neste passo antes de iniciar o Passo 1, e
+usá-lo de forma consistente em todos os passos seguintes.
+
 ## Passo 1 — Inventário do estado atual
 
 Antes de mover ou criar qualquer arquivo, escaneie o projeto e produza um inventário
@@ -75,7 +110,9 @@ inviabiliza migrações com muitos itens.
 
 Para cada item mapeado:
 
-1. Criar a pasta em `docs/{active|archive}/{categoria}/[status]-nome-em-kebab-case/`.
+1. Criar a pasta em `{destino-resolvido-no-passo-0}/{active|archive}/{categoria}/[status]-nome-em-kebab-case/`
+   (ou seja, `docs/active/...` no caso padrão, ou `docs/docs/active/...` no caso de
+   conflito com o roadmap instalado dentro de `/docs`, conforme resolvido no Passo 0).
 2. Criar o `README.md` dentro dela, usando o template exato da categoria (do
    PADRONIZATION.md), preenchendo cabeçalho (`Status`, `Data`, `Prioridade`, `Tags`,
    `Resumo`) e as seções do corpo com o conteúdo migrado, reescrito para caber na
@@ -91,6 +128,8 @@ Para cada item mapeado:
 
 Ao terminar, produzir um relatório claro para o usuário revisar, cobrindo:
 
+- Qual caminho de destino foi usado (`docs/active`/`docs/archive` padrão, ou
+  `docs/docs/active`/`docs/docs/archive` por conflito detectado no Passo 0), e por quê.
 - Quantos itens foram migrados, agrupados por categoria e por status.
 - Toda decisão de mapeamento que usou um valor padrão/conservador por falta de
   informação na fonte original (prioridade assumida como `média`, tag aproximada em
