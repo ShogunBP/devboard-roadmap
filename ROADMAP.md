@@ -78,7 +78,18 @@ Validado com teste manual real cobrindo as 3 situações de scroll (página, col
 - [~] Investigação de flicker no modo "Sistema" ao redimensionar com DevTools: causa identificada e correção aplicada, sem reprodução visual confirmada (ver detalhamento abaixo)
 - [x] Montagem dinâmica de watchers no servidor para pastas criadas após o boot (ver detalhamento abaixo)
 - [x] Logs narrativos de servidor com timestamp e endpoint POST /log-error para erros do navegador (ver detalhamento abaixo)
+- [x] Centralização dos ícones e favicons na pasta roadmap/favicon/ (ver detalhamento abaixo)
 - [x] Revisar responsividade mobile/tablet (grid do Kanban e modal): pendência conhecida desde a Fase 2, resolvida (ver detalhamento abaixo)
+
+### Centralização de Favicons (`roadmap/favicon/`) (concluída)
+
+- **Centralização de Recursos:**
+  - Copiado e integrado o arquivo `favicon.ico` para a pasta `roadmap/favicon/`.
+  - Removido o arquivo duplicado `favicon.ico` da raiz do repositório.
+- **Atualização dos Documentos HTML:**
+  - Adicionadas as tags completas de favicon e manifest (`favicon.ico`, `favicon-32x32.png`, `favicon-16x16.png`, `apple-touch-icon.png`, `site.webmanifest`) no `<head>` do `index.html`.
+  - Atualizada a referência do `<head>` do `roadmap.html` para apontar exclusivamente para `roadmap/favicon/favicon.ico`.
+  - Confirmado via testes HTTP 200 que o carregamento de todos os favicons e páginas resolve com sucesso.
 
 ### Logs Narrativos e Observabilidade do Servidor (concluída)
 
